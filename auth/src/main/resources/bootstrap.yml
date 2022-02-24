@@ -1,6 +1,6 @@
 spring:
   application:
-    name: pcs-gateway
+    name: pcs-auth
   profiles:
     active: dev
   cloud:
