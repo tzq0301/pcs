@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: pcs-gateway
+
+server:
+  port: 12100

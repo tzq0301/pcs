@@ -8,9 +8,70 @@
     <artifactId>pcs</artifactId>
     <version>0.0.1</version>
 
+    <packaging>pom</packaging>
+
+    <name>心理咨询系统（Psychological Counseling System）</name>
+    <description>心理咨询系统（Psychological Counseling System）</description>
+    <url>https://github.com/tzq0301/pcs</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>童昭旗</name>
+            <email>tzq0301@gmail.com</email>
+            <roles>
+                <role>Project Leader</role>
+                <role>Java Development Engineer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>李金志</name>
+            <email>2063436123@qq.com</email>
+            <roles>
+                <role>Database Manager</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <modules>
+        <module>gateway</module>
+    </modules>
+
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <spring-boot.version>2.3.7.RELEASE</spring-boot.version>
+        <spring-cloud-alibaba.version>2.2.2.RELEASE</spring-cloud-alibaba.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
 
 </project>
