@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: pcs-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: http://101.35.240.47:12002
+
+server:
+  port: 12100
