@@ -22,6 +22,15 @@
 
 ## 微服务管理
 
+### 微服务通信
+
+```mermaid
+flowchart LR
+    client[Client] -->|Web Request| gateway[Gateway]
+    gateway -->|PREFIX=/auth| auth[Auth]
+    gateway --> other[Other]
+ ```
+
 ### 端口管理
 
 | 应用          | 端口    |
