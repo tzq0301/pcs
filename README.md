@@ -8,6 +8,14 @@
 
 ## 技术选型
 
+| 技术        | 选型                                               | 备注                                                   |
+|-----------|--------------------------------------------------|------------------------------------------------------|
+| 微服务注册中心   | Spring Cloud Alibaba Nacos                       ||
+| 微服务配置管理中心 | Spring Cloud Alibaba Nacos                       ||
+| 微服务网关     | Spring Cloud Gateway                             ||
+| 负载均衡      | Spring Cloud Loadbalancer (ReactiveLoadBalancer) | 不实用 Ribbon 提供的阻塞式负载均衡，使用响应式负载均衡 ReactiveLoadBalancer |
+| HTTP 客户端  | Spring Cloud OpenFeign                           ||
+
 ## 技术架构
 
 ## 部署架构
@@ -19,7 +27,6 @@
 | 网关（gateway） | 12100 |
 |             |       |
 |             |       |
-
 
 ## 外部依赖
 

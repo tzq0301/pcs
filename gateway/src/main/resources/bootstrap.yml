@@ -1,15 +1,12 @@
 spring:
   application:
     name: pcs-gateway
+  profiles:
+    active: dev
   cloud:
     nacos:
       discovery:
         server-addr: http://101.35.240.47:12002
       config:
-        server-addr: 127.0.0.1:8848
-    gateway:
-      loadbalancer:
-        use404: true
-
-server:
-  port: 12100
+        server-addr: http://101.35.240.47:12002
+        file-extension: yaml
