@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: pcs-auth
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      discovery:
+        server-addr: http://101.35.240.47:12002
+      config:
+        server-addr: http://101.35.240.47:12002
+        file-extension: yaml
