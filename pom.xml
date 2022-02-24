@@ -8,6 +8,38 @@
     <artifactId>pcs</artifactId>
     <version>0.0.1</version>
 
+    <packaging>pom</packaging>
+
+    <name>心理咨询系统（Psychological Counseling System）</name>
+    <description>心理咨询系统（Psychological Counseling System）</description>
+    <url>https://github.com/tzq0301/pcs</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>童昭旗</name>
+            <email>tzq0301@gmail.com</email>
+            <roles>
+                <role>Project Leader</role>
+                <role>Java Development Engineer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>李金志</name>
+            <email>2063436123@qq.com</email>
+            <roles>
+                <role>Database Manager</role>
+            </roles>
+        </developer>
+    </developers>
+
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
