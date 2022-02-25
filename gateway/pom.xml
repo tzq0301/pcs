@@ -10,8 +10,7 @@
     </parent>
 
     <artifactId>gateway</artifactId>
-    <version>0.0.1</version>
-    <name>gateway</name>
+    <name>网关服务</name>
     <description>Gateway of the entire microservice system</description>
 
     <dependencies>
