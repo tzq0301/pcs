@@ -8,23 +8,6 @@
 
 需求来源：http://wiki.suncaper.net/pages/viewpage.action?pageId=50369779
 
-## 业务流程图
-
-```mermaid
-flowchart TB
-    subgraph first-visit[First Visit]
-        direction TB
-        apply["提交申请"] --> b
-    end 
-    
-    subgraph consult[Consult]
-        direction TB
-        c --> d
-    end
-    
-    first-visit --> consult
-```
-
 ## 技术选型
 
 | 技术        | 选型                                               | 备注                                                   |
@@ -47,7 +30,7 @@ flowchart LR
     gateway -->|PREFIX=/auth| auth[Auth]
     auth --> db[(Database)]
     gateway --> other[Other]
- ```
+```
 
 ### 端口管理
 
