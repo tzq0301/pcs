@@ -64,9 +64,10 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>cn.tzq0301</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>common</artifactId>
                 <version>${project.version}</version>
+                <type>jar</type>
             </dependency>
 
             <dependency>

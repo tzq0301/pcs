@@ -1,5 +1,6 @@
 package cn.tzq0301.auth.route;
 
+import cn.tzq0301.result.Result;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -17,6 +18,6 @@ public class RouteConfig {
     @Bean
     public RouterFunction<ServerResponse> router() {
         return route()
-                .GET("/test", request -> ServerResponse.ok().contentType(APPLICATION_JSON).bodyValue("test")).build();
+                .GET("/test", request -> ServerResponse.ok().contentType(APPLICATION_JSON).bodyValue(Result.success("test"))).build();
     }
 }
