@@ -50,4 +50,14 @@ flowchart LR
 
 ## 编码实践
 
+## 构建
+
+### Nacos
+
+参考 [nacos/setup.md](nacos/setup.md) 
+
+### ELK
+
+参考 [elk/elk.md](elk/setup.md)
+
 ## FAQ
