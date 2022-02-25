@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>gateway</artifactId>
-    <version>0.0.1</version>
+    <version>${parent.version}</version>
     <name>gateway</name>
     <description>Gateway of the entire microservice system</description>
 
