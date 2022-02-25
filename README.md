@@ -28,6 +28,7 @@
 flowchart LR
     client[Client] -->|Web Request| gateway[Gateway]
     gateway -->|PREFIX=/auth| auth[Auth]
+    auth --> db[(Database)]
     gateway --> other[Other]
  ```
 
