@@ -6,6 +6,25 @@
 
 学生可以在心理咨询系统中填写登记表，进行线上初访预约，并由管理员进行审核；审核通过后，初访员会对学生进行初访，了解大致情况；此后，咨询助理安排咨询师对学生进行心理咨询，由咨询师提交每次访问的记录，并在完成全部心理咨询后填写结案报告。
 
+需求来源：http://wiki.suncaper.net/pages/viewpage.action?pageId=50369779
+
+## 业务流程图
+
+```mermaid
+flowchart TB
+    subgraph first-visit[First Visit]
+        direction TB
+        a --> b
+    end
+    
+    subgraph consult[Consult]
+        direction TB
+        c --> d
+    end
+    
+    first-visit --> consult
+```
+
 ## 技术选型
 
 | 技术        | 选型                                               | 备注                                                   |
@@ -17,8 +36,6 @@
 | HTTP 客户端  | Spring Cloud OpenFeign                           ||
 
 ## 技术架构
-
-## 部署架构
 
 ## 微服务管理
 
@@ -38,6 +55,8 @@ flowchart LR
 |-----|---------|-------|
 | 网关  | gateway | 12100 |
 | 认证  | auth    | 12101 |
+
+## 部署架构
 
 ## 外部依赖
 
