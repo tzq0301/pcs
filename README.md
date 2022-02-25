@@ -31,10 +31,33 @@
 
 ```mermaid
 flowchart LR
-    client[Client] -->|Web Request| gateway[Gateway]
-    gateway -->|PREFIX=/auth| auth[Auth]
-    auth --> db[(Database)]
-    gateway --> other[Other]
+    client[Client] --> |Web Request| gateway[Gateway]
+    
+    subgraph java [Spring Cloud Microservices]
+        gateway -->|PREFIX=/auth| auth[Auth]
+        
+        subgraph auth-microservice[Auth Service]
+            auth --> db-auth[(Database)]
+        end
+        
+        gateway -->|PREFIX=/visit| visit[Visit]
+        
+        subgraph visit-microservice[Visit Service]
+            visit --> db-visit[(Database)]
+        end
+        
+        gateway -->|PREFIX=/consule| consule[Consule]
+        
+        subgraph consule-microservice[Consule Service]
+            consule --> db-consule[(Database)]
+        end
+    end
+    
+    consule --> export
+    
+    subgraph go [Golang]
+        export[Export Service]
+    end
 ```
 
 ### 端口管理
