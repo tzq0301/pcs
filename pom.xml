@@ -59,6 +59,7 @@
         <spring.cloud.alibaba.version>2.2.2.RELEASE</spring.cloud.alibaba.version>
 
         <guava.version>31.0.1-jre</guava.version>
+        <lombok.versoin>1.18.22</lombok.versoin>
     </properties>
 
     <dependencyManagement>
@@ -98,6 +99,13 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.versoin}</version>
+                <scope>provided</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
