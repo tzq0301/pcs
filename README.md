@@ -17,6 +17,7 @@
 | 微服务网关     | Spring Cloud Gateway                             ||
 | 负载均衡      | Spring Cloud Loadbalancer (ReactiveLoadBalancer) | 不实用 Ribbon 提供的阻塞式负载均衡，使用响应式负载均衡 ReactiveLoadBalancer |
 | HTTP 客户端  | Spring Cloud OpenFeign                           ||
+| 认证授权      | Spring Security + JWT                            |                                                      |
 
 ## 技术架构
 
