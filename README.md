@@ -14,7 +14,7 @@
 flowchart TB
     subgraph first-visit[First Visit]
         direction TB
-        a --> b
+        apply["提交申请"] --> b
     end
     
     subgraph consult[Consult]
