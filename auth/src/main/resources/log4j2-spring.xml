@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration monitorInterval="5">
+    <!--日志级别以及优先级排序: OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
+
+    <Properties>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{%-5level} [%t] %highlight{%c{1.}.%M(%L)}: %msg%n%throwable</Property>
+        <Property name="PATTERN">{"host": "%host", "logger": "%logger", "level": "%level", "message": "[%thread] [%c:%L] --- %message"}%n</Property>
+        <property name="FILE_PATH" value="/elk" />
+        <property name="FILE_NAME" value="log" />
+    </Properties>
+
+    <appenders>
+        <console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <ThresholdFilter level="Info" onMatch="ACCEPT" onMismatch="DENY"/>
+        </console>
+
+        <Socket name="logstash" host="101.35.240.47" port="5000" protocol="TCP">
+            <PatternLayout pattern="${PATTERN}" />
+        </Socket>
+    </appenders>
+
+    <loggers>
+        <Logger name="org.springframework" level="info">
+            <AppenderRef ref="logstash"/>
+        </Logger>
+
+        <AsyncLogger name="cn.tzq0301" level="info" includeLocation="false" >
+            <appender-ref ref="Console"/>
+            <appender-ref ref="logstash"/>
+        </AsyncLogger>
+
+        <Root level="info">
+            <appender-ref ref="Console"/>
+        </Root>
+    </loggers>
+
+</configuration>
