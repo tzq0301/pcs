@@ -15,7 +15,7 @@ docker network create pcs-net
 
 | 属性  | 值                                                                |
 |-----|------------------------------------------------------------------|
-| id  | 7265030fd32d7b88b1e4b59bfdfaa0b7f13d375d5908dffb3950f40d066b8856 |
+| id  | 5704f0d4b40ee0e8a8af04a0936e4bc2783a3f8c3a67891d4e0001ccc747c8e7 |
 
 
 ## 3. 创建容器
@@ -28,7 +28,7 @@ docker run -it --name pcs-nacos-mysql -e MYSQL_ROOT_PASSWORD=123456 -p 12001:330
 
 | 属性            | 值                                                                |
 |---------------|------------------------------------------------------------------|
-| id            | 4698f9dfb13f51e2d4b8c1ee25552623ae1f364f852c9c96a6e04a8d2e9408c3 |
+| id            | 608bd7c999a3c26276c27f5c48952a227640ec77a6381e2c60207f8a24a32820 |
 | image         | mysql                                                            |
 | name          | pcs-nacos-mysql                                                  |
 | password      | 123456                                                           |
@@ -44,7 +44,7 @@ docker run -it --name pcs-nacos -e MODE=standalone -p 12000:8848 --network pcs-n
 
 | 属性            | 值                                                                |
 |---------------|------------------------------------------------------------------|
-| id            | 751e651c56fa1c99aff1e9b76c49f98b8db566310086f282ff6e8a06e3db5426 |
+| id            | 97ef8a7185e49a4f3974ebff7060455a21dc5a2c3f61c90debf330d91a690f30 |
 | image         | nacos/nacos-server                                               |
 | name          | pcs-nacos                                                        |
 | MODE          | standalone                                                       |
@@ -332,7 +332,7 @@ spring.datasource.platform=mysql
 
 # 172.18.0.2:3306 是我的 MySQL 的 IP 与端口号，nacos_mysql 是数据库名
 # 使用 `docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' 容器id或容器name` 获得特定容器的 IP
-db.url.0=jdbc:mysql://172.18.0.3:3306/nacos_mysql
+db.url.0=jdbc:mysql://172.18.0.3:3306/nacos
 # 注释掉 db.url.1
 db.user=root
 db.password=123456
