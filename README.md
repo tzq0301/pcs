@@ -22,7 +22,7 @@
 | HTTP 客户端  | Spring Cloud OpenFeign                           ||
 | 认证授权      | Spring Security + JWT                            |                                                      |
 | Web 服务    | Spring WebFlux                                   |                                                      |
-| 数据存储      | MongoDB                                          | 阿里云数据库（三节点副本集实例），价值 ¥9.99                            |
+| 数据存储      | MongoDB                                          | 阿里云数据库（三节点副本集实例，价值 ¥9.99）                            |
 | 云服务器      | 阿里云轻量应用服务器、腾讯云轻量应用服务器                            |                                                      |
 
 ## 技术架构
@@ -71,11 +71,13 @@ flowchart LR
 
 ## 部署架构
 
+## 数据模型
+
 ## 外部依赖
 
 ## 编码实践
 
-## 构建
+## 环境搭建
 
 ### Nacos
 
