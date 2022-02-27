@@ -9,7 +9,8 @@
 需求来源：http://wiki.suncaper.net/pages/viewpage.action?pageId=50369779
 
 ## 业务流程
-![业务流程图](https://tzq-oos-1.oss-cn-hangzhou.aliyuncs.com/img/image-20220225144204613.png)
+
+![业务流程图](https://tzq-oos-1.oss-cn-hangzhou.aliyuncs.com/img/image-20220227103201232.png)
 
 ## 技术选型
 
