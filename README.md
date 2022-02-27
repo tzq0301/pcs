@@ -12,6 +12,10 @@
 
 ![业务流程图](https://tzq-oos-1.oss-cn-hangzhou.aliyuncs.com/img/image-20220227103201232.png)
 
+## 业务功能
+
+![心理资讯系统 v3](https://tzq-oos-1.oss-cn-hangzhou.aliyuncs.com/img/%E5%BF%83%E7%90%86%E8%B5%84%E8%AE%AF%E7%B3%BB%E7%BB%9F%20v3.png)
+
 ## 技术选型
 
 | 技术        | 选型                                               | 备注                                                   |
