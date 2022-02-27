@@ -6,7 +6,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: http://101.35.240.47:12000
+        server-addr: http://47.97.154.207:12000
       config:
-        server-addr: http://101.35.240.47:12000
+        server-addr: http://47.97.154.207:12000
         file-extension: yaml

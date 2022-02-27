@@ -9,7 +9,16 @@
 需求来源：http://wiki.suncaper.net/pages/viewpage.action?pageId=50369779
 
 ## 业务流程
-![业务流程图](https://tzq-oos-1.oss-cn-hangzhou.aliyuncs.com/img/image-20220225144204613.png)
+
+![业务流程图](https://tzq-oos-1.oss-cn-hangzhou.aliyuncs.com/img/image-20220227103201232.png)
+
+## 业务功能
+
+![心理资讯系统 v3](https://tzq-oos-1.oss-cn-hangzhou.aliyuncs.com/img/%E5%BF%83%E7%90%86%E8%B5%84%E8%AE%AF%E7%B3%BB%E7%BB%9F%20v3.png)
+
+## 数据模型
+
+![数据模型 v2](https://tzq-oos-1.oss-cn-hangzhou.aliyuncs.com/img/%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%20v2.jpeg)
 
 ## 技术选型
 
@@ -22,6 +31,8 @@
 | HTTP 客户端  | Spring Cloud OpenFeign                           ||
 | 认证授权      | Spring Security + JWT                            |                                                      |
 | Web 服务    | Spring WebFlux                                   |                                                      |
+| 数据存储      | MongoDB                                          | 阿里云数据库（三节点副本集实例，价值 ¥9.99）                            |
+| 云服务器      | 阿里云轻量应用服务器、腾讯云轻量应用服务器                            |                                                      |
 
 ## 技术架构
 
@@ -69,11 +80,13 @@ flowchart LR
 
 ## 部署架构
 
+## 数据模型
+
 ## 外部依赖
 
 ## 编码实践
 
-## 构建
+## 环境搭建
 
 ### Nacos
 
