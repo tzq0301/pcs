@@ -16,6 +16,10 @@
 
 ![心理资讯系统 v3](https://tzq-oos-1.oss-cn-hangzhou.aliyuncs.com/img/%E5%BF%83%E7%90%86%E8%B5%84%E8%AE%AF%E7%B3%BB%E7%BB%9F%20v3.png)
 
+## 数据模型
+
+![数据模型 v2](https://tzq-oos-1.oss-cn-hangzhou.aliyuncs.com/img/%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%20v2.png)
+
 ## 技术选型
 
 | 技术        | 选型                                               | 备注                                                   |
