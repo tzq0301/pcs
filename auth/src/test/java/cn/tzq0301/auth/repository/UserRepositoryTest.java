@@ -43,4 +43,12 @@ class UserRepositoryTest {
                 .expectNext("TZQ")
                 .verifyComplete();
     }
+
+    @Test
+    @Disabled
+    void testFindNothing() {
+        userRepository.findByUserId("2019101460542")
+                .as(StepVerifier::create)
+                .verifyComplete();
+    }
 }
