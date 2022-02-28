@@ -112,6 +112,7 @@ func export(w http.ResponseWriter, r *http.Request) {
 
 	if h.parse() != nil {
 		h.responseError(w)
+		return
 	}
 	h.convert().upload().response(w)
 }

@@ -3,12 +3,13 @@ package main
 import (
 	"flag"
 	"net/http"
+	"strconv"
 )
 
 const (
 	TMP_DIR = "/tmp"
-	MARKDOWN_TEMPLATE_PATH = "/Users/peter/GoLandProjects/dd_project/pcs-export-go/markdown_template.txt"
-	LUTE_PATH = "/Users/peter/GoLandProjects/dd_project/pcs-export-go/lute-pdf"
+	MARKDOWN_TEMPLATE_PATH = "/root/markdown_template.txt"
+	LUTE_PATH = "/root/lute-pdf"
 	OSS_WEBSITE = "https://oss-cn-hangzhou.aliyuncs.com"
 	OSS_DIR = "pcs/pdf"
 )
@@ -17,13 +18,14 @@ func main() {
 	keyId := flag.String("id", "", "阿里云OSS KeyId")
 	keySecret := flag.String("secret", "", "阿里云OSS KeySecret")
 	bucketName := flag.String("bucket", "", "阿里云OSS BucketName")
+	port := flag.Int("port", 12345, "监听端口")
 	flag.Parse()
 
 	bucket = initOss(*keyId, *keySecret, *bucketName)
 
 	http.HandleFunc("/export", export)
 
-	err := http.ListenAndServe(":10000", nil)
+	err := http.ListenAndServe(":" + strconv.Itoa(*port), nil)
 	if err != nil {
 		return
 	}
