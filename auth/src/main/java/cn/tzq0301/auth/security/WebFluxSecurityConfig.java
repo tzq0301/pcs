@@ -1,5 +1,6 @@
 package cn.tzq0301.auth.security;
 
+import cn.tzq0301.auth.entity.user.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,9 @@ public class WebFluxSecurityConfig {
                 .authorizeExchange()
                 .pathMatchers(HttpMethod.OPTIONS).permitAll()
                 .pathMatchers("/login/**").permitAll()
+                .pathMatchers("/test").permitAll()
+                .pathMatchers("/student").hasRole(Role.STUDENT.getRole())
+                .pathMatchers("/admin").hasRole(Role.ADMIN.getRole())
                 .anyExchange().authenticated()
                 .and().build();
     }
