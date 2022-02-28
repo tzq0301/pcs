@@ -32,8 +32,20 @@ public class Result<T> implements Serializable {
         return new Result<>(data, SUCCESS.getCode(), SUCCESS.getMessage());
     }
 
+    public static <T> Result<T> success(T data, int code, String message) {
+        return new Result<>(data, code, message);
+    }
+
     public static <T> Result<T> error(T data) {
         return new Result<>(data, ERROR.getCode(), ERROR.getMessage());
+    }
+
+    public static <T> Result<T> error(int code, String message) {
+        return new Result<>(null, code, message);
+    }
+
+    public static <T> Result<T> error(T data, int code, String message) {
+        return new Result<>(data, code, message);
     }
 
     public T getData() {

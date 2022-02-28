@@ -8,3 +8,7 @@ spring:
             - Path=/auth/**
           filters:
             - StripPrefix=1
+        - id: login
+          uri: lb://pcs-auth
+          predicates:
+            - Path=/login/**
