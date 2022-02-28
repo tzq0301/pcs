@@ -14,11 +14,11 @@
 
 ## 业务功能
 
-![心理资讯系统 v3](https://tzq-oos-1.oss-cn-hangzhou.aliyuncs.com/img/%E5%BF%83%E7%90%86%E8%B5%84%E8%AE%AF%E7%B3%BB%E7%BB%9F%20v3.png)
+![心理资讯系统 v3.1](https://tzq-oos-1.oss-cn-hangzhou.aliyuncs.com/img/%E5%BF%83%E7%90%86%E8%B5%84%E8%AE%AF%E7%B3%BB%E7%BB%9F%20v3.1.png)
 
 ## 数据模型
 
-![数据模型 v2](https://tzq-oos-1.oss-cn-hangzhou.aliyuncs.com/img/%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%20v2.jpeg)
+![数据模型 v2.1](https://tzq-oos-1.oss-cn-hangzhou.aliyuncs.com/img/%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%20v2.1.jpg)
 
 ## 技术选型
 
@@ -80,8 +80,6 @@ flowchart LR
 
 ## 部署架构
 
-## 数据模型
-
 ## 外部依赖
 
 ## 编码实践
@@ -95,5 +93,29 @@ flowchart LR
 ### ELK
 
 参考 [elk/elk.md](elk/setup.md)
+
+## 本地运行
+
+### gateway
+
+在执行 jar 时，增加命令行参数：
+```shell
+# Nacos 服务发现中心
+--spring.cloud.nacos.discovery.server-addr=your-host:your-port
+
+# Nacos 配置中心
+--spring.cloud.nacos.config.server-addr=your-host:your-port
+```
+
+### auth
+
+在执行 jar 时，增加命令行参数：
+```shell
+# Nacos 服务发现中心
+--spring.cloud.nacos.discovery.server-addr=your-host:your-port
+
+# Nacos 配置中心
+--spring.cloud.nacos.config.server-addr=your-host:your-port
+```
 
 ## FAQ
