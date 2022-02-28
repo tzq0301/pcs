@@ -66,4 +66,14 @@ public class LoginHandler {
                 .switchIfEmpty(ServerResponse.ok().bodyValue(
                         Result.error(LoginResponseCode.ERROR.getCode(), LoginResponseCode.ERROR.getMessage())));
     }
+
+    /**
+     * 使用手机号与短信验证码进行登录
+     *
+     * @param request 请求
+     * @return 响应
+     */
+    public Mono<ServerResponse> loginByCode(ServerRequest request) {
+        return null;
+    }
 }

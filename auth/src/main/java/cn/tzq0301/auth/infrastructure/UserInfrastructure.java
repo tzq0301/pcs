@@ -21,6 +21,10 @@ public class UserInfrastructure {
         return userRepository.findByUserId(userId);
     }
 
+    public Mono<User> findByPhone(String phone) {
+        return userRepository.findByPhone(phone);
+    }
+
     public Mono<User> findByIdentity(String account) {
         return userRepository.findByIdentity(account);
     }
