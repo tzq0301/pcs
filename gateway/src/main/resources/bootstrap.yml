@@ -5,8 +5,5 @@ spring:
     active: dev
   cloud:
     nacos:
-      discovery:
-        server-addr: http://47.97.154.207:12000
       config:
-        server-addr: http://47.97.154.207:12000
         file-extension: yaml
