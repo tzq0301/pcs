@@ -82,10 +82,4 @@ public class User {
             this.studentStatus = studentStatus;
         }
     }
-
-    public UserDetails toUserDetails() {
-        return new org.springframework.security.core.userdetails.User(
-                userId, password, enable, true, true, true,
-                Stream.of(new SimpleGrantedAuthority(role.getRole())).collect(Collectors.toList()));
-    }
 }
