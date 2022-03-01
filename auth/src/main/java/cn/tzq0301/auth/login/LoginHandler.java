@@ -8,6 +8,7 @@ import cn.tzq0301.auth.login.strategy.LoginByIdentityStrategy;
 import cn.tzq0301.auth.login.strategy.LoginByPhoneStrategy;
 import cn.tzq0301.auth.login.strategy.LoginByUserIdStrategy;
 import cn.tzq0301.result.Result;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -18,6 +19,7 @@ import reactor.core.publisher.Mono;
  * @version 1.0
  */
 @Component
+@AllArgsConstructor
 public class LoginHandler {
     private final LoginService loginService;
 
@@ -28,18 +30,6 @@ public class LoginHandler {
     private final LoginByPhoneStrategy loginByPhoneStrategy;
 
     private final LoginByUserIdStrategy loginByUserIdStrategy;
-
-    public LoginHandler(LoginService loginService,
-                        LoginByCodeStrategy loginByCodeStrategy,
-                        LoginByIdentityStrategy loginByIdentityStrategy,
-                        LoginByPhoneStrategy loginByPhoneStrategy,
-                        LoginByUserIdStrategy loginByUserIdStrategy) {
-        this.loginService = loginService;
-        this.loginByCodeStrategy = loginByCodeStrategy;
-        this.loginByIdentityStrategy = loginByIdentityStrategy;
-        this.loginByPhoneStrategy = loginByPhoneStrategy;
-        this.loginByUserIdStrategy = loginByUserIdStrategy;
-    }
 
     /**
      * 使用手机号/身份证/学号与密码进行登录
@@ -61,8 +51,9 @@ public class LoginHandler {
         }
 
         return user
-                .map(Users::userToLoginResponse)
-                .flatMap(u -> ServerResponse.ok().bodyValue(u))
+                .flatMap(u -> ServerResponse.ok()
+//                        .header(HttpHeaders.AUTHORIZATION, JWTUtils.generateToken(u.getUserId()))
+                        .bodyValue(Users.userToLoginResponse(u)))
                 .switchIfEmpty(ServerResponse.ok().bodyValue(
                         Result.error(LoginResponseCode.ERROR.getCode(), LoginResponseCode.ERROR.getMessage())));
     }
