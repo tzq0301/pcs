@@ -1,5 +1,6 @@
 package cn.tzq0301.auth.entity.user;
 
+import cn.tzq0301.user.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,12 +8,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author tzq0301
@@ -34,11 +31,11 @@ public class User {
 
     private String password; // 密码
 
-    private Boolean enable; // 该账号是否有效
+    private Boolean enabled; // 该账号是否有效
 
-    private Role role; // 角色
+    private String role; // 角色
 
-    private Sex sex; // 性别
+    private Integer sex; // 性别
 
     private LocalDate birthday; // 出生日期
 
@@ -53,13 +50,13 @@ public class User {
 
     private Integer studentStatus; // 不在进行为 0、正在初访为 1、正在心理咨询为 2
 
-    public User(String userId, String name, String password, Boolean enable,
-                Role role, Sex sex, LocalDate birthday,
+    public User(String userId, String name, String password, Boolean enabled,
+                String role, Integer sex, LocalDate birthday,
                 String phone, String email, String identity, Integer studentStatus) {
         this.userId = userId;
         this.name = name;
         this.password = password;
-        this.enable = enable;
+        this.enabled = enabled;
         this.role = role;
         this.sex = sex;
         this.birthday = birthday;
@@ -70,7 +67,7 @@ public class User {
     }
 
     public Integer getStudentStatus() {
-        if (!Role.STUDENT.equals(this.role)) {
+        if (!Role.STUDENT.getRole().equals(this.role)) {
             return null;
         }
 
@@ -78,7 +75,7 @@ public class User {
     }
 
     public void setStudentStatus(Integer studentStatus) {
-        if (Role.STUDENT.equals(this.role)) {
+        if (Role.STUDENT.getRole().equals(this.role)) {
             this.studentStatus = studentStatus;
         }
     }
