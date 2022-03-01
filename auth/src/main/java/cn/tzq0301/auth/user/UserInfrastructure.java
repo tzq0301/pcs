@@ -1,7 +1,6 @@
-package cn.tzq0301.auth.infrastructure;
+package cn.tzq0301.auth.user;
 
 import cn.tzq0301.auth.entity.user.User;
-import cn.tzq0301.auth.repository.UserRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
@@ -19,6 +18,10 @@ public class UserInfrastructure {
 
     public Mono<User> findByUserId(String userId) {
         return userRepository.findByUserId(userId);
+    }
+
+    public Mono<User> findByPhone(String phone) {
+        return userRepository.findByPhone(phone);
     }
 
     public Mono<User> findByIdentity(String account) {

@@ -1,4 +1,4 @@
-package cn.tzq0301.auth.security;
+package cn.tzq0301.gateway.security;
 
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;

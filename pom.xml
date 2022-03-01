@@ -60,6 +60,8 @@
 
         <guava.version>31.0.1-jre</guava.version>
         <lombok.versoin>1.18.22</lombok.versoin>
+        <logstash-gelf.version>1.12.0</logstash-gelf.version>
+        <disruptor.version>3.4.2</disruptor.version>
     </properties>
 
     <dependencyManagement>
@@ -123,13 +125,13 @@
             <dependency>
                 <groupId>biz.paluch.logging</groupId>
                 <artifactId>logstash-gelf</artifactId>
-                <version>1.12.0</version>
+                <version>${logstash-gelf.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.lmax</groupId>
                 <artifactId>disruptor</artifactId>
-                <version>3.4.2</version>
+                <version>${disruptor.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
