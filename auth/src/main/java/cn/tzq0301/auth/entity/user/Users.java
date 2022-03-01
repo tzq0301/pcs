@@ -4,20 +4,16 @@ import cn.tzq0301.auth.login.entity.LoginResponse;
 import cn.tzq0301.auth.login.entity.LoginResponseCode;
 import cn.tzq0301.result.Result;
 import com.google.common.base.Strings;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author tzq0301
  * @version 1.0
  */
 public final class Users {
-    private Users() {}
+    private static final String ROLE_PREFIX = "ROLE_";
 
     public static boolean isIdentity(String account) {
         return Strings.nullToEmpty(account).length() == 18;
@@ -27,18 +23,24 @@ public final class Users {
         return Strings.nullToEmpty(account).length() == 11;
     }
 
-    public static UserDetails userToUserDetails(User user) {
-        return new org.springframework.security.core.userdetails.User(
-                user.getUserId(), user.getPassword(), user.getEnable(), true, true, true,
-                Stream.of(new SimpleGrantedAuthority(user.getRole().getRole())).collect(Collectors.toList()));
-    }
-
     public static Result<LoginResponse> userToLoginResponse(User user) {
-        return Result.success(new LoginResponse(user.getUserId(), user.getName(), user.getRole().getRole()),
+        Objects.requireNonNull(user);
+
+        return Result.success(new LoginResponse(user.getUserId(), user.getName(), user.getRole()),
                 LoginResponseCode.SUCCESS.getCode(), LoginResponseCode.SUCCESS.getMessage());
     }
 
-    public static void encoderPassword(User user, PasswordEncoder passwordEncoder) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+    public static User addRolePrefix(User user) {
+        Objects.requireNonNull(user);
+
+        if (user.getRole().startsWith(ROLE_PREFIX)) {
+            return user;
+        }
+
+        user.setRole(ROLE_PREFIX + user.getRole());
+
+        return user;
     }
+
+    private Users() {}
 }
