@@ -33,6 +33,7 @@
 | Web 服务    | Spring WebFlux                                   |                                                      |
 | 数据存储      | MongoDB                                          | 阿里云数据库（三节点副本集实例，价值 ¥9.99）                            |
 | 云服务器      | 阿里云轻量应用服务器、腾讯云轻量应用服务器                            |                                                      |
+| 缓存        | Redis Cluster ( 1 Master & 2 Salves )            | 基于 Docker Compose 的"一主二从"三节点 Redis 集群                |
 
 ## 技术架构
 
