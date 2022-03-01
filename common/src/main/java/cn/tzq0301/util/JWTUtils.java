@@ -1,15 +1,17 @@
 package cn.tzq0301.util;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import io.jsonwebtoken.impl.crypto.DefaultJwtSignatureValidator;
 
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -21,20 +23,26 @@ import java.util.function.Function;
 public final class JWTUtils {
     private static final String SECRET = "ThisIsTheSecretOfJwtAuthorizationOfOutPerfectProjectPcsSystem";
 
-    private static final long EXPIRATION = 6 * 60 * 60 * 1000;
+    public static final long EXPIRATION = 6 * 60 * 60 * 1000;
+
+    private static final SignatureAlgorithm ALG = SignatureAlgorithm.HS256;
+
+    private static final SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET.getBytes(StandardCharsets.UTF_8), ALG.getJcaName());
+
+    private static final DefaultJwtSignatureValidator validator = new DefaultJwtSignatureValidator(ALG, secretKeySpec);
 
     /**
      * 创建 JWT Token
      *
      * @param userId 用户 ID
+     * @param role 用户角色
      * @return JWT Token
      */
     public static String generateToken(final String userId, final String role) {
-        HashMap<String, Object> claims = Maps.newHashMap();
-        claims.put("role", role);
-
         // Use username as subject
         // Add role into claims
+        Map<String, Object> claims = Maps.newHashMap();
+        claims.put("role", role);
         return createToken(claims, userId);
     }
 
@@ -61,6 +69,16 @@ public final class JWTUtils {
     }
 
     /**
+     * 从 JWT Token 中获取用户 ID
+     *
+     * @param token JWT Token
+     * @return JWT Token 中的用户 ID
+     */
+    public static String extractUserId(final String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    /**
      * 使用 jjwt API 创建 JWT Token
      *
      * @param claims JWT Token 应该包含的 claims
@@ -83,20 +101,10 @@ public final class JWTUtils {
                 .setExpiration(new Date(currentTime + EXPIRATION))
 
                 // Signs the constructed JWT using the specified algorithm with the specified key.
-                .signWith(SignatureAlgorithm.HS256, SECRET)
+                .signWith(ALG, SECRET)
 
                 // Actually builds the JWT and serializes it to a compact
                 .compact();
-    }
-
-    /**
-     * 从 JWT Token 中获取用户 ID
-     *
-     * @param token JWT Token
-     * @return JWT Token 中的用户 ID
-     */
-    private static String extractUserId(final String token) {
-        return extractClaim(token, Claims::getSubject);
     }
 
     /**
@@ -105,7 +113,7 @@ public final class JWTUtils {
      * @param token JWT Token
      * @return JWT Token 是否过期
      */
-    private static boolean isTokenExpired(final String token) {
+    public static boolean isTokenExpired(final String token) {
         return extractExpiration(token).before(new Date());
     }
 
@@ -136,7 +144,7 @@ public final class JWTUtils {
      * @param token JWT Token
      * @return JWT Token 中的所有 claims
      */
-    private static Claims extractAllClaims(final String token) {
+    public static Claims extractAllClaims(final String token) {
         return Jwts.parser()
                 .setSigningKey(SECRET)
                 .parseClaimsJws(token)
