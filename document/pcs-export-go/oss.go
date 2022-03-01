@@ -26,7 +26,8 @@ func initOss(keyId, keySecret, bucketName string) *oss.Bucket {
 }
 
 func uploadFile(filePath string) (fileLink string) {
-	fileLink = OSS_DIR + "/" + filepath.Base(filePath)
+	timestamp := time.Now().Unix()
+	fileLink = OSS_DIR + "/" + strconv.FormatInt(timestamp, 10) + filepath.Base(filePath)
 	err := bucket.PutObjectFromFile(fileLink, filePath)
 	if err != nil {
 		log.Println("Error:", err)
