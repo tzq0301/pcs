@@ -1,4 +1,4 @@
-package cn.tzq0301.auth.entity.user;
+package cn.tzq0301.user;
 
 /**
  * @author tzq0301
