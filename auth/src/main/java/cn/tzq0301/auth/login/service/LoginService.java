@@ -1,11 +1,9 @@
-package cn.tzq0301.auth.login;
+package cn.tzq0301.auth.login.service;
 
 import cn.tzq0301.auth.entity.user.User;
 import cn.tzq0301.auth.entity.user.Users;
 import cn.tzq0301.auth.user.UserInfrastructure;
-import cn.tzq0301.auth.login.strategy.LoginStrategy;
 import lombok.AllArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -18,11 +16,19 @@ import reactor.core.publisher.Mono;
 public class LoginService {
     private final UserInfrastructure userInfrastructure;
 
-    public Mono<User> login(LoginStrategy loginStrategy, String principal, String certification) {
-        return loginStrategy.login(principal, certification);
+    public Mono<User> findByUserId(String userId) {
+        return userInfrastructure.findByUserId(userId);
+    }
+
+    public Mono<User> findByIdentity(String identity) {
+        return userInfrastructure.findByIdentity(identity);
+    }
+
+    public Mono<User> findByPhone(String phone) {
+        return userInfrastructure.findByPhone(phone);
     }
 
     public Mono<User> saveUser(User user) {
-        return userInfrastructure.saveUser(user);
+        return userInfrastructure.saveUser(Users.addRolePrefix(user));
     }
 }
