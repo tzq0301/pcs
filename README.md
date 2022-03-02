@@ -28,11 +28,12 @@
 | 微服务配置管理中心 | Spring Cloud Alibaba Nacos                       ||
 | 微服务网关     | Spring Cloud Gateway                             ||
 | 负载均衡      | Spring Cloud Loadbalancer (ReactiveLoadBalancer) | 不实用 Ribbon 提供的阻塞式负载均衡，使用响应式负载均衡 ReactiveLoadBalancer |
-| HTTP 客户端  | Spring Cloud OpenFeign                           ||
+| HTTP 客户端  | WebClient <br/> ~~(Spring Cloud OpenFeign)~~     ||
 | 认证授权      | Spring Security + JWT                            |                                                      |
 | Web 服务    | Spring WebFlux                                   |                                                      |
 | 数据存储      | MongoDB                                          | 阿里云数据库（三节点副本集实例，价值 ¥9.99）                            |
 | 云服务器      | 阿里云轻量应用服务器、腾讯云轻量应用服务器                            |                                                      |
+| 短信发送      | 腾讯云 SMS                                          |                                                      |
 | 缓存        | Redis Cluster ( 1 Master & 2 Salves )            | 基于 Docker Compose 的"一主二从"三节点 Redis 集群                |
 
 ## 技术架构

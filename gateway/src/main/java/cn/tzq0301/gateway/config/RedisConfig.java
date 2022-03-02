@@ -18,6 +18,9 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  */
 @SpringBootConfiguration
 public class RedisConfig {
+    public static final String PROJECT_NAMESPACE_PREFIX = "pcs:";
+
+    public static final String JWT_NAMESPACE_PREFIX = PROJECT_NAMESPACE_PREFIX + "jwt:";
 
     @Bean
     public ReactiveRedisTemplate<String, Object> reactiveRedisTemplate(

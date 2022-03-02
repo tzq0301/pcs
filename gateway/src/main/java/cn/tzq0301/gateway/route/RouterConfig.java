@@ -1,6 +1,6 @@
 package cn.tzq0301.gateway.route;
 
-import cn.tzq0301.gateway.login.LoginHandler;
+import cn.tzq0301.gateway.login.handler.LoginHandler;
 import cn.tzq0301.util.JWTUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -28,6 +28,7 @@ public class RouterConfig {
     @Bean
     public RouterFunction<ServerResponse> router() {
         return route()
+                // 测试接口
                 .GET("/test", request -> Mono.just("test").flatMap(ServerResponse.ok()::bodyValue))
                 .GET("/test/user_id/{user_id}", request -> {
                     String userId = request.pathVariable("user_id");
@@ -40,7 +41,10 @@ public class RouterConfig {
                     log.info("userId from JWT: {}", userIdFromJWT);
                     return ServerResponse.ok().build();
                 })
+
+                // 正式接口
                 .GET("/login/account/{account}/password/{password}", loginHandler::loginByAccount)
+                .GET("/phone/{phone}/code", loginHandler::requestMessageValidationCode)
                 .build();
     }
 }
