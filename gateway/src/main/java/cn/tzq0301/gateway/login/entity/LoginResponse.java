@@ -18,6 +18,11 @@ public class LoginResponse {
     private String id;
 
     /**
+     * JWT Token
+     */
+    private String jwt;
+
+    /**
      * 角色
      */
     private String role;

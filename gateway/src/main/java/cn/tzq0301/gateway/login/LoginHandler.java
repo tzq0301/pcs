@@ -1,15 +1,14 @@
 package cn.tzq0301.gateway.login;
 
 import cn.tzq0301.gateway.login.entity.LoginResponse;
-import cn.tzq0301.gateway.login.entity.LoginResponseCode;
 import cn.tzq0301.gateway.security.PcsUserDetailsService;
 import cn.tzq0301.result.Result;
 import cn.tzq0301.util.JWTUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.http.HttpHeaders;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -18,6 +17,8 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
+
+import static cn.tzq0301.gateway.login.entity.LoginResponseCode.*;
 
 /**
  * @author tzq0301
@@ -48,23 +49,41 @@ public class LoginHandler {
         return userDetailsService.findByUsername(account)
                 .filter(user -> passwordEncoder.matches(password, user.getPassword()))
                 .doOnNext(user -> log.info("{} {} login", user.getAuthorities(), user.getUsername()))
-                .map(user -> new LoginResponse(user.getUsername(),
-                        user.getAuthorities().stream()
-                                .map(GrantedAuthority::getAuthority)
-                                .findAny()
-                                .map(role -> role.startsWith(ROLE_PREFIX) ? role.substring(ROLE_PREFIX.length()) : role)
-                                .orElse("")))
-                .flatMap(user -> Mono.just(JWTUtils.generateToken(user.getId(), user.getRole()))
-                        .publishOn(Schedulers.boundedElastic())
-                        .doOnNext(jwt -> log.info("Create jwt for {}: {}", user.getId(), jwt))
-                        .doOnNext(jwt -> redisTemplate.opsForValue().set(jwt, "").subscribe())
-                        .doOnNext(jwt -> redisTemplate.expire(jwt, Duration.ofMillis(JWTUtils.EXPIRATION)).subscribe())
-                        .flatMap(jwt -> ServerResponse.ok()
-                                .header(HttpHeaders.AUTHORIZATION, jwt)
-                                .bodyValue(Result.success(
-                                        user, LoginResponseCode.SUCCESS.getCode(), LoginResponseCode.SUCCESS.getMessage()))))
-                .switchIfEmpty(ServerResponse.ok().bodyValue(Result.error(
-                        LoginResponseCode.ERROR.getCode(), LoginResponseCode.ERROR.getMessage())));
+
+                .map(this::generateJwtResponse)
+
+                .doOnNext(this::pushJwtToRedis)
+//                .publishOn(Schedulers.boundedElastic())
+//                .doOnNext(loginResponse -> redisTemplate.opsForValue().set(loginResponse.getJwt(), "").subscribe())
+//                .doOnNext(loginResponse -> redisTemplate.expire(
+//                        loginResponse.getJwt(), Duration.ofMillis(JWTUtils.EXPIRATION)).subscribe())
+
+                .flatMap(loginResponse -> ServerResponse.ok().bodyValue(
+                        Result.success(loginResponse, SUCCESS.getCode(), SUCCESS.getMessage())))
+                .switchIfEmpty(ServerResponse.ok().bodyValue(
+                        Result.error(ERROR.getCode(), ERROR.getMessage())));
+
+
+//        return userDetailsService.findByUsername(account)
+//                .filter(user -> passwordEncoder.matches(password, user.getPassword()))
+//                .doOnNext(user -> log.info("{} {} login", user.getAuthorities(), user.getUsername()))
+//                .map(user -> new LoginResponse(user.getUsername(),
+//                        user.getAuthorities().stream()
+//                                .map(GrantedAuthority::getAuthority)
+//                                .findAny()
+//                                .map(role -> role.startsWith(ROLE_PREFIX) ? role.substring(ROLE_PREFIX.length()) : role)
+//                                .orElse("")))
+//                .flatMap(user -> Mono.just(JWTUtils.generateToken(user.getId(), user.getRole()))
+//                        .publishOn(Schedulers.boundedElastic())
+//                        .doOnNext(jwt -> log.info("Create jwt for {}: {}", user.getId(), jwt))
+//                        .doOnNext(jwt -> redisTemplate.opsForValue().set(jwt, "").subscribe())
+//                        .doOnNext(jwt -> redisTemplate.expire(jwt, Duration.ofMillis(JWTUtils.EXPIRATION)).subscribe())
+//                        .flatMap(jwt -> ServerResponse.ok()
+//                                .header(HttpHeaders.AUTHORIZATION, jwt)
+//                                .bodyValue(Result.success(
+//                                        user, LoginResponseCode.SUCCESS.getCode(), LoginResponseCode.SUCCESS.getMessage()))))
+//                .switchIfEmpty(ServerResponse.ok().bodyValue(Result.error(
+//                        LoginResponseCode.ERROR.getCode(), LoginResponseCode.ERROR.getMessage())));
     }
 
     /**
@@ -75,5 +94,41 @@ public class LoginHandler {
      */
     public Mono<ServerResponse> loginByCode(ServerRequest request) {
         return null;
+    }
+
+    /**
+     * 基于用户信息（用户 ID 与角色）生成 JWT
+     *
+     * @param user {@link org.springframework.security.core.userdetails.UserDetails}
+     * @return {@link cn.tzq0301.gateway.login.entity.LoginResponse}
+     */
+    private LoginResponse generateJwtResponse(UserDetails user) {
+        String userId = user.getUsername();
+        String role = user.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .findAny()
+                .map(it -> it.startsWith(ROLE_PREFIX) ? it.substring(ROLE_PREFIX.length()) : it)
+                .orElse("");
+
+        String jwt = JWTUtils.generateToken(userId, role);
+        log.info("Create jwt for {}: {}", userId, jwt);
+
+        return new LoginResponse(userId, jwt, role);
+    }
+
+    /**
+     * 将 JWT 放入 Redis 中
+     *
+     * @param loginResponse {@link cn.tzq0301.gateway.login.entity.LoginResponse}
+     */
+    private void pushJwtToRedis(LoginResponse loginResponse) {
+        Mono.just(loginResponse)
+                .publishOn(Schedulers.boundedElastic())
+                .doFirst(() -> redisTemplate.opsForValue().set(loginResponse.getJwt(), "").subscribe())
+                .doOnNext(it -> log.info("Push JWT to Redis: {}", it.getJwt()))
+                .doFirst(() -> redisTemplate.expire(
+                        loginResponse.getJwt(), Duration.ofMillis(JWTUtils.EXPIRATION)).subscribe())
+                .doOnNext(it -> log.info("Set expiration {} Millis for {}", JWTUtils.EXPIRATION, it.getJwt()))
+                .subscribe();
     }
 }
