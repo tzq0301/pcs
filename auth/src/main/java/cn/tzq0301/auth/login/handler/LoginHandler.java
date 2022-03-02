@@ -1,6 +1,7 @@
-package cn.tzq0301.auth.user;
+package cn.tzq0301.auth.login.handler;
 
 import cn.tzq0301.auth.entity.user.Users;
+import cn.tzq0301.auth.login.service.LoginService;
 import cn.tzq0301.auth.user.entity.UserResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -14,18 +15,18 @@ import reactor.core.publisher.Mono;
  */
 @Component
 @AllArgsConstructor
-public class UserHandler {
-    private final UserService userService;
+public class LoginHandler {
+    private final LoginService loginService;
 
     public Mono<ServerResponse> getUserByAccount(ServerRequest request) {
         return Mono.just(request.pathVariable("account"))
                 .flatMap(account -> {
                     if (Users.isIdentity(account)) {
-                        return userService.findByIdentity(account);
+                        return loginService.findByIdentity(account);
                     } else if (Users.isPhone(account)) {
-                        return userService.findByPhone(account);
+                        return loginService.findByPhone(account);
                     } else {
-                        return userService.findByUserId(account);
+                        return loginService.findByUserId(account);
                     }
                 })
                 .map(user -> new UserResponse(

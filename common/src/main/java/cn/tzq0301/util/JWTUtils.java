@@ -21,15 +21,13 @@ import java.util.function.Function;
  * @version 1.0
  */
 public final class JWTUtils {
-    private static final String SECRET = "ThisIsTheSecretOfJwtAuthorizationOfOutPerfectProjectPcsSystem";
-
     public static final long EXPIRATION = 6 * 60 * 60 * 1000;
 
+    public static final String AUTHORIZATION_HEADER_PREFIX = "Bearer ";
+
+    private static final String SECRET = "ThisIsTheSecretOfJwtAuthorizationOfOutPerfectProjectPcsSystem";
+
     private static final SignatureAlgorithm ALG = SignatureAlgorithm.HS256;
-
-    private static final SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET.getBytes(StandardCharsets.UTF_8), ALG.getJcaName());
-
-    private static final DefaultJwtSignatureValidator validator = new DefaultJwtSignatureValidator(ALG, secretKeySpec);
 
     /**
      * 创建 JWT Token
