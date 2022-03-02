@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: pcs-message
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      config:
+        file-extension: yaml
