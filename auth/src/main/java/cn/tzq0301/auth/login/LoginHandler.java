@@ -51,9 +51,7 @@ public class LoginHandler {
         }
 
         return user
-                .flatMap(u -> ServerResponse.ok()
-//                        .header(HttpHeaders.AUTHORIZATION, JWTUtils.generateToken(u.getUserId()))
-                        .bodyValue(Users.userToLoginResponse(u)))
+                .flatMap(u -> ServerResponse.ok().bodyValue(Users.userToLoginResponse(u)))
                 .switchIfEmpty(ServerResponse.ok().bodyValue(
                         Result.error(LoginResponseCode.ERROR.getCode(), LoginResponseCode.ERROR.getMessage())));
     }

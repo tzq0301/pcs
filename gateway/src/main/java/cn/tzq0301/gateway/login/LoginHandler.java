@@ -3,16 +3,13 @@ package cn.tzq0301.gateway.login;
 import cn.tzq0301.gateway.login.entity.LoginResponse;
 import cn.tzq0301.gateway.login.entity.LoginResponseCode;
 import cn.tzq0301.gateway.security.PcsUserDetailsService;
-import cn.tzq0301.gateway.security.entity.UserResponse;
 import cn.tzq0301.result.Result;
 import cn.tzq0301.util.JWTUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.http.HttpHeaders;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -36,6 +33,8 @@ public class LoginHandler {
 
     private final ReactiveRedisTemplate<String, Object> redisTemplate;
 
+    private static final String ROLE_PREFIX = "ROLE_";
+
     /**
      * 使用手机号/身份证/学号与密码进行登录
      *
@@ -49,10 +48,12 @@ public class LoginHandler {
         return userDetailsService.findByUsername(account)
                 .filter(user -> passwordEncoder.matches(password, user.getPassword()))
                 .doOnNext(user -> log.info("{} {} login", user.getAuthorities(), user.getUsername()))
-                .map(user -> new LoginResponse(user.getUsername(), user.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .findAny()
-                        .orElse("")))
+                .map(user -> new LoginResponse(user.getUsername(),
+                        user.getAuthorities().stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .findAny()
+                                .map(role -> role.startsWith(ROLE_PREFIX) ? role.substring(ROLE_PREFIX.length()) : role)
+                                .orElse("")))
                 .flatMap(user -> Mono.just(JWTUtils.generateToken(user.getId(), user.getRole()))
                         .publishOn(Schedulers.boundedElastic())
                         .doOnNext(jwt -> log.info("Create jwt for {}: {}", user.getId(), jwt))

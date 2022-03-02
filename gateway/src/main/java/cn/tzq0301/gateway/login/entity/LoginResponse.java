@@ -18,11 +18,6 @@ public class LoginResponse {
     private String id;
 
     /**
-     * 学生姓名（name）
-     */
-//    private String username;
-
-    /**
      * 角色
      */
     private String role;

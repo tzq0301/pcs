@@ -95,6 +95,14 @@ flowchart LR
 
 参考 [elk/elk.md](elk/setup.md)
 
+### Redis
+
+```shell
+cd ./redis
+
+docker-compose up -d
+```
+
 ## 本地运行
 
 ### gateway
