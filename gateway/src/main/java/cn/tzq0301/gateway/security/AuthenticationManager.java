@@ -1,5 +1,6 @@
 package cn.tzq0301.gateway.security;
 
+import cn.tzq0301.gateway.config.RedisConfig;
 import cn.tzq0301.util.JWTUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -30,48 +31,66 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
         return Mono.just(authentication)
-                .filter(auth -> {
-                    boolean authenticated = auth.isAuthenticated();
-                    if (authenticated) {
-                        log.info("'{}' has been authenticated", auth.getPrincipal());
-                    } else {
-                        log.info("'{}' has not been authenticated", auth.getPrincipal());
-                    }
-                    return !authenticated;
-                })
+                .filter(AuthenticationManager::isAuthenticated)
                 .switchIfEmpty(Mono.empty())
+
                 .map(Authentication::getPrincipal)
-                .map(principal -> {
-                    log.info("Principal is {}", principal);
-                    return principal.toString();
-                })
+                .map(Object::toString)
+                .doOnNext(it -> log.info("Principal is {}", it))
+
                 .publishOn(Schedulers.boundedElastic())
-                .filter(jwt -> {
-                    boolean isValid = redisTemplate.opsForValue().get(jwt).block() != null;
-                    if (!isValid) {
-                        log.warn("The following jwt is invalid: {}", jwt);
-                    }
-                    return isValid;
-                })
+
+                .filter(this::isJwtValid)
                 .switchIfEmpty(Mono.empty())
-                .filter(jwt -> {
-                    boolean tokenExpired = JWTUtils.isTokenExpired(jwt);
-                    if (tokenExpired) {
-                        log.info("'{}' has been expired", jwt);
-                    } else {
-                        log.info("'{}' has not been expired", jwt);
-                    }
-                    return !tokenExpired;
-                })
+
+                .filter(AuthenticationManager::isJwtExpired)
                 .switchIfEmpty(Mono.empty())
-                .map(jwt -> {
-                    String userId = JWTUtils.extractUserId(jwt);
-                    String role = JWTUtils.extractUserRole(jwt);
-                    log.info("[{}] {} authenticated", userId, role);
-                    return new UsernamePasswordAuthenticationToken(
-                            userId, null, Stream.of(role)
-                            .map(r -> r.startsWith(ROLE_PREFIX) ? r : ROLE_PREFIX + r)
-                            .map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
-                });
+
+                .map(AuthenticationManager::jwtToAuthentication);
+    }
+
+    private static boolean isAuthenticated(final Authentication authentication) {
+        boolean authenticated = authentication.isAuthenticated();
+
+        if (authenticated) {
+            log.info("'{}' has been authenticated", authentication.getPrincipal());
+        } else {
+            log.info("'{}' has not been authenticated", authentication.getPrincipal());
+        }
+
+        return !authenticated;
+    }
+
+    private boolean isJwtValid(final String jwt) {
+        boolean isValid = redisTemplate.opsForValue().get(RedisConfig.JWT_NAMESPACE_PREFIX + jwt).block() != null;
+
+        if (!isValid) {
+            log.warn("The following jwt is invalid: {}", jwt);
+        }
+
+        return isValid;
+    }
+
+    private static boolean isJwtExpired(final String jwt) {
+        boolean tokenExpired = JWTUtils.isTokenExpired(jwt);
+
+        if (tokenExpired) {
+            log.info("'{}' has been expired", jwt);
+        } else {
+            log.info("'{}' has not been expired", jwt);
+        }
+
+        return !tokenExpired;
+    }
+
+    private static Authentication jwtToAuthentication(final String jwt) {
+        String userId = JWTUtils.extractUserId(jwt);
+        String role = JWTUtils.extractUserRole(jwt);
+
+        log.info("[{}] {} authenticated", userId, role);
+
+        return new UsernamePasswordAuthenticationToken(userId, null, Stream.of(role)
+                .map(r -> r.startsWith(ROLE_PREFIX) ? r : ROLE_PREFIX + r)
+                .map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
     }
 }

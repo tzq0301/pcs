@@ -1,5 +1,6 @@
 package cn.tzq0301.gateway.login.handler;
 
+import cn.tzq0301.gateway.config.RedisConfig;
 import cn.tzq0301.gateway.login.entity.LoginResponse;
 import cn.tzq0301.gateway.security.PcsUserDetailsService;
 import cn.tzq0301.result.Result;
@@ -102,10 +103,12 @@ public class LoginHandler {
     private void pushJwtToRedis(LoginResponse loginResponse) {
         Mono.just(loginResponse)
                 .publishOn(Schedulers.boundedElastic())
-                .doFirst(() -> redisTemplate.opsForValue().set(loginResponse.getJwt(), "").subscribe())
+                .doOnNext(it -> redisTemplate.opsForValue()
+                        .set(RedisConfig.JWT_NAMESPACE_PREFIX + it.getJwt(), "").subscribe())
                 .doOnNext(it -> log.info("Push JWT to Redis: {}", it.getJwt()))
-                .doFirst(() -> redisTemplate.expire(
-                        loginResponse.getJwt(), Duration.ofMillis(JWTUtils.EXPIRATION)).subscribe())
+                .doOnNext(it -> redisTemplate
+                        .expire(RedisConfig.JWT_NAMESPACE_PREFIX + it.getJwt(),
+                                Duration.ofMillis(JWTUtils.EXPIRATION)).subscribe())
                 .doOnNext(it -> log.info("Set expiration {} Millis for {}", JWTUtils.EXPIRATION, it.getJwt()))
                 .subscribe();
     }
