@@ -62,6 +62,7 @@
         <lombok.versoin>1.18.22</lombok.versoin>
         <logstash-gelf.version>1.12.0</logstash-gelf.version>
         <disruptor.version>3.4.2</disruptor.version>
+        <tencentcloud-sdk-java.version>3.1.270</tencentcloud-sdk-java.version>
     </properties>
 
     <dependencyManagement>
@@ -132,6 +133,12 @@
                 <groupId>com.lmax</groupId>
                 <artifactId>disruptor</artifactId>
                 <version>${disruptor.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.tencentcloudapi</groupId>
+                <artifactId>tencentcloud-sdk-java</artifactId>
+                <version>${tencentcloud-sdk-java.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
