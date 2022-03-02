@@ -1,4 +1,4 @@
-package cn.tzq0301.gateway.login;
+package cn.tzq0301.gateway.login.handler;
 
 import cn.tzq0301.gateway.login.entity.LoginResponse;
 import cn.tzq0301.gateway.security.PcsUserDetailsService;
@@ -55,6 +55,13 @@ public class LoginHandler {
                         Result.success(loginResponse, SUCCESS.getCode(), SUCCESS.getMessage())))
                 .switchIfEmpty(ServerResponse.ok().bodyValue(
                         Result.error(ERROR.getCode(), ERROR.getMessage())));
+    }
+
+    // FIXME
+    public Mono<ServerResponse> requestMessageValidationCode(ServerRequest request) {
+        final String phone = request.pathVariable("phone");
+
+        return null;
     }
 
     /**
