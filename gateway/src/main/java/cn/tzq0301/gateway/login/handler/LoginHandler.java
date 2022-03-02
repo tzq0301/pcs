@@ -61,6 +61,7 @@ public class LoginHandler {
     // FIXME
     public Mono<ServerResponse> requestMessageValidationCode(ServerRequest request) {
         final String phone = request.pathVariable("phone");
+        final String code = request.pathVariable("code");
 
         return null;
     }

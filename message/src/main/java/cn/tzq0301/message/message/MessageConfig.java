@@ -1,4 +1,4 @@
-package cn.tzq0301.gateway.message;
+package cn.tzq0301.message.message;
 
 import com.tencentcloudapi.common.Credential;
 import com.tencentcloudapi.common.profile.ClientProfile;

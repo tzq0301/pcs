@@ -1,4 +1,4 @@
-package cn.tzq0301.gateway.message;
+package cn.tzq0301.message.message;
 
 import com.tencentcloudapi.common.exception.TencentCloudSDKException;
 import com.tencentcloudapi.sms.v20210111.SmsClient;
@@ -6,7 +6,6 @@ import com.tencentcloudapi.sms.v20210111.models.SendSmsRequest;
 import com.tencentcloudapi.sms.v20210111.models.SendSmsResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cglib.core.Local;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 
@@ -45,7 +44,7 @@ public class SmsUtils {
      *                         （示例如：+8613711112222， 其中前面有一个+号 ，86为国家码，
      *                         13711112222为手机号，最多不要超过200个手机号）
      * @param templateParamSet 模板参数: 若无模板参数，则设置为空
-     * @return {@link com.tencentcloudapi.sms.v20210111.models.SendSmsResponse}
+     * @return {@link SendSmsResponse}
      * @throws TencentCloudSDKException 短信发送服务异常
      */
     public SendSmsResponse sendSmsToChinesePhones(String[] phoneNumberSet, String[] templateParamSet) throws TencentCloudSDKException {

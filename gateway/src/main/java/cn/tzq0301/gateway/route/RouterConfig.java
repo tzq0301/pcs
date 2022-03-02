@@ -43,8 +43,15 @@ public class RouterConfig {
                 })
 
                 // 正式接口
+
+                // 用户管理
+                // 用户管理 - 用户登录
                 .GET("/login/account/{account}/password/{password}", loginHandler::loginByAccount)
-                .GET("/phone/{phone}/code", loginHandler::requestMessageValidationCode)
+                .GET("/login/phone/{phone}/code/{code}", loginHandler::requestMessageValidationCode)
+
+                // 通用接口
+//                .GET("/phone/{phone}/code", loginHandler::requestMessageValidationCode) // FIXME
+
                 .build();
     }
 }

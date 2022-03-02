@@ -47,6 +47,13 @@ flowchart LR
     client[Client] --> |Web Request| gateway[Gateway]
     
     subgraph java [Spring Cloud Microservices]
+        gateway --> rabbit[Rabbit MQ]
+        rabbit --> message
+        
+        subgraph message-microservice[Message Service]
+            message[Message]
+        end
+        
         gateway -->|PREFIX=/auth| auth[Auth]
         
         subgraph auth-microservice[Auth Service]
@@ -79,6 +86,7 @@ flowchart LR
 |-----|---------|-------|
 | 网关  | gateway | 12100 |
 | 认证  | auth    | 12101 |
+| 短信  | message | 12102 |
 
 ## 部署架构
 
