@@ -21,8 +21,8 @@ public class PcsUserDetailsService implements ReactiveUserDetailsService {
     private final PcsUserManager userManager;
 
     @Override
-    public Mono<UserDetails> findByUsername(String userId) {
-        return userManager.getUserByUserId(userId)
+    public Mono<UserDetails> findByUsername(String account) {
+        return userManager.getUserByUserId(account)
                 .map(user -> new User(user.getUserId(), user.getPassword(), user.getEnabled(),
                         true, true, true,
                         Stream.of(user.getRole()).map(SimpleGrantedAuthority::new).collect(Collectors.toList())));

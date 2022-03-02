@@ -15,9 +15,9 @@ import reactor.core.publisher.Mono;
 public class PcsUserManager {
     private final WebClient.Builder builder;
 
-    public Mono<UserResponse> getUserByUserId(String userId) {
+    public Mono<UserResponse> getUserByUserId(String account) {
         return builder.build().get()
-                .uri("http://pcs-auth/user_id/{user_id}", userId)
+                .uri("http://pcs-auth/account/{account}", account)
                 .retrieve()
                 .bodyToMono(UserResponse.class);
     }

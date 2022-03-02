@@ -31,7 +31,7 @@ public class RouteConfig {
                 .GET("/student", testHandler::student)
                 .GET("/admin", testHandler::admin)
                 .GET("/login/account/{account}/password/{password}", loginHandler::loginByAccount)
-                .GET("/user_id/{user_id}", userHandler::getUserByUserId)
+                .GET("/account/{account}", userHandler::getUserByAccount)
                 .build();
     }
 }

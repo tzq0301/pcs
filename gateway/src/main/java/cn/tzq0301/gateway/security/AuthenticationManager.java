@@ -25,6 +25,8 @@ import java.util.stream.Stream;
 public class AuthenticationManager implements ReactiveAuthenticationManager {
     private final ReactiveRedisTemplate<String, Object> redisTemplate;
 
+    private static final String ROLE_PREFIX = "ROLE_";
+
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
         return Mono.just(authentication)
@@ -68,6 +70,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
                     log.info("[{}] {} authenticated", userId, role);
                     return new UsernamePasswordAuthenticationToken(
                             userId, null, Stream.of(role)
+                            .map(r -> r.startsWith(ROLE_PREFIX) ? r : ROLE_PREFIX + r)
                             .map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
                 });
     }

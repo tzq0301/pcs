@@ -21,6 +21,14 @@ public class UserService {
         return userInfrastructure.findByUserId(userId);
     }
 
+    public Mono<User> findByIdentity(String identity) {
+        return userInfrastructure.findByIdentity(identity);
+    }
+
+    public Mono<User> findByPhone(String phone) {
+        return userInfrastructure.findByPhone(phone);
+    }
+
     public Mono<User> saveUser(User user) {
         return userInfrastructure.saveUser(Users.addRolePrefix(user));
     }

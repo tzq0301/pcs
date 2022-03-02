@@ -3,7 +3,6 @@ package cn.tzq0301.auth.login.strategy;
 import cn.tzq0301.auth.entity.user.User;
 import cn.tzq0301.auth.user.UserInfrastructure;
 import lombok.AllArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -20,13 +19,12 @@ public class LoginByUserIdStrategy implements LoginStrategy {
 
     @Override
     public Mono<User> login(String userId, String password) {
-//        Mono<User> user = userInfrastructure.findByUserId(userId);
-//
-//        if (user == null) {
-//            return Mono.empty();
-//        }
-//
-//        return user.filter(u -> passwordEncoder.matches(password, u.getPassword()));
-        return null;
+        Mono<User> user = userInfrastructure.findByUserId(userId);
+
+        if (user == null) {
+            return Mono.empty();
+        }
+
+        return user;
     }
 }
