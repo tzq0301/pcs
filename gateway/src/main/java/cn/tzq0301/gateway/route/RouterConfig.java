@@ -44,7 +44,7 @@ public class RouterConfig {
 
                 // 正式接口
                 .GET("/login/account/{account}/password/{password}", loginHandler::loginByAccount)
-                .GET("/login/phone/{phone}", loginHandler::requestMessageValidationCode)
+                .GET("/phone/{phone}/code", loginHandler::requestMessageValidationCode)
                 .build();
     }
 }
