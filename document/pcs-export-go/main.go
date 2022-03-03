@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"net/http"
+	"path"
 	"strconv"
 )
 
@@ -14,10 +15,17 @@ const (
 	OSS_DIR = "pcs/pdf"
 )
 
+
+var bucketName *string
+
+func fillLink(link string) string {
+	return "https://" + *bucketName + "." + path.Base(OSS_WEBSITE) + "/" + link;
+}
+
 func main() {
 	keyId := flag.String("id", "", "阿里云OSS KeyId")
 	keySecret := flag.String("secret", "", "阿里云OSS KeySecret")
-	bucketName := flag.String("bucket", "", "阿里云OSS BucketName")
+	bucketName = flag.String("bucket", "", "阿里云OSS BucketName")
 	port := flag.Int("port", 12345, "监听端口")
 	flag.Parse()
 

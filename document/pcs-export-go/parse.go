@@ -61,7 +61,7 @@ func parse(body string) (patientName, doctorName, date, content string, err erro
 	mdTemplate, err := os.Open(MARKDOWN_TEMPLATE_PATH)
 	buf, err := ioutil.ReadAll(mdTemplate)
 	if err != nil {
-		log.Fatalln(err.Error())
+		log.Fatalln("err on Open:", err.Error())
 	}
 
 	builder := strings.Builder{}

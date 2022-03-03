@@ -73,6 +73,12 @@ func (h *Handler) convert() *Handler {
 
 // upload pdf to oss
 func (h *Handler) upload() *Handler {
+	defer func(name string) {
+		err := os.Remove(name)
+		if err != nil {
+			log.Println("os.Remove error for", err.Error())
+		}
+	}(h.pdfPath)
 	log.Println("Handler::upload(), pdfPath=", h.pdfPath)
 	h.pdfLink = uploadFile(h.pdfPath)
 	return h
@@ -80,20 +86,11 @@ func (h *Handler) upload() *Handler {
 
 // response oss link of pdf
 func (h *Handler) response(w http.ResponseWriter) {
-	defer func(name string) {
-		err := os.Remove(name)
-		if err != nil {
-			log.Println("os.Remove error for", err.Error())
-		}
-	}(h.pdfPath)
 	log.Println("Handler::response(), pdfLink=", h.pdfLink)
 	w.WriteHeader(200)
-	n, err := w.Write([]byte(h.pdfLink))
+	_, err := w.Write([]byte(fillLink(h.pdfLink)))
 	if err != nil {
 		log.Println("error on write: ", err.Error())
-	}
-	if n != len(h.pdfLink) {
-		log.Println("error on write, write", n, "bytes, need write", len(h.pdfLink), "bytes")
 	}
 }
 
