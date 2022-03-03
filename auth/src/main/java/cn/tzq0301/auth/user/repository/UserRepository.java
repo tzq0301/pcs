@@ -1,4 +1,4 @@
-package cn.tzq0301.auth.user;
+package cn.tzq0301.auth.user.repository;
 
 import cn.tzq0301.auth.entity.user.User;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;

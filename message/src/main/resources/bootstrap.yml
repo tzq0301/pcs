@@ -7,3 +7,10 @@ spring:
     nacos:
       config:
         file-extension: yaml
+        shared-configs:
+          - dataId: amqp.yaml
+            refresh: true
+          - dataId: redis.yaml
+            refresh: true
+          - dataId: sms.yaml
+            refresh: true

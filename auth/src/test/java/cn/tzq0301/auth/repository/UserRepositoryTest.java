@@ -3,7 +3,7 @@ package cn.tzq0301.auth.repository;
 import cn.tzq0301.user.Role;
 import cn.tzq0301.user.Sex;
 import cn.tzq0301.auth.entity.user.User;
-import cn.tzq0301.auth.user.UserRepository;
+import cn.tzq0301.auth.user.repository.UserRepository;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

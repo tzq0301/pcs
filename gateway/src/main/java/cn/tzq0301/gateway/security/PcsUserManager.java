@@ -21,4 +21,8 @@ public class PcsUserManager {
                 .retrieve()
                 .bodyToMono(UserResponse.class);
     }
+
+    public boolean isPhoneInEnduranceContainer(final String phone) {
+        return false;
+    }
 }

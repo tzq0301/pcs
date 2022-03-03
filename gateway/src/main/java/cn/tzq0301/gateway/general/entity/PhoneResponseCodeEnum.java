@@ -1,21 +1,21 @@
-package cn.tzq0301.result;
+package cn.tzq0301.gateway.general.entity;
+
+import cn.tzq0301.result.ResultEnumerable;
 
 /**
- * {@link Result} 的返回码与返回信息的枚举类
- *
  * @author tzq0301
  * @version 1.0
  */
-public enum ResultEnum implements ResultEnumerable {
-    SUCCESS(0, "Success"), // 请求成功
-    ERROR(0, "Error"), // 请求失败
-    ;
+public enum PhoneResponseCodeEnum implements ResultEnumerable {
+    SUCCESS(0, "验证码发送成功"),
+    PHONE_NOT_FOUNT(1, "没有该手机号"),
+    PHONE_FORMAT_ERROR(2, "手机号格式错误");
 
     private final Integer code;
 
     private final String message;
 
-    ResultEnum(Integer code, String message) {
+    PhoneResponseCodeEnum(Integer code, String message) {
         this.code = code;
         this.message = message;
     }
@@ -32,11 +32,9 @@ public enum ResultEnum implements ResultEnumerable {
 
     @Override
     public String toString() {
-        return "ResultEnum{" +
+        return "PhoneResponseCodeEnum{" +
                 "code=" + code +
                 ", message='" + message + '\'' +
                 '}';
     }
-
-
 }
