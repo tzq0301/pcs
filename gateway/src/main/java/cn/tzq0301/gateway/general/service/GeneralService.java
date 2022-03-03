@@ -1,5 +1,6 @@
 package cn.tzq0301.gateway.general.service;
 
+import cn.tzq0301.gateway.general.manager.GeneralManager;
 import cn.tzq0301.gateway.security.PcsUserManager;
 import lombok.AllArgsConstructor;
 import org.springframework.amqp.AmqpException;
@@ -13,6 +14,8 @@ import reactor.core.publisher.Mono;
 @Service
 @AllArgsConstructor
 public class GeneralService {
+    private final GeneralManager generalManager;
+
     private final PcsUserManager userManager;
 
     public Mono<Boolean> isPhoneInEnduranceContainer(final String phone) {
@@ -20,6 +23,6 @@ public class GeneralService {
     }
 
     public void sendValidationCode(final String phone) throws AmqpException {
-        userManager.sendValidationCode(phone);
+        generalManager.sendValidationCode(phone);
     }
 }

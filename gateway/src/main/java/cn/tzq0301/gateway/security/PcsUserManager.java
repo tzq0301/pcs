@@ -19,8 +19,6 @@ import reactor.core.publisher.Mono;
 public class PcsUserManager {
     private final WebClient.Builder builder;
 
-    private final AmqpTemplate amqpTemplate;
-
     public Mono<UserResponse> getUserByUserId(String account) {
         return builder.build().get()
                 .uri("lb://pcs-auth/account/{account}", account)
@@ -39,10 +37,5 @@ public class PcsUserManager {
                 // So I add the next line of `switchIfEmpty(...)`
                 .switchIfEmpty(Mono.just(Boolean.FALSE))
                 .doOnNext(value -> log.info("{} is{} valid", phone, value ? "" : " not"));
-    }
-
-    public void sendValidationCode(final String phone) throws AmqpException {
-        log.info("{} requests to send validation code", phone);
-        amqpTemplate.convertAndSend(phone);
     }
 }
