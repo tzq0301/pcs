@@ -32,8 +32,24 @@ public class Result<T> implements Serializable {
         return new Result<>(data, SUCCESS.getCode(), SUCCESS.getMessage());
     }
 
+    public static <T> Result<T> success(int code, String message) {
+        return new Result<>(null, code, message);
+    }
+
+    public static <T> Result<T> success(ResultEnumerable resultEnum) {
+        return new Result<>(null, resultEnum.getCode(), resultEnum.getMessage());
+    }
+
+    public static <T> Result<T> success(T data, ResultEnumerable resultEnum) {
+        return new Result<>(data, resultEnum.getCode(), resultEnum.getMessage());
+    }
+
     public static <T> Result<T> success(T data, int code, String message) {
         return new Result<>(data, code, message);
+    }
+
+    public static <T> Result<T> error() {
+        return new Result<>(null, ERROR.getCode(), ERROR.getMessage());
     }
 
     public static <T> Result<T> error(T data) {
@@ -42,6 +58,14 @@ public class Result<T> implements Serializable {
 
     public static <T> Result<T> error(int code, String message) {
         return new Result<>(null, code, message);
+    }
+
+    public static <T> Result<T> error(ResultEnumerable resultEnum) {
+        return new Result<>(null, resultEnum.getCode(), resultEnum.getMessage());
+    }
+
+    public static <T> Result<T> error(T data, ResultEnumerable resultEnum) {
+        return new Result<>(data, resultEnum.getCode(), resultEnum.getMessage());
     }
 
     public static <T> Result<T> error(T data, int code, String message) {

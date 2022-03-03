@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: pcs-message
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      config:
+        file-extension: yaml
+        shared-configs:
+          - dataId: amqp.yaml
+            refresh: true
+          - dataId: redis.yaml
+            refresh: true
+          - dataId: sms.yaml
+            refresh: true

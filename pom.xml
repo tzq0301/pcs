@@ -44,6 +44,7 @@
         <module>gateway</module>
         <module>auth</module>
         <module>common</module>
+        <module>message</module>
     </modules>
 
     <properties>
@@ -60,6 +61,10 @@
 
         <guava.version>31.0.1-jre</guava.version>
         <lombok.versoin>1.18.22</lombok.versoin>
+        <logstash-gelf.version>1.12.0</logstash-gelf.version>
+        <disruptor.version>3.4.2</disruptor.version>
+        <tencentcloud-sdk-java.version>3.1.270</tencentcloud-sdk-java.version>
+        <mq-amqp-client.version>1.0.3</mq-amqp-client.version>
     </properties>
 
     <dependencyManagement>
@@ -123,13 +128,25 @@
             <dependency>
                 <groupId>biz.paluch.logging</groupId>
                 <artifactId>logstash-gelf</artifactId>
-                <version>1.12.0</version>
+                <version>${logstash-gelf.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.lmax</groupId>
                 <artifactId>disruptor</artifactId>
-                <version>3.4.2</version>
+                <version>${disruptor.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.tencentcloudapi</groupId>
+                <artifactId>tencentcloud-sdk-java</artifactId>
+                <version>${tencentcloud-sdk-java.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.mq-amqp</groupId>
+                <artifactId>mq-amqp-client</artifactId>
+                <version>${mq-amqp-client.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
