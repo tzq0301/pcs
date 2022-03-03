@@ -2,6 +2,7 @@ package cn.tzq0301.auth.route;
 
 import cn.tzq0301.auth.api.TestHandler;
 import cn.tzq0301.auth.login.handler.LoginHandler;
+import cn.tzq0301.auth.user.handler.UserHandler;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,8 @@ public class RouteConfig {
 
     private final LoginHandler loginHandler;
 
+    private final UserHandler userHandler;
+
     @Bean
     public RouterFunction<ServerResponse> router() {
         return route()
@@ -28,6 +31,7 @@ public class RouteConfig {
                 .GET("/student", testHandler::student)
                 .GET("/admin", testHandler::admin)
                 .GET("/account/{account}", loginHandler::getUserByAccount)
+                .GET("/phone/{phone}", userHandler::isPhoneInEnduranceContainer)
                 .build();
     }
 }

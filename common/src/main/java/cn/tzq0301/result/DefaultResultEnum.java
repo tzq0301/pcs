@@ -6,16 +6,15 @@ package cn.tzq0301.result;
  * @author tzq0301
  * @version 1.0
  */
-public enum ResultEnum implements ResultEnumerable {
+public enum DefaultResultEnum implements ResultEnumerable {
     SUCCESS(0, "Success"), // 请求成功
-    ERROR(0, "Error"), // 请求失败
-    ;
+    ERROR(1, "Error"); // 请求失败
 
     private final Integer code;
 
     private final String message;
 
-    ResultEnum(Integer code, String message) {
+    DefaultResultEnum(Integer code, String message) {
         this.code = code;
         this.message = message;
     }
@@ -37,6 +36,4 @@ public enum ResultEnum implements ResultEnumerable {
                 ", message='" + message + '\'' +
                 '}';
     }
-
-
 }
