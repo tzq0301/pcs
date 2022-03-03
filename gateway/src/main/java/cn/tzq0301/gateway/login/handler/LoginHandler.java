@@ -9,6 +9,7 @@ import cn.tzq0301.util.JWTUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +22,7 @@ import reactor.core.scheduler.Schedulers;
 import java.time.Duration;
 
 import static cn.tzq0301.gateway.login.entity.LoginResponseCode.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 /**
  * @author tzq0301
@@ -50,13 +52,15 @@ public class LoginHandler {
         String account = request.pathVariable("account");
         String password = request.pathVariable("password");
 
+        ServerResponse.BodyBuilder responseBodyBuilder = ServerResponse.ok().contentType(APPLICATION_JSON);
+
         return userDetailsService.findByUsername(account)
                 .filter(user -> passwordEncoder.matches(password, user.getPassword()))
                 .doOnNext(user -> log.info("{} {} login", user.getAuthorities(), user.getUsername()))
                 .map(this::generateJwtResponse)
                 .doOnNext(this::pushJwtToRedis)
-                .flatMap(loginResponse -> ServerResponse.ok().bodyValue(Result.success(loginResponse, SUCCESS)))
-                .switchIfEmpty(ServerResponse.ok().bodyValue(Result.error(ERROR)));
+                .flatMap(loginResponse -> responseBodyBuilder.bodyValue(Result.success(loginResponse, SUCCESS)))
+                .switchIfEmpty(responseBodyBuilder.bodyValue(Result.error(ERROR)));
     }
 
     // FIXME
