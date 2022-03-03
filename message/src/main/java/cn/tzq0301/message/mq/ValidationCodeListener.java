@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @RabbitListener(queues = "pcs-message-validation-code")
 public class ValidationCodeListener {
     @RabbitHandler
-    public void sendMessageContainsValidationCode(String message) {
-
+    public void sendMessageContainsValidationCode(String phone) {
+        System.out.println(phone);
     }
 }

@@ -1,4 +1,4 @@
-package cn.tzq0301.gateway.mq;
+package cn.tzq0301.gateway.config;
 
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;

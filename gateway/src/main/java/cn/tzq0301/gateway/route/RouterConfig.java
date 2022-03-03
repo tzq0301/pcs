@@ -1,5 +1,6 @@
 package cn.tzq0301.gateway.route;
 
+import cn.tzq0301.gateway.general.handler.GeneralHandler;
 import cn.tzq0301.gateway.login.handler.LoginHandler;
 import cn.tzq0301.util.JWTUtils;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,8 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 @Log4j2
 public class RouterConfig {
     private final LoginHandler loginHandler;
+
+    private final GeneralHandler generalHandler;
 
     @Bean
     public RouterFunction<ServerResponse> router() {
@@ -50,7 +53,7 @@ public class RouterConfig {
                 .GET("/login/phone/{phone}/code/{code}", loginHandler::requestMessageValidationCode)
 
                 // 通用接口
-//                .GET("/phone/{phone}/code", loginHandler::requestMessageValidationCode) // FIXME
+                .GET("/phone/{phone}/code", generalHandler::sendCodeToPhone)
 
                 .build();
     }

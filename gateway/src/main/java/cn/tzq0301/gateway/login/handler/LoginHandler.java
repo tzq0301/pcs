@@ -2,6 +2,7 @@ package cn.tzq0301.gateway.login.handler;
 
 import cn.tzq0301.gateway.config.RedisConfig;
 import cn.tzq0301.gateway.login.entity.LoginResponse;
+import cn.tzq0301.gateway.login.service.LoginService;
 import cn.tzq0301.gateway.security.PcsUserDetailsService;
 import cn.tzq0301.result.Result;
 import cn.tzq0301.util.JWTUtils;
@@ -30,6 +31,8 @@ import static cn.tzq0301.gateway.login.entity.LoginResponseCode.*;
 @Log4j2
 public class LoginHandler {
     private final PcsUserDetailsService userDetailsService;
+
+    private final LoginService loginService;
 
     private final PasswordEncoder passwordEncoder;
 
