@@ -9,7 +9,8 @@ import cn.tzq0301.result.ResultEnumerable;
 public enum PhoneResponseCodeEnum implements ResultEnumerable {
     SUCCESS(0, "验证码发送成功"),
     PHONE_NOT_FOUNT(1, "没有该手机号"),
-    PHONE_FORMAT_ERROR(2, "手机号格式错误");
+    PHONE_FORMAT_ERROR(2, "手机号格式错误"),
+    MESSAGE_SEND_ERROR(3, "验证码发送失败");
 
     private final Integer code;
 
