@@ -2,7 +2,7 @@ package cn.tzq0301.result;
 
 import java.io.Serializable;
 
-import static cn.tzq0301.result.ResultEnum.*;
+import static cn.tzq0301.result.DefaultResultEnum.*;
 
 /**
  * @author tzq0301
