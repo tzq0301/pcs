@@ -23,7 +23,7 @@ public class PcsUserManager {
 
     public Mono<UserResponse> getUserByUserId(String account) {
         return builder.build().get()
-                .uri("http://pcs-auth/account/{account}", account)
+                .uri("lb://pcs-auth/account/{account}", account)
                 .retrieve()
                 .bodyToMono(UserResponse.class);
     }
@@ -42,6 +42,7 @@ public class PcsUserManager {
     }
 
     public void sendValidationCode(final String phone) throws AmqpException {
+        log.info("{} requests to send validation code", phone);
         amqpTemplate.convertAndSend(phone);
     }
 }
