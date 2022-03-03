@@ -55,10 +55,8 @@ public class LoginHandler {
                 .doOnNext(user -> log.info("{} {} login", user.getAuthorities(), user.getUsername()))
                 .map(this::generateJwtResponse)
                 .doOnNext(this::pushJwtToRedis)
-                .flatMap(loginResponse -> ServerResponse.ok().bodyValue(
-                        Result.success(loginResponse, SUCCESS.getCode(), SUCCESS.getMessage())))
-                .switchIfEmpty(ServerResponse.ok().bodyValue(
-                        Result.error(ERROR.getCode(), ERROR.getMessage())));
+                .flatMap(loginResponse -> ServerResponse.ok().bodyValue(Result.success(loginResponse, SUCCESS)))
+                .switchIfEmpty(ServerResponse.ok().bodyValue(Result.error(ERROR)));
     }
 
     // FIXME

@@ -8,6 +8,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Objects;
 
+import static cn.tzq0301.auth.login.entity.LoginResponseCode.SUCCESS;
+
 /**
  * @author tzq0301
  * @version 1.0
@@ -26,8 +28,7 @@ public final class Users {
     public static Result<LoginResponse> userToLoginResponse(User user) {
         Objects.requireNonNull(user);
 
-        return Result.success(new LoginResponse(user.getUserId(), user.getName(), user.getRole()),
-                LoginResponseCode.SUCCESS.getCode(), LoginResponseCode.SUCCESS.getMessage());
+        return Result.success(new LoginResponse(user.getUserId(), user.getName(), user.getRole()), SUCCESS);
     }
 
     public static User addRolePrefix(User user) {
