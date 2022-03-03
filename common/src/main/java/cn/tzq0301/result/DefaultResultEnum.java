@@ -8,8 +8,7 @@ package cn.tzq0301.result;
  */
 public enum DefaultResultEnum implements ResultEnumerable {
     SUCCESS(0, "Success"), // 请求成功
-    ERROR(0, "Error"), // 请求失败
-    ;
+    ERROR(1, "Error"); // 请求失败
 
     private final Integer code;
 
@@ -37,6 +36,4 @@ public enum DefaultResultEnum implements ResultEnumerable {
                 ", message='" + message + '\'' +
                 '}';
     }
-
-
 }
