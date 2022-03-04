@@ -400,4 +400,15 @@ docker-compose up -d
 --spring.cloud.nacos.config.server-addr=your-host:your-port
 ```
 
+### message
+
+在执行 jar 时，增加命令行参数：
+```shell
+# Nacos 服务发现中心
+--spring.cloud.nacos.discovery.server-addr=your-host:your-port
+
+# Nacos 配置中心
+--spring.cloud.nacos.config.server-addr=your-host:your-port
+```
+
 ## FAQ

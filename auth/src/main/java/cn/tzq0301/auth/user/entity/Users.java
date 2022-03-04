@@ -1,14 +1,13 @@
-package cn.tzq0301.auth.entity.user;
+package cn.tzq0301.auth.user.entity;
 
 import cn.tzq0301.auth.login.entity.LoginResponse;
 import cn.tzq0301.auth.login.entity.LoginResponseCode;
 import cn.tzq0301.result.Result;
+import cn.tzq0301.user.Sex;
+import cn.tzq0301.util.DateUtils;
 import com.google.common.base.Strings;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Objects;
-
-import static cn.tzq0301.auth.login.entity.LoginResponseCode.SUCCESS;
 
 /**
  * @author tzq0301
@@ -25,10 +24,11 @@ public final class Users {
         return Strings.nullToEmpty(account).length() == 11;
     }
 
+    @Deprecated
     public static Result<LoginResponse> userToLoginResponse(User user) {
         Objects.requireNonNull(user);
 
-        return Result.success(new LoginResponse(user.getUserId(), user.getName(), user.getRole()), SUCCESS);
+        return Result.success(new LoginResponse(user.getUserId(), user.getName(), user.getRole()), LoginResponseCode.SUCCESS);
     }
 
     public static User addRolePrefix(User user) {
@@ -41,6 +41,26 @@ public final class Users {
         user.setRole(ROLE_PREFIX + user.getRole());
 
         return user;
+    }
+
+    public static void removeRolePrefix(User user) {
+        Objects.requireNonNull(user);
+
+        if (user.getRole().startsWith(ROLE_PREFIX)) {
+            user.setRole(user.getRole().substring(ROLE_PREFIX.length()));
+        }
+    }
+
+    public static UserInfoResponse userToUserInfoResponse(User user) {
+        Objects.requireNonNull(user);
+
+        removeRolePrefix(user);
+
+        return new UserInfoResponse(
+                user.getName(), user.getRole(),
+                Objects.requireNonNull(Sex.from(user.getSex())).getStr(),
+                DateUtils.localDateToString(user.getBirthday()),
+                user.getPhone(), user.getEmail(), user.getIdentity());
     }
 
     private Users() {}

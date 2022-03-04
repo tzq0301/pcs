@@ -1,5 +1,6 @@
 package cn.tzq0301.auth.login.entity;
 
+import cn.tzq0301.auth.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,12 +14,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LoginResponse {
     /**
-     * {@link cn.tzq0301.auth.entity.user.User} 中的 userId（学工号）
+     * {@link User} 中的 userId（学工号）
      */
     private String id;
 
     /**
-     * {@link cn.tzq0301.auth.entity.user.User} 中的 name
+     * {@link User} 中的 name
      */
     private String username;
 

@@ -2,6 +2,7 @@ package cn.tzq0301.gateway.route;
 
 import cn.tzq0301.gateway.general.handler.GeneralHandler;
 import cn.tzq0301.gateway.login.handler.LoginHandler;
+import cn.tzq0301.gateway.logout.handler.LogoutHandler;
 import cn.tzq0301.util.JWTUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -29,6 +30,8 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class RouterConfig {
     private final LoginHandler loginHandler;
 
+    private final LogoutHandler logoutHandler;
+
     private final GeneralHandler generalHandler;
 
     @Bean
@@ -53,6 +56,8 @@ public class RouterConfig {
                 // 用户管理
                 // 用户管理 - 用户登录
                 .path("/login", this::loginRouter)
+                // 用户管理 - 用户登出
+                .GET("/logout", logoutHandler::logout)
 
                 // 通用接口
                 .GET("/phone/{phone}/code", generalHandler::sendCodeToPhone)

@@ -29,6 +29,14 @@ public final class JWTUtils {
 
     private static final SignatureAlgorithm ALG = SignatureAlgorithm.HS256;
 
+    public static String getJwtFromAuthorizationHeader(final String authorizationHeader) {
+        if (Strings.isNullOrEmpty(authorizationHeader)) {
+            throw new IllegalArgumentException("Authorization Header is empty");
+        }
+
+        return authorizationHeader.substring(AUTHORIZATION_HEADER_PREFIX.length());
+    }
+
     /**
      * 创建 JWT Token
      *
