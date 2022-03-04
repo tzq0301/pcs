@@ -18,10 +18,9 @@ import reactor.core.publisher.Mono;
  * @author tzq0301
  * @version 1.0
  */
-//@Component
+@Component
 @AllArgsConstructor
 @Log4j2
-@Deprecated
 public class JWTFilter implements GlobalFilter, Ordered {
     private final ReactiveRedisTemplate<String, Object> redisTemplate;
 
