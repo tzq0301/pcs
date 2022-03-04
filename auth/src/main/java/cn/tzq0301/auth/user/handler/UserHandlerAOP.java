@@ -35,28 +35,54 @@ public class UserHandlerAOP {
     @Pointcut(value = "execution(public * cn.tzq0301.auth.user.handler.UserHandler.getUserInformation())")
     public void getUserInformation() {}
 
+    @Pointcut(value = "execution(public * cn.tzq0301.auth.user.handler.UserHandler.updatePassword())")
+    public void updatePassword() {}
+
     @Before(value = "isPhoneInEnduranceContainer()")
     public void beforeIsPhoneInEnduranceContainer(JoinPoint joinPoint) {
-        Object[] args = joinPoint.getArgs();
-
-        ServerRequest request = (ServerRequest) args[0];
+        ServerRequest request = getRequest(joinPoint);
 
         log.info("{} try to validate whether it is in endurance container", request.pathVariable("phone"));
     }
 
     @Before(value = "getUserInformation()")
     public void beforeGetUserInformation(JoinPoint joinPoint) {
-        Object[] args = joinPoint.getArgs();
-        ServerRequest request = (ServerRequest) args[0];
+        ServerRequest request = getRequest(joinPoint);
 
-        String auth = request.headers().firstHeader(AUTHORIZATION);
-        if (Strings.isNullOrEmpty(auth)) {
+        if (hasAuthorization(request)) {
             return;
         }
 
-        String jwt = auth.substring(JWTUtils.AUTHORIZATION_HEADER_PREFIX.length());
+        String jwt = getJWT(request);
         String userId = request.pathVariable("user_id");
 
         log.info("{} tries to get information of user {}", JWTUtils.extractUserId(jwt), userId);
+    }
+
+    @Before(value = "updatePassword()")
+    public void beforeUpdatePassword(JoinPoint joinPoint) {
+        ServerRequest request = getRequest(joinPoint);
+
+        if (hasAuthorization(request)) {
+            return;
+        }
+
+        String jwt = getJWT(request);
+        String userId = request.pathVariable("user_id");
+
+        log.info("{} tries to update password of user {}", JWTUtils.extractUserId(jwt), userId);
+    }
+
+    private static ServerRequest getRequest(JoinPoint joinPoint) {
+        return (ServerRequest) joinPoint.getArgs()[0];
+    }
+
+    private static boolean hasAuthorization(ServerRequest request) {
+        return Strings.isNullOrEmpty(request.headers().firstHeader(AUTHORIZATION));
+    }
+
+    private static String getJWT(ServerRequest request) {
+        return Objects.requireNonNull(request.headers().firstHeader(AUTHORIZATION))
+                .substring(JWTUtils.AUTHORIZATION_HEADER_PREFIX.length());
     }
 }

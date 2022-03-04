@@ -1,7 +1,6 @@
 package cn.tzq0301.util;
 
 import com.google.common.base.Strings;
-import com.sun.istack.internal.NotNull;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -37,7 +36,7 @@ public final class DateUtils {
         return number >= 0 && number < 10;
     }
 
-    public static LocalDate stringToLocalDate(@NotNull final String str) {
+    public static LocalDate stringToLocalDate(final String str) {
         if (Strings.isNullOrEmpty(str) || str.length() != DATE_LENGTH) {
             throw new IllegalArgumentException();
         }

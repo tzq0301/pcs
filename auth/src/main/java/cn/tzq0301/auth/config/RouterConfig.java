@@ -34,6 +34,7 @@ public class RouterConfig {
                 .GET("/phone/{phone}", userHandler::isPhoneInEnduranceContainer)
                 .GET("/user_id/{user_id}", userHandler::getUserInformation)
                 .PATCH("/user_id/{user_id}", userHandler::updateUserInformation)
+                .PATCH("/user_id/{user_id}/old_password/{old_password}/new_password/{new_password}", userHandler::updatePassword)
                 .build();
     }
 }

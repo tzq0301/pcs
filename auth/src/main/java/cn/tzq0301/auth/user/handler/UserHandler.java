@@ -9,6 +9,7 @@ import cn.tzq0301.util.JWTUtils;
 import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -17,8 +18,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Objects;
 
-import static cn.tzq0301.auth.user.entity.UserResultEnum.SUCCESS;
-import static cn.tzq0301.auth.user.entity.UserResultEnum.USER_ID_NOT_MATCH;
+import static cn.tzq0301.auth.user.entity.UserResultEnum.*;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -32,6 +32,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Log4j2
 public class UserHandler {
     private final UserService userService;
+
+    private final PasswordEncoder passwordEncoder;
 
     public Mono<ServerResponse> isPhoneInEnduranceContainer(ServerRequest request) {
         String phone = request.pathVariable("phone");
@@ -83,6 +85,33 @@ public class UserHandler {
                         })
                         .flatMap(userService::updateUser)
                         .flatMap(user -> ServerResponse.ok().bodyValue(Result.success(SUCCESS))));
+    }
+
+    public Mono<ServerResponse> updatePassword(ServerRequest request) {
+        String userId = request.pathVariable("user_id");
+        String oldPassword = request.pathVariable("old_password");
+        String newPassword = request.pathVariable("new_password");
+
+        return checkForUserId(request, userId)
+                .switchIfEmpty(Mono.just(Objects.equals(oldPassword, newPassword))
+                        .flatMap(equals -> {
+                            if (equals) {
+                                return ServerResponse.ok().bodyValue(Result.error(PASSWORD_DUPLICATE));
+                            }
+
+                            return userService.findByUserId(userId).flatMap(user -> {
+                                if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+                                    return ServerResponse.ok().bodyValue(Result.error(OLD_PASSWORD_NOT_CORRECT));
+                                }
+
+                                user.setPassword(newPassword);
+                                return userService.saveUser(user)
+                                        .flatMap(u -> ServerResponse.ok().bodyValue(Result.success(SUCCESS)))
+                                        .onErrorResume(ex -> ex instanceof Exception, it ->
+                                                ServerResponse.ok().bodyValue(Result.error(UPDATE_FAIL)));
+                            });
+                        })
+                );
     }
 
     private Mono<ServerResponse> checkForUserId(ServerRequest request, String userId) {
