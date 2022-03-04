@@ -12,6 +12,89 @@
 
 ![业务流程图](https://tzq-oos-1.oss-cn-hangzhou.aliyuncs.com/img/image-20220227103201232.png)
 
+### 用户登录
+
+#### 用户根据账号密码进行登录
+
+1. 【 客户端 】通过 `http:host:port/login/account/{account}/password/{password}` 向【 pcs-gateway 微服务 】发起登录请求
+2. 【 pcs-gateway 微服务 】中的 JWT Filter 判断该请求是登录请求，放行
+3. 【 pcs-gateway 微服务 】中的 Security Filter 判断该请求是登录请求，放行
+4. 【 pcs-gateway 微服务 】向【pcs-auth 微服务】发起请求 
+   1. 如果账号密码错误，则返回 401 UnAuthorization 错误
+   2. 如果正确，则继续执行
+5. 【 pcs-gateway 微服务 】基于用户的 ID 与角色（role）生成 JWT
+6. 【 pcs-gateway 微服务 】将生成的 JWT 发送到【 Redis 】中，并设置过期时间
+7. 【 pcs-gateway 微服务 】向【客户端】进行响应
+
+```mermaid
+flowchart LR
+    client[Client] --> |1. Login Request| gateway[Gateway]
+    
+    subgraph java [Spring Cloud Microservices]
+        gateway --> rabbit[Rabbit MQ]
+        rabbit --> message
+        
+        subgraph message-microservice[Message Service]
+            message[Message]
+        end
+        
+        gateway -->|2. Validate User| auth[Auth]
+        
+        subgraph auth-microservice[Auth Service]
+            auth --> db-auth[(Database)]
+        end
+        
+        gateway -->|3. Generate JWT & Send| redis[Redis]
+    end
+```
+
+#### 用户根据手机验证码进行登录
+
+1. 【 客户端 】通过 `http:host:port/phone/{phone}/code` 向【 pcs-gateway 微服务 】发起发送短信验证码请求
+2. 【 pcs-gateway 微服务 】中的 JWT Filter 判断该请求是申请短信验证码请求，放行
+3. 【 pcs-gateway 微服务 】中的 Security Filter 判断该请求是申请短信验证码请求，放行
+4. 【 pcs-gateway 微服务 】向【pcs-auth 微服务】发起请求
+    1. 如果手机号错误或者非用户手机号，则返回错误
+    2. 如果正确，则继续执行
+5. 【 pcs-gateway 微服务 】将手机号发送至【 RabbitMQ 】
+6. 【 pcs-message 微服务 】监听【 RabbitMQ 】中的指定队列，获取手机号，并生成验证码
+7. 【 pcs-message 微服务 】使用【 腾讯云 SMS 服务 】向手机号发送验证码
+8. 【 pcs-message 微服务 】将手机号与验证码作为键值对存放入【 Redis 】中，并设置过期时间
+9. 【 客户端 】收到短信后，调用 `http:host:port/login/phone/{phone}/code/{code}` 向【 pcs-gateway 微服务 】发起登录请求
+10. 【 pcs-gateway 微服务 】向【 Redis 】查看是否存在相应的键值对
+    1. 如果不存在，则返回 401 UnAuthorization 错误
+    2. 如果正确，则继续执行
+11. 【 pcs-gateway 微服务 】基于用户的 ID 与角色（role）生成 JWT
+12. 【 pcs-gateway 微服务 】将生成的 JWT 发送到【 Redis 】中，并设置过期时间
+13. 【 pcs-gateway 微服务 】向【客户端】进行响应
+
+```mermaid
+flowchart LR
+    client[Client] --> |1. Login Request| gateway[Gateway]
+    
+    subgraph java [Spring Cloud Microservices]
+        
+        
+        gateway -->|3. Send Phone Num| rabbit[Rabbit MQ]
+        rabbit -->|4. Receive Phone Num & Send Message| message
+        
+        subgraph message-microservice[Message Service]
+            message[Message]
+        end
+        
+        message -->|5. Send Phone & Code| redis
+        
+        gateway -->|6. Valid Phone Num & Code| redis[Redis]
+        gateway -->|7. Generate JWT & Send| redis
+        
+        gateway -->|2. Validate Phone Num| auth[Auth]
+        
+        subgraph auth-microservice[Auth Service]
+            auth --> db-auth[(Database)]
+        end
+    end
+```
+
 ## 业务功能
 
 ![心理资讯系统 v4](https://tzq-oos-1.oss-cn-hangzhou.aliyuncs.com/img/%E5%BF%83%E7%90%86%E8%B5%84%E8%AE%AF%E7%B3%BB%E7%BB%9F%20v4.png)
