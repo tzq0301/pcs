@@ -45,6 +45,7 @@
         <module>auth</module>
         <module>common</module>
         <module>message</module>
+        <module>general</module>
     </modules>
 
     <properties>
@@ -147,6 +148,12 @@
                 <groupId>com.alibaba.mq-amqp</groupId>
                 <artifactId>mq-amqp-client</artifactId>
                 <version>${mq-amqp-client.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jetbrains</groupId>
+                <artifactId>annotations</artifactId>
+                <version>22.0.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
