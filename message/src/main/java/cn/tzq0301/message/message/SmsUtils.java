@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -21,6 +22,8 @@ import java.util.concurrent.ThreadLocalRandom;
 @Log4j2
 public class SmsUtils {
     public static final String CHINESE_PHONE_PREFIX = "+86";
+
+    public static final Duration EXPIRATION = Duration.ofMinutes(5L);
 
     @Value("${sms.sdkAppId}")
     private String sdkAppId;
