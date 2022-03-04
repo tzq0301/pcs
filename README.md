@@ -14,11 +14,11 @@
 
 ## 业务功能
 
-![心理资讯系统 v3.1](https://tzq-oos-1.oss-cn-hangzhou.aliyuncs.com/img/%E5%BF%83%E7%90%86%E8%B5%84%E8%AE%AF%E7%B3%BB%E7%BB%9F%20v3.1.png)
+![心理资讯系统 v4](https://tzq-oos-1.oss-cn-hangzhou.aliyuncs.com/img/%E5%BF%83%E7%90%86%E8%B5%84%E8%AE%AF%E7%B3%BB%E7%BB%9F%20v4.png)
 
 ## 数据模型
 
-![数据模型 v2.1](https://tzq-oos-1.oss-cn-hangzhou.aliyuncs.com/img/%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%20v2.1.jpg)
+![数据模型 v5](https://tzq-oos-1.oss-cn-hangzhou.aliyuncs.com/img/%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%20v5.jpeg)
 
 ## 技术选型
 
@@ -92,6 +92,46 @@ flowchart LR
 ## 部署架构
 
 ## 外部依赖
+
+### 阿里云轻量级应用服务器
+
+官网：https://www.aliyun.com/product/swas?spm=5176.19720258.J_8058803260.32.53352c4acnKsf2
+
+> 轻量应用服务器 （Simple Application Server），是可快速搭建且易于管理的轻量级云服务器；提供基于单台服务器的应用部署，安全管理，运维监控等服务，一站式提升您的服务器使用体验和效率。
+
+项目使用阿里云轻量级应用服务器进行**基于 Docker 容器的 Nacos 服务部署与 MySQL 持久化配置**。
+
+### 腾讯云轻量级应用服务器
+
+官网：https://cloud.tencent.com/product/lighthouse
+
+> 轻量应用服务器（TencentCloud Lighthouse）是新一代开箱即用、面向轻量应用场景的云服务器产品，助力中小企业和开发者便捷高效的在云端构建网站、Web应用、小程序/小游戏、APP、电商应用、云盘/图床以及各类开发测试环境，相比普通云服务器更加简单易用且更贴近应用，以套餐形式整体售卖基础云资源并提供高带宽流量包，将热门开源软件融合打包实现一键构建应用，提供极简上云体验。
+
+项目使用腾讯云轻量级应用服务器进行**基于 Docker 容器的 Redis 集群编排与部署**。
+
+### 阿里云数据库 MongoDB 版
+
+官网：https://www.aliyun.com/product/mongodb?spm=5176.19720258.J_8058803260.42.73b62c4aL496Gm
+
+> 云数据库 MongoDB 版是完全兼容 MongoDB 协议、高度兼容 DynamoDB 协议的在线文档型数据库服务，支持Serverless、单节点、副本集、分片集群四种部署架构，能够满足不同的业务场景需要，在互联网（游戏、资讯、社交、电商、直播）、新零售、在线教育、金融、物联网、政企等行业都有广泛的应用。
+
+项目使用 MongoDB 作为**数据持久化方案**。
+
+### 阿里云消息队列 RabbitMQ 版
+
+官网：https://www.aliyun.com/product/amqp?spm=5176.19720258.J_8058803260.94.53352c4adQCYdY
+
+> 消息队列 RabbitMQ 版是一款基于高可用分布式存储架构实现的 AMQP 0-9-1协议的消息产品。消息队列 RabbitMQ 版兼容开源 RabbitMQ 客户端，解决开源各种稳定性痛点（例如消息堆积、脑裂等问题），同时具备高并发、分布式、灵活扩缩容等云消息服务优势。
+
+项目使用 RabbitMQ 进行**短信业务的流量削峰**，减小服务器压力。
+
+### 腾讯云短信 SMS
+
+官网：https://cloud.tencent.com/product/sms
+
+> 腾讯云短信（Short Message Service，SMS）可为广大企业级用户提供稳定可靠，安全合规的短信触达服务。用户可快速接入，调用 API / SDK 或者通过控制台即可发送，支持发送验证码、通知类短信和营销短信。国内验证短信秒级触达，99%到达率；国际/港澳台短信覆盖全球200+国家/地区，全球多服务站点，稳定可靠。
+
+项目使用腾讯云 SMS 进行基于手机号的**用户认证与授权**业务。
 
 ## 编码实践
 
@@ -314,13 +354,21 @@ public class TestController {
 
 ### Nacos
 
-参考 [nacos/setup.md](nacos/setup.md) 
+项目使用 Docker 容器运行 Nacos 实例用于**服务注册中心**与**服务配置中心**。
+
+基于 Docker 搭建 MySQL 实例作为 Nacos 服务配置中心的持久化容器，并搭建 Docker Network 对 Nacos 实例与 MySQL 实例进行连接。
+
+Nacos 搭建过程参考 [nacos/setup.md](nacos/setup.md)。
+
+![Nacos](https://tzq-oos-1.oss-cn-hangzhou.aliyuncs.com/img/Snipaste_2022-03-04_13-59-49.png)
 
 ### ELK
 
 参考 [elk/elk.md](elk/setup.md)
 
 ### Redis
+
+项目基于 Docker 搭建**一主两从**的高可用 Redis 集群，并使用 Docker Compose 进行服务编排。
 
 ```shell
 cd ./redis
