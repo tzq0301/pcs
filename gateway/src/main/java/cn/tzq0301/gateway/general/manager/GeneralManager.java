@@ -5,6 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.stream.Collectors;
 
 /**
  * @author tzq0301
@@ -16,7 +21,17 @@ import org.springframework.stereotype.Service;
 public class GeneralManager {
     private final AmqpTemplate amqpTemplate;
 
+    private final WebClient.Builder builder;
+
     public void sendValidationCode(final String phone) throws AmqpException {
         amqpTemplate.convertAndSend(phone);
+    }
+
+    public Flux<String> listAddresses() {
+        return builder.build()
+                .get()
+                .uri("lb://pcs-general/addresses")
+                .retrieve()
+                .bodyToFlux(String.class);
     }
 }
