@@ -19,7 +19,7 @@ public final class DateUtils {
 
     private static final int DATE_LENGTH = YEAR_LENGTH + MONTH_LENGTH + DAY_LENGTH;
 
-    public static String localDateToString(@NotNull final LocalDate localDate) {
+    public static String localDateToString(final LocalDate localDate) {
         if (Objects.isNull(localDate)) {
             throw new IllegalArgumentException();
         }

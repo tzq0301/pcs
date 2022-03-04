@@ -6,7 +6,6 @@ import cn.tzq0301.auth.user.service.UserService;
 import cn.tzq0301.result.Result;
 import cn.tzq0301.util.DateUtils;
 import cn.tzq0301.util.JWTUtils;
-import cn.tzq0301.util.SexUtils;
 import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -82,7 +81,7 @@ public class UserHandler {
                                 user.setEmail(email);
                             }
                         })
-                        .flatMap(userService::saveUser)
+                        .flatMap(userService::updateUser)
                         .flatMap(user -> ServerResponse.ok().bodyValue(Result.success(SUCCESS))));
     }
 
