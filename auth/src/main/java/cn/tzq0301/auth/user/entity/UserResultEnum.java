@@ -9,7 +9,9 @@ import cn.tzq0301.result.ResultEnumerable;
 public enum UserResultEnum implements ResultEnumerable {
     SUCCESS(0, "请求成功"),
     USER_ID_NOT_MATCH(1, "用户 ID 不匹配"),
-    ERROR(2, "请求失败");
+    OLD_PASSWORD_NOT_CORRECT(2, "旧密码错误"),
+    UPDATE_FAIL(3, "修改失败"),
+    PASSWORD_DUPLICATE(4, "新密码与旧密码重复");
 
     private final Integer code;
 
