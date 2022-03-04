@@ -4,6 +4,7 @@ import cn.tzq0301.gateway.config.RedisConfig;
 import cn.tzq0301.gateway.login.entity.LoginResponse;
 import cn.tzq0301.gateway.login.service.LoginService;
 import cn.tzq0301.gateway.security.PcsUserDetailsService;
+import cn.tzq0301.gateway.util.PhoneUtils;
 import cn.tzq0301.result.Result;
 import cn.tzq0301.util.JWTUtils;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,9 @@ import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
 
-import static cn.tzq0301.gateway.login.entity.LoginResponseCode.*;
+import static cn.tzq0301.gateway.login.entity.LoginResponseCode.ERROR;
+import static cn.tzq0301.gateway.login.entity.LoginResponseCode.SUCCESS;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 /**
  * @author tzq0301
@@ -50,21 +53,15 @@ public class LoginHandler {
         String account = request.pathVariable("account");
         String password = request.pathVariable("password");
 
+        ServerResponse.BodyBuilder responseBodyBuilder = ServerResponse.ok().contentType(APPLICATION_JSON);
+
         return userDetailsService.findByUsername(account)
                 .filter(user -> passwordEncoder.matches(password, user.getPassword()))
                 .doOnNext(user -> log.info("{} {} login", user.getAuthorities(), user.getUsername()))
                 .map(this::generateJwtResponse)
                 .doOnNext(this::pushJwtToRedis)
-                .flatMap(loginResponse -> ServerResponse.ok().bodyValue(Result.success(loginResponse, SUCCESS)))
-                .switchIfEmpty(ServerResponse.ok().bodyValue(Result.error(ERROR)));
-    }
-
-    // FIXME
-    public Mono<ServerResponse> requestMessageValidationCode(ServerRequest request) {
-        final String phone = request.pathVariable("phone");
-        final String code = request.pathVariable("code");
-
-        return null;
+                .flatMap(loginResponse -> responseBodyBuilder.bodyValue(Result.success(loginResponse, SUCCESS)))
+                .switchIfEmpty(responseBodyBuilder.bodyValue(Result.error(ERROR)));
     }
 
     /**
@@ -74,7 +71,24 @@ public class LoginHandler {
      * @return 响应
      */
     public Mono<ServerResponse> loginByCode(ServerRequest request) {
-        return null;
+        final String phone = request.pathVariable("phone");
+        final String code = request.pathVariable("code");
+
+        if (!PhoneUtils.isValid(phone)) {
+            return ServerResponse.ok().contentType(APPLICATION_JSON).bodyValue(Result.error(ERROR));
+        }
+
+        return loginService.isValidationCodeConsistentWithPhone(phone, code)
+                .switchIfEmpty(Mono.just(Boolean.FALSE))
+                .filter(Boolean.TRUE::equals)
+                .flatMap(valid -> userDetailsService.findByUsername(phone))
+                .doOnNext(user -> log.info("{} {} login", user.getAuthorities(), user.getUsername()))
+                .map(this::generateJwtResponse)
+                .doOnNext(this::pushJwtToRedis)
+                .flatMap(loginResponse -> ServerResponse.ok().contentType(APPLICATION_JSON)
+                        .bodyValue(Result.success(loginResponse, SUCCESS)))
+                .switchIfEmpty(ServerResponse.ok().contentType(APPLICATION_JSON)
+                        .bodyValue(Result.error(ERROR)));
     }
 
     /**

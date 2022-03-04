@@ -8,12 +8,15 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 /**
@@ -36,7 +39,7 @@ public class RouterConfig {
                 .GET("/test/user_id/{user_id}", request -> {
                     String userId = request.pathVariable("user_id");
                     String jwt = Objects.requireNonNull(
-                            request.exchange().getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION))
+                                    request.exchange().getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION))
                             .substring("Bearer ".length());
                     String userIdFromJWT = JWTUtils.extractUserId(jwt);
                     log.info("jwt            : {}", jwt);
@@ -49,12 +52,20 @@ public class RouterConfig {
 
                 // 用户管理
                 // 用户管理 - 用户登录
-                .GET("/login/account/{account}/password/{password}", loginHandler::loginByAccount)
-                .GET("/login/phone/{phone}/code/{code}", loginHandler::requestMessageValidationCode)
+                .path("/login", this::loginRouter)
 
                 // 通用接口
                 .GET("/phone/{phone}/code", generalHandler::sendCodeToPhone)
 
                 .build();
+    }
+
+    private RouterFunction<ServerResponse> loginRouter() {
+        return route()
+                .nest(accept(APPLICATION_JSON), builder -> builder
+                        .GET("/account/{account}/password/{password}", loginHandler::loginByAccount)
+                        .GET("/phone/{phone}/code/{code}", loginHandler::loginByCode)
+                        .build()
+                ).build();
     }
 }

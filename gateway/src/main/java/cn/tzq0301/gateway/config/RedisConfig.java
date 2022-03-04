@@ -22,6 +22,8 @@ public class RedisConfig {
 
     public static final String JWT_NAMESPACE_PREFIX = PROJECT_NAMESPACE_PREFIX + "jwt:";
 
+    public static final String SMS_NAMESPACE_PREFIX = PROJECT_NAMESPACE_PREFIX + "sms:";
+
     @Bean
     public ReactiveRedisTemplate<String, Object> reactiveRedisTemplate(
             ReactiveRedisConnectionFactory reactiveRedisConnectionFactory,
