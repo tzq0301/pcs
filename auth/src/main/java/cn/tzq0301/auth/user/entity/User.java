@@ -1,4 +1,4 @@
-package cn.tzq0301.auth.entity.user;
+package cn.tzq0301.auth.user.entity;
 
 import cn.tzq0301.user.Role;
 import lombok.AllArgsConstructor;

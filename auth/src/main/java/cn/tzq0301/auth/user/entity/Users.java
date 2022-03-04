@@ -1,10 +1,8 @@
-package cn.tzq0301.auth.entity.user;
+package cn.tzq0301.auth.user.entity;
 
 import cn.tzq0301.auth.login.entity.LoginResponse;
-import cn.tzq0301.auth.login.entity.LoginResponseCode;
 import cn.tzq0301.result.Result;
 import com.google.common.base.Strings;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Objects;
 

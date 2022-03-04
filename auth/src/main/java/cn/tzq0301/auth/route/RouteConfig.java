@@ -32,6 +32,7 @@ public class RouteConfig {
                 .GET("/admin", testHandler::admin)
                 .GET("/account/{account}", loginHandler::getUserByAccount)
                 .GET("/phone/{phone}", userHandler::isPhoneInEnduranceContainer)
+                .GET("/user_id/{user_id}", userHandler::getUserInformation)
                 .build();
     }
 }

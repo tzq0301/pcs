@@ -1,7 +1,7 @@
 package cn.tzq0301.auth.login.service;
 
-import cn.tzq0301.auth.entity.user.User;
-import cn.tzq0301.auth.entity.user.Users;
+import cn.tzq0301.auth.user.entity.User;
+import cn.tzq0301.auth.user.entity.Users;
 import cn.tzq0301.auth.user.infrastraction.UserInfrastructure;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

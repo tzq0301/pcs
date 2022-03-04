@@ -24,6 +24,9 @@ public class UserHandler {
 
         return userService.isPhoneInEnduranceContainer(phone)
                 .flatMap(ServerResponse.ok()::bodyValue);
+    }
 
+    public Mono<ServerResponse> getUserInformation(ServerRequest request) {
+        return null;
     }
 }

@@ -1,6 +1,6 @@
 package cn.tzq0301.auth.login.handler;
 
-import cn.tzq0301.auth.entity.user.Users;
+import cn.tzq0301.auth.user.entity.Users;
 import cn.tzq0301.auth.login.service.LoginService;
 import cn.tzq0301.auth.user.entity.UserResponse;
 import lombok.AllArgsConstructor;
