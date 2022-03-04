@@ -45,6 +45,7 @@ public class WebFluxSecurityConfig {
                 .pathMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .pathMatchers("/login/**").permitAll()
+                .pathMatchers("/logout").permitAll()
 
                 .pathMatchers("/test/**").permitAll()
 
