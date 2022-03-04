@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: pcs-general
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      config:
+        file-extension: yaml
+        shared-configs:
+          - dataId: redis.yaml
+            refresh: true

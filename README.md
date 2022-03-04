@@ -88,6 +88,7 @@ flowchart LR
 | 网关  | gateway | 12100 |
 | 认证  | auth    | 12101 |
 | 短信  | message | 12102 |
+| 通用  | general | 12103 |
 
 ## 部署架构
 
