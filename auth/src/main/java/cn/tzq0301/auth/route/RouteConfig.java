@@ -33,6 +33,7 @@ public class RouteConfig {
                 .GET("/account/{account}", loginHandler::getUserByAccount)
                 .GET("/phone/{phone}", userHandler::isPhoneInEnduranceContainer)
                 .GET("/user_id/{user_id}", userHandler::getUserInformation)
+                .PATCH("/user_id/{user_id}", userHandler::updateUserInformation)
                 .build();
     }
 }

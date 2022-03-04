@@ -8,7 +8,8 @@ import cn.tzq0301.result.ResultEnumerable;
  */
 public enum UserResultEnum implements ResultEnumerable {
     SUCCESS(0, "请求成功"),
-    USER_ID_NOT_MATCH(1, "用户 ID 不匹配");
+    USER_ID_NOT_MATCH(1, "用户 ID 不匹配"),
+    ERROR(2, "请求失败");
 
     private final Integer code;
 

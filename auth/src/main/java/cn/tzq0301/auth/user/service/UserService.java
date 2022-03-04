@@ -25,4 +25,8 @@ public class UserService {
     public Mono<User> findByUserId(String userId) {
         return userInfrastructure.findByUserId(userId);
     }
+
+    public Mono<User> saveUser(User user) {
+        return userInfrastructure.saveUser(user);
+    }
 }
