@@ -64,7 +64,7 @@ public class RouterConfig {
         return route()
                 .nest(accept(APPLICATION_JSON), builder -> builder
                         .GET("/account/{account}/password/{password}", loginHandler::loginByAccount)
-                        .GET("/phone/{phone}/code/{code}", loginHandler::requestMessageValidationCode)
+                        .GET("/phone/{phone}/code/{code}", loginHandler::loginByCode)
                         .build()
                 ).build();
     }
