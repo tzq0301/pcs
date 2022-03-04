@@ -4,12 +4,12 @@ import cn.tzq0301.gateway.config.RedisConfig;
 import cn.tzq0301.gateway.login.entity.LoginResponse;
 import cn.tzq0301.gateway.login.service.LoginService;
 import cn.tzq0301.gateway.security.PcsUserDetailsService;
+import cn.tzq0301.gateway.util.PhoneUtils;
 import cn.tzq0301.result.Result;
 import cn.tzq0301.util.JWTUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,7 +21,8 @@ import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
 
-import static cn.tzq0301.gateway.login.entity.LoginResponseCode.*;
+import static cn.tzq0301.gateway.login.entity.LoginResponseCode.ERROR;
+import static cn.tzq0301.gateway.login.entity.LoginResponseCode.SUCCESS;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 /**
@@ -63,14 +64,6 @@ public class LoginHandler {
                 .switchIfEmpty(responseBodyBuilder.bodyValue(Result.error(ERROR)));
     }
 
-    // FIXME
-    public Mono<ServerResponse> requestMessageValidationCode(ServerRequest request) {
-        final String phone = request.pathVariable("phone");
-        final String code = request.pathVariable("code");
-
-        return null;
-    }
-
     /**
      * 使用手机号与短信验证码进行登录
      *
@@ -78,7 +71,24 @@ public class LoginHandler {
      * @return 响应
      */
     public Mono<ServerResponse> loginByCode(ServerRequest request) {
-        return null;
+        final String phone = request.pathVariable("phone");
+        final String code = request.pathVariable("code");
+
+        if (!PhoneUtils.isValid(phone)) {
+            return ServerResponse.ok().contentType(APPLICATION_JSON).bodyValue(Result.error(ERROR));
+        }
+
+        return loginService.isValidationCodeConsistentWithPhone(phone, code)
+                .switchIfEmpty(Mono.just(Boolean.FALSE))
+                .filter(Boolean.TRUE::equals)
+                .flatMap(valid -> userDetailsService.findByUsername(phone))
+                .doOnNext(user -> log.info("{} {} login", user.getAuthorities(), user.getUsername()))
+                .map(this::generateJwtResponse)
+                .doOnNext(this::pushJwtToRedis)
+                .flatMap(loginResponse -> ServerResponse.ok().contentType(APPLICATION_JSON)
+                        .bodyValue(Result.success(loginResponse, SUCCESS)))
+                .switchIfEmpty(ServerResponse.ok().contentType(APPLICATION_JSON)
+                        .bodyValue(Result.error(ERROR)));
     }
 
     /**
