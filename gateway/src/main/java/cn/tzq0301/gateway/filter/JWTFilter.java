@@ -1,5 +1,7 @@
 package cn.tzq0301.gateway.filter;
 
+import cn.tzq0301.gateway.config.RedisConfig;
+import cn.tzq0301.util.JWTUtils;
 import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -26,6 +28,8 @@ public class JWTFilter implements GlobalFilter, Ordered {
 
     private static final String LOGIN_ROUTE_PREFIX = "/login";
 
+    private static final String LOGOUT_ROUTE_PREFIX = "/logout";
+
     private static final String BEARER_PREFIX = "Bearer ";
 
     @Override
@@ -34,11 +38,12 @@ public class JWTFilter implements GlobalFilter, Ordered {
                 exchange.getRequest().getURI(),
                 exchange.getRequest().getHeaders().get(org.springframework.http.HttpHeaders.AUTHORIZATION));
 
-        if (isLoginRoute(exchange)) {
+        if (isLoginRoute(exchange) || isLogoutRoute(exchange)) {
             return chain.filter(exchange);
         }
 
         if (!hasAuthorized(exchange)) {
+            log.info("{} has not been authorized", exchange.getRequest().getURI());
             ServerHttpResponse response = exchange.getResponse();
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return response.setComplete();
@@ -51,6 +56,10 @@ public class JWTFilter implements GlobalFilter, Ordered {
         return exchange.getRequest().getURI().toString().startsWith(LOGIN_ROUTE_PREFIX);
     }
 
+    private boolean isLogoutRoute(ServerWebExchange exchange) {
+        return exchange.getRequest().getURI().toString().startsWith(LOGOUT_ROUTE_PREFIX);
+    }
+
     private boolean hasAuthorized(ServerWebExchange exchange) {
         String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         if (Strings.isNullOrEmpty(authHeader)) {
@@ -61,9 +70,9 @@ public class JWTFilter implements GlobalFilter, Ordered {
             return false;
         }
 
-        String jwt = authHeader.substring(7);
+        String jwt = JWTUtils.getJwtFromAuthorizationHeader(authHeader);
 
-        if (redisTemplate.opsForValue().get(jwt).block() == null) {
+        if (redisTemplate.opsForValue().get(RedisConfig.JWT_NAMESPACE_PREFIX + jwt).block() == null) {
             return false;
         }
 
