@@ -1,4 +1,4 @@
-package cn.tzq0301.auth.route;
+package cn.tzq0301.auth.config;
 
 import cn.tzq0301.auth.api.TestHandler;
 import cn.tzq0301.auth.login.handler.LoginHandler;
@@ -17,7 +17,7 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
  */
 @SpringBootConfiguration
 @AllArgsConstructor
-public class RouteConfig {
+public class RouterConfig {
     private final TestHandler testHandler;
 
     private final LoginHandler loginHandler;
@@ -33,6 +33,7 @@ public class RouteConfig {
                 .GET("/account/{account}", loginHandler::getUserByAccount)
                 .GET("/phone/{phone}", userHandler::isPhoneInEnduranceContainer)
                 .GET("/user_id/{user_id}", userHandler::getUserInformation)
+                .PATCH("/user_id/{user_id}", userHandler::updateUserInformation)
                 .build();
     }
 }

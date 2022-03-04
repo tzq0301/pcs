@@ -16,4 +16,8 @@ public class SexUtils {
     public static String sexOfString(Sex sex) {
         return sex.getStr();
     }
+
+    public static Integer sexToInteger(String sex) {
+        return Sex.valueOf(sex).getSex();
+    }
 }

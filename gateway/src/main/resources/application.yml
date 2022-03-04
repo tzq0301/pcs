@@ -11,3 +11,14 @@ spring:
             - Path=/auth/**
           filters:
             - StripPrefix=1
+        - id: general
+          uri: lb://pcs-general
+          predicates:
+            - Path=/general/**
+          filters:
+            - StripPrefix=1
+        - id: addresses
+          uri: lb://pcs-general
+          predicates:
+            - Path=/addresses
+

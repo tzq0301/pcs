@@ -1,4 +1,4 @@
-package cn.tzq0301.gateway.route;
+package cn.tzq0301.gateway.config;
 
 import cn.tzq0301.gateway.general.handler.GeneralHandler;
 import cn.tzq0301.gateway.login.handler.LoginHandler;

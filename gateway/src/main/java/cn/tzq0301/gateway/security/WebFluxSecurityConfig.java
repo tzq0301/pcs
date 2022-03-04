@@ -11,8 +11,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.context.ServerSecurityContextRepository;
 import reactor.core.publisher.Mono;
 
-import static cn.tzq0301.user.Role.ADMIN;
-import static cn.tzq0301.user.Role.STUDENT;
+import static cn.tzq0301.user.Role.*;
 
 /**
  * @author tzq0301
@@ -45,6 +44,7 @@ public class WebFluxSecurityConfig {
                 .pathMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .pathMatchers("/login/**").permitAll()
+                .pathMatchers("/logout").permitAll()
 
                 .pathMatchers("/test/**").permitAll()
 
@@ -52,6 +52,9 @@ public class WebFluxSecurityConfig {
                 .pathMatchers("/auth/student").hasRole(STUDENT.getRole())
                 .pathMatchers("/auth/admin").hasRole(ADMIN.getRole())
                 .pathMatchers("/auth/**").permitAll() // FIXME 需要细化
+
+                .pathMatchers("/addresses").hasAnyRole(STUDENT.getRole(), ADMIN.getRole(),
+                        ASSISTANT.getRole(), CONSULTANT.getRole(), VISITOR.getRole())
 
 //                .pathMatchers("/student").hasRole(Role.STUDENT.getRole())
 //                .pathMatchers("/admin").hasRole(Role.ADMIN.getRole())

@@ -37,8 +37,44 @@ class UserRepositoryTest {
 
     @Test
     @Disabled
+    void testInsertAssistant() {
+        User wx = new User("2019141460400", "WX", "123456", true, Role.ASSISTANT.getRole(), Sex.MALE.getSex(),
+                LocalDate.of(2001, 6, 2), "18198646220", "wx@qq.com",
+                "111111111111111111", 0);
+
+        userRepository.save(wx)
+                .map(User::getName)
+                .as(StepVerifier::create)
+                .expectNext("WX")
+                .verifyComplete();
+    }
+
+    @Test
+    @Disabled
+    void testUpdateWx() {
+        User wx = new User("2019141460400", "WX", "123456", true, Role.ASSISTANT.getRole(), Sex.MALE.getSex(),
+                LocalDate.of(2001, 6, 2), "18198646220", "wx@gmail.com",
+                "111111111111111111", 0);
+
+//        userRepository.save(wx)
+//                .map(User::getEmail)
+//                .as(StepVerifier::create)
+//                .expectNext("wx@gmail.com")
+//                .verifyComplete();
+
+        userRepository.save(wx)
+                .flatMap(user -> userRepository.findByUserId("2019141460400"))
+                .map(User::getEmail)
+                .as(StepVerifier::create)
+                .expectNext("wx@gmail.com")
+                .verifyComplete();
+    }
+
+    @Test
+//    @Disabled
     void testFindByUserId() {
         userRepository.findByUserId("2019141460542")
+                .doOnNext(System.out::println)
                 .map(User::getName)
                 .as(StepVerifier::create)
                 .expectNext("TZQ")
