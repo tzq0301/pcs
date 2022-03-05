@@ -1,7 +1,7 @@
 package cn.tzq0301.gateway.general.handler;
 
 import cn.tzq0301.gateway.general.service.GeneralService;
-import cn.tzq0301.gateway.util.PhoneUtils;
+import cn.tzq0301.util.PhoneUtils;
 import cn.tzq0301.result.Result;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;

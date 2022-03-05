@@ -1,4 +1,4 @@
-package cn.tzq0301.gateway.util;
+package cn.tzq0301.util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

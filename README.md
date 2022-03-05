@@ -144,10 +144,24 @@ flowchart LR
             auth --> db-auth[(Database)]
         end
         
+        visit --> auth
+        
         gateway -->|PREFIX=/visit| visit[Visit]
         
         subgraph visit-microservice[Visit Service]
             visit --> db-visit[(Database)]
+        end
+        
+        gateway -->|PREFIX=/general| general[General]
+        
+        subgraph general-microservice[General Service]
+            general --> db-general[(Database)]
+        end
+        
+        gateway -->|PREFIX=/duty| duty[Duty]
+        
+        subgraph duty-microservice[Duty Service]
+            duty --> db-duty[(Database)]
         end
         
         gateway -->|PREFIX=/consule| consule[Consule]

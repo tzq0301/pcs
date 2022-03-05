@@ -60,4 +60,9 @@ public class ApplyService {
     public Flux<Apply> getAllUnfinishedApplies() {
         return applyInfrastructure.getAllAppliesByStatus(ZERO);
     }
+
+    public Mono<Apply> revokeApply(Apply apply) {
+        apply.revoke();
+        return applyInfrastructure.saveApply(apply);
+    }
 }
