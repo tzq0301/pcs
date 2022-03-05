@@ -1,9 +1,13 @@
 package cn.tzq0301.visit.apply.manager;
 
+import cn.tzq0301.util.JWTUtils;
+import cn.tzq0301.visit.apply.entity.UserInfo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
+import static com.google.common.net.HttpHeaders.AUTHORIZATION;
 
 /**
  * @author tzq0301
@@ -29,4 +33,11 @@ public class ApplyManager {
                 .bodyToMono(Integer.class);
     }
 
+    public Mono<UserInfo> findUserInfoByJWT(String jwt) {
+        return builder.build().get()
+                .uri("lb://pcs-auth/user_id/{user_id}/info", JWTUtils.extractUserId(jwt))
+                .header(AUTHORIZATION, JWTUtils.AUTHORIZATION_HEADER_PREFIX + jwt)
+                .retrieve()
+                .bodyToMono(UserInfo.class);
+    }
 }

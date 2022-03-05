@@ -2,8 +2,8 @@ package cn.tzq0301.visit.apply.service;
 
 import cn.tzq0301.visit.apply.entity.Applies;
 import cn.tzq0301.visit.apply.entity.Apply;
-import cn.tzq0301.visit.apply.entity.vo.ApplyRequest;
-import cn.tzq0301.visit.apply.entity.vo.ApplyRequestException;
+import cn.tzq0301.visit.apply.entity.applyrequest.ApplyRequest;
+import cn.tzq0301.visit.apply.entity.applyrequest.ApplyRequestException;
 import cn.tzq0301.visit.apply.infrastructure.ApplyInfrastructure;
 import cn.tzq0301.visit.apply.manager.ApplyManager;
 import lombok.AllArgsConstructor;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import static cn.tzq0301.util.Num.ONE;
+import static cn.tzq0301.util.Num.ZERO;
 
 /**
  * @author tzq0301
@@ -25,19 +26,29 @@ public class ApplyService {
 
     private final ApplyInfrastructure applyInfrastructure;
 
-    public Mono<Apply> requestApply(Mono<ApplyRequest> applyRequest) {
-        return applyRequest
-                .filterWhen(request -> applyManager.isUserAbleToApply(request.getId()).doOnNext(able -> {
-                    if (!able) {
-                        log.warn("{} is not able to create a new apply", request.getId());
+    public Mono<Apply> requestApply(String jwt, Mono<ApplyRequest> applyRequest) {
+        return applyManager.findUserInfoByJWT(jwt)
+                .flatMap(user -> {
+                    log.info("Got user {}", user);
+
+                    if (!ZERO.equals(user.getStudentStatus())) {
+                        log.warn("{} is not able to create a new apply", user.getUserId());
+                        return Mono.empty();
                     }
-                }))
-                .flatMap(request -> applyInfrastructure.saveApply(Applies.newApply(
-                        request.getId(), request.getPhone(), request.getEmail(),
-                        request.getProblemId(), request.getProblemDetail(),request.getDay(),
-                        request.getFrom(), request.getAddress(), request.getScores())))
-                .flatMap(apply ->  applyManager.setStudentStatus(apply.getUserId(), 1)
-                        .flatMap(it -> ONE.equals(it) ? Mono.just(apply) : Mono.error(ApplyRequestException::new)))
+
+                    return Mono.just(user);
+                })
+                .flatMap(user -> applyRequest.map(request -> Applies.newApply(user, request))
+                        .flatMap(apply ->
+                                applyInfrastructure.saveApply(apply)
+                                        .flatMap(it -> applyManager.setStudentStatus(it.getUserId(), ONE)
+                                                .flatMap(status -> ONE.equals(status)
+                                                        ? Mono.just(apply)
+                                                        : Mono.error(ApplyRequestException::new)))))
                 .switchIfEmpty(Mono.error(ApplyRequestException::new));
+    }
+
+    public Mono<Apply> getApplyByApplyId(String applyId) {
+        return applyInfrastructure.getApplyByApplyId(applyId);
     }
 }

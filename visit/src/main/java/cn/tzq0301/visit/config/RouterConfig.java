@@ -22,6 +22,8 @@ public class RouterConfig {
     public RouterFunction<ServerResponse> router() {
         return route()
                 .POST("/apply", applyHandler::requestApply)
+                .GET("/id/{id}/apply_id/{apply_id}", applyHandler::getApply)
+                .GET("/id/{id}/applys", applyHandler::getApplies)
                 .build();
     }
 }

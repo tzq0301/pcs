@@ -1,4 +1,4 @@
-package cn.tzq0301.visit.apply.entity.vo;
+package cn.tzq0301.visit.apply.entity.getapply;
 
 import cn.tzq0301.result.ResultEnumerable;
 
@@ -6,15 +6,15 @@ import cn.tzq0301.result.ResultEnumerable;
  * @author tzq0301
  * @version 1.0
  */
-public enum ApplyRequestResult implements ResultEnumerable {
-    NO_NEED_TO_APPLY_TWICE(0, "无需重复发起申请"),
-    PHONE_FORMAT_INCORRECT(1, "手机号格式不正确");
+public enum GetApplyResult implements ResultEnumerable {
+    SUCCESS(0, "请求成功"),
+    APPLY_NOT_FOUNT(1, "没有该初访申请记录");
 
     private final Integer code;
 
     private final String message;
 
-    ApplyRequestResult(Integer code, String message) {
+    GetApplyResult(Integer code, String message) {
         this.code = code;
         this.message = message;
     }

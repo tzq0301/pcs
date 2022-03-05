@@ -146,4 +146,14 @@ public class UserHandler {
                 .map(User::getStudentStatus)
                 .flatMap(ServerResponse.ok()::bodyValue);
     }
+
+    public Mono<ServerResponse> getUserInfo(ServerRequest request) {
+        String userId = request.pathVariable("user_id");
+
+        return checkForUserId(request, userId)
+                .switchIfEmpty(userService
+                        .findByUserId(userId)
+                        .map(Users::userToUserInfo)
+                        .flatMap(ServerResponse.ok()::bodyValue));
+    }
 }

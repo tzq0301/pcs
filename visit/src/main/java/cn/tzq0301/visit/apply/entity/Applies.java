@@ -1,6 +1,7 @@
 package cn.tzq0301.visit.apply.entity;
 
 import cn.tzq0301.util.DateUtils;
+import cn.tzq0301.visit.apply.entity.applyrequest.ApplyRequest;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,21 +25,30 @@ public final class Applies {
 
     private static final String SCALE_RESULT_FORMAT = "量表得分 %s / 量表总分 %s = %2.2f%%";
 
-    public static Apply newApply(String userId, String phone, String email, ProblemEnum problemId, String problemDetail,
-                                 String day, Integer from, String address, List<Integer> scores) {
-        return newApply(userId, phone, email, problemId.getCode(), problemDetail, day, from, address, scores);
-    }
-
-    public static Apply newApply(String userId, String phone, String email, Integer problemId, String problemDetail,
-                                 String day, Integer from, String address, List<Integer> scores) {
+    public static Apply newApply(String userId, Integer sex, String birthday, String phone, String email, String identity,
+                                 Integer problemId, String problemDetail, String day, Integer from, String address,
+                                 List<Integer> scores) {
         int sumScore = getSumScore(scores);
         String scaleResult = String.format(SCALE_RESULT_FORMAT,
                 sumScore, TOTAL_SCORE, (double) sumScore / TOTAL_SCORE * 100);
         int order = getOrder(sumScore);
 
-        return new Apply(userId, phone, email, problemId, problemDetail, DateUtils.stringToLocalDate(day),
-                from, address, scores, sumScore, scaleResult, order, null,
-                ApplyStatusEnum.PENDING_REVIEW.getCode(), LocalDate.now());
+        return new Apply(userId, sex, DateUtils.stringToLocalDate(birthday), phone, email, identity, problemId,
+                problemDetail, DateUtils.stringToLocalDate(day), from, address, scores, sumScore, scaleResult,
+                order, null, ApplyStatusEnum.PENDING_REVIEW.getCode(), LocalDate.now());
+    }
+
+    public static Apply newApply(UserInfo userInfo, Integer problemId, String problemDetail, String day, Integer from, String address,
+                                 List<Integer> scores) {
+        return newApply(userInfo.getUserId(), userInfo.getSex(), DateUtils.localDateToString(userInfo.getBirthday()),
+                userInfo.getPhone(), userInfo.getEmail(), userInfo.getIdentity(), problemId, problemDetail,
+                day, from, address, scores);
+    }
+
+    public static Apply newApply(UserInfo userInfo, ApplyRequest request) {
+        return newApply(userInfo.getUserId(), userInfo.getSex(), DateUtils.localDateToString(userInfo.getBirthday()),
+                request.getPhone(), request.getEmail(), userInfo.getIdentity(), request.getProblemId(), request.getProblemDetail(),
+                request.getDay(), request.getFrom(), request.getAddress(), request.getScores());
     }
 
     private static int getSumScore(List<Integer> scores) {

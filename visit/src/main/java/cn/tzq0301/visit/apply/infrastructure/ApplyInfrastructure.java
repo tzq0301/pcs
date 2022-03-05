@@ -1,8 +1,9 @@
 package cn.tzq0301.visit.apply.infrastructure;
 
-import cn.tzq0301.visit.apply.reposiroty.ApplyRepository;
 import cn.tzq0301.visit.apply.entity.Apply;
+import cn.tzq0301.visit.apply.reposiroty.ApplyRepository;
 import lombok.AllArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
@@ -17,5 +18,10 @@ public class ApplyInfrastructure {
 
     public Mono<Apply> saveApply(Apply apply) {
         return applyRepository.save(apply);
+    }
+
+    public Mono<Apply> getApplyByApplyId(String applyId) {
+        return Mono.defer(() -> applyRepository.findById(new ObjectId(applyId)))
+                .onErrorResume(IllegalArgumentException.class, e -> Mono.empty());
     }
 }
