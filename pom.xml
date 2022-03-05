@@ -46,6 +46,9 @@
         <module>common</module>
         <module>message</module>
         <module>general</module>
+        <module>visit</module>
+        <module>consult</module>
+        <module>duty</module>
     </modules>
 
     <properties>
