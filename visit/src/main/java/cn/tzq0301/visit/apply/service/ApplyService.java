@@ -11,6 +11,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import static cn.tzq0301.util.Num.ONE;
+
 /**
  * @author tzq0301
  * @version 1.0
@@ -22,8 +24,6 @@ public class ApplyService {
     private final ApplyManager applyManager;
 
     private final ApplyInfrastructure applyInfrastructure;
-
-    private static final Integer ONE = 1;
 
     public Mono<Apply> requestApply(Mono<ApplyRequest> applyRequest) {
         return applyRequest
