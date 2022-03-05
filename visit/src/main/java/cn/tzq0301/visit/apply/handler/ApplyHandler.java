@@ -23,11 +23,13 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static cn.tzq0301.result.DefaultResultEnum.SUCCESS;
+import static cn.tzq0301.util.Num.ONE;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 /**
@@ -70,6 +72,18 @@ public class ApplyHandler {
                 .switchIfEmpty(ServerResponse.ok().bodyValue(Result.error(GetApplyResult.APPLY_NOT_FOUNT)));
     }
 
+    /**
+     * 获取所有的初访预约申请
+     *
+     * <ol>
+     *     <li>根据 JWT 中的 userId 判断请求中的 id 是否相同，若不同则拒绝响应</li>
+     *     <li>通过 userId 进行匹配查询</li>
+     *     <li>对结果进行分页</li>
+     * </ol>
+     *
+     * @param request 请求
+     * @return 响应
+     */
     public Mono<ServerResponse> getApplies(ServerRequest request) {
         String userIdFromJWT = getUserId(request);
         String userId = request.pathVariable("id");
@@ -92,14 +106,45 @@ public class ApplyHandler {
 
         return PageUtils.pagingFlux(applyService.getAllUnfinishedApplies(), offset, limit, Applies::toGetApplies)
                 .flatMap(applies -> ServerResponse.ok().bodyValue(Result.success(applies, SUCCESS)));
+    }
 
-//        return applyService.getAllUnfinishedApplies()
-//                .collectList()
-//                .map(applies -> applies.subList(
-//                        Math.min(offset * limit, applies.size()),
-//                        Math.min((offset + 1) * limit, applies.size())))
-//                .map(list -> list.stream().map(Applies::toGetApplies).collect(Collectors.toList()))
-//                .flatMap(applies -> ServerResponse.ok().bodyValue(Result.success(applies, SUCCESS)));
+    // FIXME 接口尚未测试
+    /**
+     * 学生可以提前一天撤销初访申请记录
+     *
+     * @param request 请求
+     * @return 响应
+     */
+    public Mono<ServerResponse> deleteApplyById(ServerRequest request) {
+        String userIdFromJWT = getUserId(request);
+        String userId = request.pathVariable("user_id");
+
+        if (!Objects.equals(userId, userIdFromJWT)) {
+            log.info("\nIn Path: id = {}\nIn JWT:  id = {}", userId, userIdFromJWT);
+            return ServerResponse.ok().bodyValue(Result.error(2, "用户 ID 不匹配"));
+        }
+
+        String applyId = request.pathVariable("global_id");
+
+        return applyService.getApplyByApplyId(applyId)
+                .flatMap(apply -> {
+                    if (!Objects.equals(userId, apply.getUserId())) {
+                        return Mono.just(Result.error(4, "用户无权查看此记录（用户 ID 与 Global ID 不匹配）"));
+                    }
+
+                    if (!ONE.equals(apply.getStatus())) {
+                        return Mono.just(Result.error(5, "该初访预约申请尚未通过，无法撤销"));
+                    }
+
+                    if (!LocalDate.now().plusDays(1).isBefore(apply.getApplyPassTime())) {
+                        return Mono.just(Result.error(1, "撤销失败（必须提前一天撤销）"));
+                    }
+
+                    return applyService.revokeApply(apply)
+                            .map(it -> Result.success(0, "撤销成功"));
+                })
+                .switchIfEmpty(Mono.just(Result.error(3, "没有该初访预约申请")))
+                .flatMap(ServerResponse.ok()::bodyValue);
     }
 
     private String getJWT(ServerRequest request) {

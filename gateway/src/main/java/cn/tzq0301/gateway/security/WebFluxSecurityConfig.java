@@ -57,6 +57,7 @@ public class WebFluxSecurityConfig {
                 .pathMatchers("/visit/id/{id}/applys").hasRole(STUDENT.getRole())
                 .pathMatchers("/visit/id/{id}/apply_id/{apply_id}").hasRole(STUDENT.getRole())
                 .pathMatchers("/visit/unfinished_applies").hasRole(ADMIN.getRole())
+                .pathMatchers("/visit/user_id/{user_id}/global_id/{global_id}").hasRole(STUDENT.getRole())
                 .pathMatchers("/visit/**").permitAll()
 
                 .pathMatchers("/addresses").permitAll()

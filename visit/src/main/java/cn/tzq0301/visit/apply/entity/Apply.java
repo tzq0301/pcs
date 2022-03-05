@@ -13,6 +13,8 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 import java.time.LocalDate;
 import java.util.List;
 
+import static cn.tzq0301.util.Num.THREE;
+
 /**
  * @author tzq0301
  * @version 1.0
@@ -85,5 +87,9 @@ public class Apply {
         this.applyPassTime = applyPassTime;
         this.status = status;
         this.createdTime = createdTime;
+    }
+
+    public void revoke() {
+        this.status = THREE;
     }
 }
