@@ -4,10 +4,13 @@ import cn.tzq0301.user.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.time.LocalDate;
 
@@ -22,7 +25,8 @@ import java.time.LocalDate;
 public class User {
     @Id
     @Field("_id")
-    private String id;
+    @MongoId(FieldType.OBJECT_ID)
+    private ObjectId id;
 
     @Indexed(unique = true)
     private String userId; // 学工号

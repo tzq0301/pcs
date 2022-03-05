@@ -2,6 +2,7 @@ package cn.tzq0301.visit.apply.entity;
 
 import cn.tzq0301.util.DateUtils;
 import cn.tzq0301.visit.apply.entity.applyrequest.ApplyRequest;
+import cn.tzq0301.visit.apply.entity.getapplies.GetApplies;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -49,6 +50,12 @@ public final class Applies {
         return newApply(userInfo.getUserId(), userInfo.getSex(), DateUtils.localDateToString(userInfo.getBirthday()),
                 request.getPhone(), request.getEmail(), userInfo.getIdentity(), request.getProblemId(), request.getProblemDetail(),
                 request.getDay(), request.getFrom(), request.getAddress(), request.getScores());
+    }
+
+    public static GetApplies toGetApplies(Apply apply) {
+        return new GetApplies(apply.getId().toString(), apply.getStatus(),
+                DateUtils.localDateToString(apply.getCreatedTime()), DateUtils.localDateToString(apply.getDay()),
+                apply.getFrom(), apply.getAddress(), ProblemEnum.getName(apply.getProblemId()));
     }
 
     private static int getSumScore(List<Integer> scores) {

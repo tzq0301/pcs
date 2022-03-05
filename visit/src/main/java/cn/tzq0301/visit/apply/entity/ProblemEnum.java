@@ -26,4 +26,19 @@ public enum ProblemEnum {
     public String getName() {
         return name;
     }
+
+    public static String getName(Integer code) {
+        switch (code) {
+            case 0:
+                return DEVELOP.getName();
+            case 1:
+                return ADAPT.getName();
+            case 2:
+                return OBSTACLE.getName();
+            case 3:
+                return OTHER.getName();
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
 }

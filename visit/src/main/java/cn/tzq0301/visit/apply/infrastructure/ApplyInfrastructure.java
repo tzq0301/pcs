@@ -4,7 +4,9 @@ import cn.tzq0301.visit.apply.entity.Apply;
 import cn.tzq0301.visit.apply.reposiroty.ApplyRepository;
 import lombok.AllArgsConstructor;
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -23,5 +25,9 @@ public class ApplyInfrastructure {
     public Mono<Apply> getApplyByApplyId(String applyId) {
         return Mono.defer(() -> applyRepository.findById(new ObjectId(applyId)))
                 .onErrorResume(IllegalArgumentException.class, e -> Mono.empty());
+    }
+
+    public Flux<Apply> getAppliesByUserId(final String userId) {
+        return applyRepository.findByUserId(userId);
     }
 }
