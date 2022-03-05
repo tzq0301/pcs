@@ -4,7 +4,7 @@ import cn.tzq0301.gateway.config.RedisConfig;
 import cn.tzq0301.gateway.login.entity.LoginResponse;
 import cn.tzq0301.gateway.login.service.LoginService;
 import cn.tzq0301.gateway.security.PcsUserDetailsService;
-import cn.tzq0301.gateway.util.PhoneUtils;
+import cn.tzq0301.util.PhoneUtils;
 import cn.tzq0301.result.Result;
 import cn.tzq0301.util.JWTUtils;
 import lombok.AllArgsConstructor;
