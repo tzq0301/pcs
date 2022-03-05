@@ -1,5 +1,6 @@
 package cn.tzq0301.auth.user.handler;
 
+import cn.tzq0301.auth.user.entity.User;
 import cn.tzq0301.auth.user.entity.UserResultEnum;
 import cn.tzq0301.auth.user.entity.Users;
 import cn.tzq0301.auth.user.service.UserService;
@@ -127,5 +128,22 @@ public class UserHandler {
         }
 
         return Mono.empty();
+    }
+
+    public Mono<ServerResponse> isUserAbleToApply(ServerRequest request) {
+        String userId = request.pathVariable("user_id");
+
+        return userService.isUserAbleToApply(userId)
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    public Mono<ServerResponse> setStudentStatusToOne(ServerRequest request) {
+        String userId = request.pathVariable("user_id");
+        int studentStatus = Integer.parseInt(request.pathVariable("student_status"));
+
+        return userService.findByUserId(userId)
+                .flatMap(user -> userService.setStudentStatus(user, studentStatus))
+                .map(User::getStudentStatus)
+                .flatMap(ServerResponse.ok()::bodyValue);
     }
 }

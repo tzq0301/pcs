@@ -35,6 +35,8 @@ public class RouterConfig {
                 .GET("/user_id/{user_id}", userHandler::getUserInformation)
                 .PATCH("/user_id/{user_id}", userHandler::updateUserInformation)
                 .PATCH("/user_id/{user_id}/old_password/{old_password}/new_password/{new_password}", userHandler::updatePassword)
+                .GET("/user_id/{user_id}/student_status", userHandler::isUserAbleToApply)
+                .PATCH("/user_id/{user_id}/student_status/{student_status}", userHandler::setStudentStatusToOne)
                 .build();
     }
 }
