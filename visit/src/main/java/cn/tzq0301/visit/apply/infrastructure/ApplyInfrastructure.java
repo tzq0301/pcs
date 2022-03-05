@@ -4,10 +4,13 @@ import cn.tzq0301.visit.apply.entity.Apply;
 import cn.tzq0301.visit.apply.reposiroty.ApplyRepository;
 import lombok.AllArgsConstructor;
 import org.bson.types.ObjectId;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Objects;
+
+import static cn.tzq0301.util.Num.ZERO;
 
 /**
  * @author tzq0301
@@ -29,5 +32,10 @@ public class ApplyInfrastructure {
 
     public Flux<Apply> getAppliesByUserId(final String userId) {
         return applyRepository.findByUserId(userId);
+    }
+
+    public Flux<Apply> getAllAppliesByStatus(final Integer status) {
+        return applyRepository.findAll()
+                .filter(apply -> Objects.equals(status, apply.getStatus()));
     }
 }
