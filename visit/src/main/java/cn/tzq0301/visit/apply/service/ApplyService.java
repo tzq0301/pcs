@@ -56,4 +56,8 @@ public class ApplyService {
     public Flux<Apply> getAppliesByUserId(final String userId) {
         return applyInfrastructure.getAppliesByUserId(userId);
     }
+
+    public Flux<Apply> getAllUnfinishedApplies() {
+        return applyInfrastructure.getAllAppliesByStatus(ZERO);
+    }
 }

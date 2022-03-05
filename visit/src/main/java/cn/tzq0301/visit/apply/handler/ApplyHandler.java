@@ -3,6 +3,7 @@ package cn.tzq0301.visit.apply.handler;
 import cn.tzq0301.result.Result;
 import cn.tzq0301.util.DateUtils;
 import cn.tzq0301.util.JWTUtils;
+import cn.tzq0301.util.PageUtils;
 import cn.tzq0301.visit.apply.entity.Applies;
 import cn.tzq0301.visit.apply.entity.Apply;
 import cn.tzq0301.visit.apply.entity.applyrequest.ApplyRequest;
@@ -81,20 +82,24 @@ public class ApplyHandler {
         int offset = getOffset(request);
         int limit = getLimit(request);
 
-        return applyService.getAppliesByUserId(userId)
-                .collectList()
-                .map(applies -> applies.subList(
-                        Math.min(offset * limit, applies.size()),
-                        Math.min((offset + 1) * limit, applies.size())))
-//                .onErrorResume(
-//                        ex -> ex instanceof IndexOutOfBoundsException || ex instanceof IllegalArgumentException,
-//                        ex -> Mono.just(Lists.newArrayList()))
-                .map(list -> list.stream().map(Applies::toGetApplies).collect(Collectors.toList()))
+        return PageUtils.pagingFlux(applyService.getAppliesByUserId(userId), offset, limit, Applies::toGetApplies)
                 .flatMap(applies -> ServerResponse.ok().bodyValue(Result.success(applies, SUCCESS)));
     }
 
     public Mono<ServerResponse> getAllUnfinishedApplies(ServerRequest request) {
-        return null;
+        int offset = getOffset(request);
+        int limit = getLimit(request);
+
+        return PageUtils.pagingFlux(applyService.getAllUnfinishedApplies(), offset, limit, Applies::toGetApplies)
+                .flatMap(applies -> ServerResponse.ok().bodyValue(Result.success(applies, SUCCESS)));
+
+//        return applyService.getAllUnfinishedApplies()
+//                .collectList()
+//                .map(applies -> applies.subList(
+//                        Math.min(offset * limit, applies.size()),
+//                        Math.min((offset + 1) * limit, applies.size())))
+//                .map(list -> list.stream().map(Applies::toGetApplies).collect(Collectors.toList()))
+//                .flatMap(applies -> ServerResponse.ok().bodyValue(Result.success(applies, SUCCESS)));
     }
 
     private String getJWT(ServerRequest request) {
