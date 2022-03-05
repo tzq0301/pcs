@@ -54,6 +54,9 @@ public class WebFluxSecurityConfig {
                 .pathMatchers("/auth/**").permitAll() // FIXME 需要细化
 
                 .pathMatchers("/visit/apply").hasRole(STUDENT.getRole())
+                .pathMatchers("/visit/id/{id}/applys").hasRole(STUDENT.getRole())
+                .pathMatchers("/visit/id/{id}/apply_id/{apply_id}").hasRole(STUDENT.getRole())
+                .pathMatchers("/visit/unfinished_applies").hasRole(ADMIN.getRole())
                 .pathMatchers("/visit/**").permitAll()
 
                 .pathMatchers("/addresses").permitAll()

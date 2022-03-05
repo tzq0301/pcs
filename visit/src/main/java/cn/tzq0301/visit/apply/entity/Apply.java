@@ -3,9 +3,12 @@ package cn.tzq0301.visit.apply.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,13 +24,20 @@ import java.util.List;
 public class Apply {
     @Id
     @Field("_id")
-    private String id;
+    @MongoId(FieldType.OBJECT_ID)
+    private ObjectId id; // Global ID
 
     private String userId; // 学工号
+
+    private Integer sex; // 性别
+
+    private LocalDate birthday; // 生日
 
     private String phone; // 电话号码
 
     private String email; // 邮箱
+
+    private String identity; // 身份证
 
     private Integer problemId; // 问题类型
 
@@ -53,12 +63,16 @@ public class Apply {
 
     private LocalDate createdTime; // 创建时间
 
-    Apply(String userId, String phone, String email, Integer problemId, String problemDetail,
-                 LocalDate day, Integer from, String address, List<Integer> scores, Integer sumScore,
-                 String scaleResult, Integer order, LocalDate applyPassTime, Integer status, LocalDate createdTime) {
+    Apply(String userId, Integer sex, LocalDate birthday, String phone, String email, String identity,
+                 Integer problemId, String problemDetail, LocalDate day, Integer from, String address,
+                 List<Integer> scores, Integer sumScore, String scaleResult, Integer order,
+                 LocalDate applyPassTime, Integer status, LocalDate createdTime) {
         this.userId = userId;
+        this.sex = sex;
+        this.birthday = birthday;
         this.phone = phone;
         this.email = email;
+        this.identity = identity;
         this.problemId = problemId;
         this.problemDetail = problemDetail;
         this.day = day;

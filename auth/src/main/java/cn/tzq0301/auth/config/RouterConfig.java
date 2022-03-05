@@ -33,6 +33,7 @@ public class RouterConfig {
                 .GET("/account/{account}", loginHandler::getUserByAccount)
                 .GET("/phone/{phone}", userHandler::isPhoneInEnduranceContainer)
                 .GET("/user_id/{user_id}", userHandler::getUserInformation)
+                .GET("/user_id/{user_id}/info", userHandler::getUserInfo)
                 .PATCH("/user_id/{user_id}", userHandler::updateUserInformation)
                 .PATCH("/user_id/{user_id}/old_password/{old_password}/new_password/{new_password}", userHandler::updatePassword)
                 .GET("/user_id/{user_id}/student_status", userHandler::isUserAbleToApply)

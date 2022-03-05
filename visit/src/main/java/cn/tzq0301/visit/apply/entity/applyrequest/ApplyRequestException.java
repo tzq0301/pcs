@@ -1,4 +1,4 @@
-package cn.tzq0301.visit.apply.entity.vo;
+package cn.tzq0301.visit.apply.entity.applyrequest;
 
 /**
  * @author tzq0301
