@@ -53,8 +53,10 @@ public class WebFluxSecurityConfig {
                 .pathMatchers("/auth/admin").hasRole(ADMIN.getRole())
                 .pathMatchers("/auth/**").permitAll() // FIXME 需要细化
 
-                .pathMatchers("/addresses").hasAnyRole(STUDENT.getRole(), ADMIN.getRole(),
-                        ASSISTANT.getRole(), CONSULTANT.getRole(), VISITOR.getRole())
+                .pathMatchers("/visit/apply").hasRole(STUDENT.getRole())
+                .pathMatchers("/visit/**").permitAll()
+
+                .pathMatchers("/addresses").permitAll()
 
 //                .pathMatchers("/student").hasRole(Role.STUDENT.getRole())
 //                .pathMatchers("/admin").hasRole(Role.ADMIN.getRole())

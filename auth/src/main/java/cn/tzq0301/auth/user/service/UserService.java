@@ -35,4 +35,13 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userInfrastructure.saveUser(user);
     }
+
+    public Mono<Integer> isUserAbleToApply(String userId) {
+        return userInfrastructure.findByUserId(userId).map(User::getStudentStatus);
+    }
+
+    public Mono<User> setStudentStatus(User user, int studentStatus) {
+        user.setStudentStatus(studentStatus);
+        return userInfrastructure.saveUser(user);
+    }
 }

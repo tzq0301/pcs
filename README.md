@@ -172,9 +172,9 @@ flowchart LR
 | 认证 | auth    | 12101 |
 | 短信 | message | 12102 |
 | 通用 | general | 12103 |
-| 初访 | visit        | 12104      |
-| 咨询 | consult        | 12105      |
-| 值班 | duty        | 12106      |
+| 初访 | visit   | 12104 |
+| 咨询 | consult | 12105 |
+| 值班 | duty    | 12106 |
 
 ## 部署架构
 

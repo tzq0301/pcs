@@ -57,4 +57,23 @@ class UserServiceTest {
                         "555@gmail.com", "555555555555555555"))
         ).subscribe();
     }
+
+    @Test
+    @Disabled
+    void saveUser2() {
+        Mono.zip(
+                userService.saveUser(Users.newUser("6666666666666", "Student2", "123456", Role.STUDENT,
+                        Sex.MALE, LocalDate.of(2001, 3, 1), "66666666666",
+                        "666@gmail.com", "666666666666666666")),
+                userService.saveUser(Users.newUser("7777777777777", "Student3", "123456", Role.STUDENT,
+                        Sex.FEMALE, LocalDate.of(2002, 3, 21), "7777777777",
+                        "777@gmail.com", "777777777777777777")),
+                userService.saveUser(Users.newUser("8888888888888", "Visitor2", "123456", Role.VISITOR,
+                        Sex.FEMALE, LocalDate.of(1990, 3, 12), "88888888888",
+                        "888@gmail.com", "888888888888888888")),
+                userService.saveUser(Users.newUser("4444444444444", "Consultant2", "123456", Role.CONSULTANT,
+                        Sex.FEMALE, LocalDate.of(2002, 5, 2), "99999999999",
+                        "999@gmail.com", "999999999999999999"))
+        ).subscribe();
+    }
 }
