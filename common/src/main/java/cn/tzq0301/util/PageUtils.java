@@ -5,6 +5,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -25,6 +26,16 @@ public final class PageUtils {
                         Math.min(offset * limit, list.size()),
                         Math.min((offset + 1) * limit, list.size())))
                 .map(list -> list.stream().map(function).collect(Collectors.toList()));
+    }
+
+    public static <T, U> Mono<List<U>> pagingFlux(Flux<T> flux, Predicate<T> predicate, int offset, int limit, Function<T, U> function) {
+        return flux.collectList()
+                .map(list -> list.stream()
+                        .filter(predicate)
+                        .map(function)
+                        .skip(offset)
+                        .limit(limit)
+                        .collect(Collectors.toList()));
     }
 
     private PageUtils() {}

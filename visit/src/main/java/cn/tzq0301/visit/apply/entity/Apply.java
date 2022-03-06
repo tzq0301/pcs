@@ -31,6 +31,8 @@ public class Apply {
 
     private String userId; // 学工号
 
+    private String name; // 姓名
+
     private Integer sex; // 性别
 
     private LocalDate birthday; // 生日
@@ -65,11 +67,12 @@ public class Apply {
 
     private LocalDate createdTime; // 创建时间
 
-    Apply(String userId, Integer sex, LocalDate birthday, String phone, String email, String identity,
+    Apply(String userId, String name, Integer sex, LocalDate birthday, String phone, String email, String identity,
                  Integer problemId, String problemDetail, LocalDate day, Integer from, String address,
                  List<Integer> scores, Integer sumScore, String scaleResult, Integer order,
                  LocalDate applyPassTime, Integer status, LocalDate createdTime) {
         this.userId = userId;
+        this.name = name;
         this.sex = sex;
         this.birthday = birthday;
         this.phone = phone;
