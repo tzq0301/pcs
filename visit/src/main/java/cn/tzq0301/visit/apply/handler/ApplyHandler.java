@@ -29,7 +29,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static cn.tzq0301.result.DefaultResultEnum.SUCCESS;
-import static cn.tzq0301.util.Num.ONE;
+import static cn.tzq0301.util.Num.*;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 /**
@@ -120,8 +120,11 @@ public class ApplyHandler {
         String userId = request.pathVariable("user_id");
 
         if (!Objects.equals(userId, userIdFromJWT)) {
-            log.info("\nIn Path: id = {}\nIn JWT:  id = {}", userId, userIdFromJWT);
-            return ServerResponse.ok().bodyValue(Result.error(2, "用户 ID 不匹配"));
+            log.info("In Path: id = {}", userId);
+            log.info("In JWT:  id = {}", userIdFromJWT);
+            return Mono.just(Result.error(2, "用户 ID 不匹配"))
+                    .doOnNext(result -> log.info("{}", result))
+                    .flatMap(ServerResponse.ok()::bodyValue);
         }
 
         String applyId = request.pathVariable("global_id");
@@ -132,8 +135,16 @@ public class ApplyHandler {
                         return Mono.just(Result.error(4, "用户无权查看此记录（用户 ID 与 Global ID 不匹配）"));
                     }
 
-                    if (!ONE.equals(apply.getStatus())) {
+                    if (ZERO.equals(apply.getStatus())) {
                         return Mono.just(Result.error(5, "该初访预约申请尚未通过，无法撤销"));
+                    }
+
+                    if (TWO.equals(apply.getStatus())) {
+                        return Mono.just(Result.error(6, "该初访预约申请已被拒绝，无法撤销"));
+                    }
+
+                    if (THREE.equals(apply.getStatus())) {
+                        return Mono.just(Result.error(7, "该初访预约申请已被通过，无法撤销"));
                     }
 
                     if (!LocalDate.now().plusDays(1).isBefore(apply.getApplyPassTime())) {
@@ -144,6 +155,7 @@ public class ApplyHandler {
                             .map(it -> Result.success(0, "撤销成功"));
                 })
                 .switchIfEmpty(Mono.just(Result.error(3, "没有该初访预约申请")))
+                .doOnNext(result -> log.info("{}", result))
                 .flatMap(ServerResponse.ok()::bodyValue);
     }
 
