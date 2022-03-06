@@ -4,6 +4,7 @@ import cn.tzq0301.visit.record.entity.VisitRecord;
 import cn.tzq0301.visit.record.repository.VisitRecordRepository;
 import lombok.AllArgsConstructor;
 import org.bson.types.ObjectId;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -11,7 +12,7 @@ import reactor.core.publisher.Mono;
  * @author tzq0301
  * @version 1.0
  */
-@Service
+@Repository
 @AllArgsConstructor
 public class VisitRecordInfrastructure {
     private final VisitRecordRepository visitRecordRepository;
