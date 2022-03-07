@@ -5,30 +5,25 @@ import cn.tzq0301.util.DateUtils;
 import cn.tzq0301.util.JWTUtils;
 import cn.tzq0301.util.PageUtils;
 import cn.tzq0301.visit.apply.entity.Applies;
-import cn.tzq0301.visit.apply.entity.Apply;
 import cn.tzq0301.visit.apply.entity.applyrequest.ApplyRequest;
 import cn.tzq0301.visit.apply.entity.applyrequest.ApplyRequestException;
 import cn.tzq0301.visit.apply.entity.applyrequest.ApplyRequestResult;
 import cn.tzq0301.visit.apply.entity.getapply.GetApply;
 import cn.tzq0301.visit.apply.entity.getapply.GetApplyResult;
+import cn.tzq0301.visit.apply.entity.passapply.PassApplyRequest;
 import cn.tzq0301.visit.apply.service.ApplyService;
-import cn.tzq0301.visit.record.infrastructure.VisitRecordInfrastructure;
 import cn.tzq0301.visit.record.service.VisitRecordService;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static cn.tzq0301.result.DefaultResultEnum.SUCCESS;
 import static cn.tzq0301.util.Num.*;
@@ -148,6 +143,7 @@ public class ApplyHandler {
         String applyId = request.pathVariable("global_id");
 
         return applyService.getApplyByApplyId(applyId)
+                .doOnNext(apply -> log.info("Got Apply: {}", apply.toString()))
                 .flatMap(apply -> {
                     if (!Objects.equals(userId, apply.getUserId())) {
                         return Mono.just(Result.error(4, "用户无权查看此记录（用户 ID 与 Global ID 不匹配）"));
@@ -161,8 +157,9 @@ public class ApplyHandler {
                         return Mono.just(Result.error(6, "该初访预约申请已被撤销，无需重复操作"));
                     }
 
-                    // FIXME 需要测试
+                    log.info("Global ID: {}", apply.getId().toHexString());
                     return visitRecordService.findVisitRecordById(apply.getId())
+                            .doOnNext(visitRecord -> log.info("Got VisitRecord: {}", visitRecord.toString()))
                             .flatMap(record -> {
                                 if (ONE.equals(apply.getStatus())
                                         && LocalDate.now().plusDays(1).isAfter(record.getDay())) {
@@ -170,21 +167,19 @@ public class ApplyHandler {
                                 }
 
                                 return applyService.revokeApply(apply)
+                                        .doOnNext(tuple -> log.info("撤销 {} 撤销后的 Apply: {}", tuple.getT2(), tuple.getT1()))
                                         .map(it -> Result.success(0, "撤销成功"));
                             });
-
-                      // FIXME 已被通过（status 为 1）的初访预约申请只能在预约时间一天之前撤销
-//                    if (ONE.equals(apply.getStatus())
-//                            && !LocalDate.now().plusDays(1).isBefore(apply.getApplyPassTime())) {
-//                        return Mono.just(Result.error(1, "撤销失败（已被通过的申请必须提前一天撤销）"));
-//                    }
-//
-//                    return applyService.revokeApply(apply)
-//                            .map(it -> Result.success(0, "撤销成功"));
                 })
                 .switchIfEmpty(Mono.just(Result.error(3, "没有该初访预约申请")))
                 .doOnNext(result -> log.info("{}", result))
                 .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    public Mono<ServerResponse> passApply(ServerRequest request) {
+        return request.bodyToMono(PassApplyRequest.class)
+                .flatMap(applyService::passApply)
+                .flatMap(it -> ServerResponse.ok().build());
     }
 
     private String getJWT(ServerRequest request) {

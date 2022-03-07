@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -17,11 +18,13 @@ import java.util.List;
  * @author tzq0301
  * @version 1.0
  */
-@Document
+@Document("visitRecord")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class VisitRecord {
+public class VisitRecord implements Serializable {
+    private static final long serialVersionUID = -2999123288462744174L;
+
     @Id
     @Field("_id")
     @MongoId(FieldType.OBJECT_ID)

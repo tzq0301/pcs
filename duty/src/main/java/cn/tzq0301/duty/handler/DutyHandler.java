@@ -3,17 +3,16 @@ package cn.tzq0301.duty.handler;
 import cn.tzq0301.duty.entity.duty.Duties;
 import cn.tzq0301.duty.entity.duty.Pattern;
 import cn.tzq0301.duty.entity.duty.SpecialItem;
+import cn.tzq0301.duty.entity.work.WorkItems;
 import cn.tzq0301.duty.service.DutyService;
 import cn.tzq0301.util.DateUtils;
 import lombok.AllArgsConstructor;
-import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -28,7 +27,7 @@ import static cn.tzq0301.util.Num.ZERO;
 public class DutyHandler {
     private final DutyService dutyService;
 
-    public Mono<ServerResponse> getAddressByUserIdAndDayAndFrom(ServerRequest request) {
+    public Mono<ServerResponse> findAddressByUserIdAndDayAndFrom(ServerRequest request) {
         String userId = request.pathVariable("user_id");
         LocalDate day = DateUtils.stringToLocalDate(request.pathVariable("day"));
         int from = Integer.parseInt(request.pathVariable("from"));
@@ -58,5 +57,19 @@ public class DutyHandler {
                             .orElse("");
                 })
                 .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    public Mono<ServerResponse> addWorkItem(ServerRequest request) {
+        return dutyService.addWorkByUserId(request.pathVariable("user_id"), WorkItems.newWorkItem(
+                request.pathVariable("day"), Integer.parseInt(request.pathVariable("from")),
+                request.pathVariable("address")))
+                .flatMap(it -> ServerResponse.ok().build());
+    }
+
+    public Mono<ServerResponse> deleteWorkItem(ServerRequest request) {
+        return dutyService.deleteWorkByUserId(request.pathVariable("user_id"), WorkItems.newWorkItem(
+                        request.pathVariable("day"), Integer.parseInt(request.pathVariable("from")),
+                        request.pathVariable("address")))
+                .flatMap(it -> ServerResponse.ok().bodyValue("OK"));
     }
 }

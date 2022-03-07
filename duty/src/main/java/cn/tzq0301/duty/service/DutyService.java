@@ -81,4 +81,11 @@ public class DutyService {
                 .doOnNext(work -> Arrays.stream(workItems).forEach(work::addWork))
                 .flatMap(dutyInfrastructure::saveWork);
     }
+
+    public Mono<Work> deleteWorkByUserId(String userId, WorkItem workItem) {
+        return dutyInfrastructure.getWorkByUserId(userId)
+                .switchIfEmpty(Mono.just(Works.newWork(userId)))
+                .doOnNext(work -> work.deleteWork(workItem))
+                .flatMap(dutyInfrastructure::saveWork);
+    }
 }

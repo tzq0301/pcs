@@ -147,7 +147,7 @@ public class UserHandler {
                 .flatMap(ServerResponse.ok()::bodyValue);
     }
 
-    public Mono<ServerResponse> getUserInfo(ServerRequest request) {
+    public Mono<ServerResponse> getUserInfoByJWT(ServerRequest request) {
         String userId = request.pathVariable("user_id");
 
         return checkForUserId(request, userId)
@@ -155,5 +155,14 @@ public class UserHandler {
                         .findByUserId(userId)
                         .map(Users::userToUserInfo)
                         .flatMap(ServerResponse.ok()::bodyValue));
+    }
+
+    public Mono<ServerResponse> getUserInfo(ServerRequest request) {
+        String userId = request.pathVariable("user_id");
+
+        return userService
+                .findByUserId(userId)
+                .map(Users::userToUserInfo)
+                .flatMap(ServerResponse.ok()::bodyValue);
     }
 }

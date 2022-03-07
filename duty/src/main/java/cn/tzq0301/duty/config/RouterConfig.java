@@ -21,7 +21,9 @@ public class RouterConfig {
     @Bean
     public RouterFunction<ServerResponse> router() {
         return route()
-                .GET("/user_id/{user_id}/day/{day}/from/{from}", dutyHandler::getAddressByUserIdAndDayAndFrom)
+                .GET("/user_id/{user_id}/day/{day}/from/{from}", dutyHandler::findAddressByUserIdAndDayAndFrom)
+                .POST("/user_id/{user_id}/day/{day}/from/{from}/address/{address}", dutyHandler::addWorkItem)
+                .DELETE("/user_id/{user_id}/day/{day}/from/{from}/address/{address}", dutyHandler::deleteWorkItem)
                 .build();
     }
 }

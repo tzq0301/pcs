@@ -12,6 +12,8 @@ import org.springframework.security.web.server.context.ServerSecurityContextRepo
 import reactor.core.publisher.Mono;
 
 import static cn.tzq0301.user.Role.*;
+import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpMethod.POST;
 
 /**
  * @author tzq0301
@@ -53,12 +55,13 @@ public class WebFluxSecurityConfig {
                 .pathMatchers("/auth/admin").hasRole(ADMIN.getRole())
                 .pathMatchers("/auth/**").permitAll() // FIXME 需要细化
 
-                .pathMatchers("/visit/apply").hasRole(STUDENT.getRole())
+                .pathMatchers(POST, "/visit/apply").hasRole(STUDENT.getRole())
                 .pathMatchers("/visit/id/{id}/applys").hasRole(STUDENT.getRole())
                 .pathMatchers("/visit/id/{id}/apply_id/{apply_id}").hasRole(STUDENT.getRole())
                 .pathMatchers("/visit/unfinished_applies").hasRole(ADMIN.getRole())
-                .pathMatchers("/visit/user_id/{user_id}/global_id/{global_id}").hasRole(STUDENT.getRole())
+                .pathMatchers(DELETE, "/visit/user_id/{user_id}/global_id/{global_id}").hasRole(STUDENT.getRole())
                 .pathMatchers("/visit/**").permitAll()
+                .pathMatchers(POST, "/visit/pass_apply").hasRole(ADMIN.getRole())
 
                 .pathMatchers("/addresses").permitAll()
 

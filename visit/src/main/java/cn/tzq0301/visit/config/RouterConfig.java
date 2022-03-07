@@ -26,6 +26,7 @@ public class RouterConfig {
                 .GET("/id/{id}/applys", applyHandler::getApplies)
                 .GET("/unfinished_applies", applyHandler::getAllUnfinishedApplies)
                 .DELETE("/user_id/{user_id}/global_id/{global_id}", applyHandler::deleteApplyById)
+                .POST("/pass_apply", applyHandler::passApply)
                 .build();
     }
 }

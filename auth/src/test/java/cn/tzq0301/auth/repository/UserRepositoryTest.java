@@ -4,6 +4,7 @@ import cn.tzq0301.user.Role;
 import cn.tzq0301.user.Sex;
 import cn.tzq0301.auth.user.entity.User;
 import cn.tzq0301.auth.user.repository.UserRepository;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +72,7 @@ class UserRepositoryTest {
     }
 
     @Test
-//    @Disabled
+    @Disabled
     void testFindByUserId() {
         userRepository.findByUserId("2019141460542")
                 .doOnNext(System.out::println)
@@ -86,6 +87,16 @@ class UserRepositoryTest {
     void testFindNothing() {
         userRepository.findByUserId("2019101460542")
                 .as(StepVerifier::create)
+                .verifyComplete();
+    }
+
+    @Test
+    void test() {
+        userRepository.findById(new ObjectId("622563b587d5945143d92b13"))
+                .doOnNext(System.out::println)
+                .map(User::getName)
+                .as(StepVerifier::create)
+                .expectNext("Student")
                 .verifyComplete();
     }
 }

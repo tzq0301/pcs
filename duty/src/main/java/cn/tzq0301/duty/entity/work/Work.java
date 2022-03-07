@@ -40,6 +40,14 @@ public class Work implements Serializable {
     }
 
     public void addWork(final WorkItem workItem) {
+        if (this.works.contains(workItem)) {
+            return;
+        }
+
         this.works.add(workItem);
+    }
+
+    public void deleteWork(final WorkItem workItem) {
+        this.works.remove(workItem);
     }
 }

@@ -17,11 +17,19 @@ import reactor.core.publisher.Mono;
 public class VisitRecordInfrastructure {
     private final VisitRecordRepository visitRecordRepository;
 
-    public Mono<VisitRecord> findVisitRecordById(String id) {
+    public Mono<VisitRecord> findVisitRecordById(final String id) {
         return visitRecordRepository.findById(new ObjectId(id));
     }
 
-    public Mono<VisitRecord> findVisitRecordById(ObjectId id) {
+    public Mono<VisitRecord> findVisitRecordById(final ObjectId id) {
         return visitRecordRepository.findById(id);
+    }
+
+    public Mono<VisitRecord> saveVisitRecord(final VisitRecord visitRecord) {
+        return visitRecordRepository.save(visitRecord);
+    }
+
+    public Mono<String> deleteById(final ObjectId visitRecordId) {
+        return visitRecordRepository.deleteById(visitRecordId).map(it -> "OK");
     }
 }
