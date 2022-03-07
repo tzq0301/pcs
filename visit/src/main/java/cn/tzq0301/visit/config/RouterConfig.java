@@ -1,6 +1,7 @@
 package cn.tzq0301.visit.config;
 
 import cn.tzq0301.visit.apply.handler.ApplyHandler;
+import cn.tzq0301.visit.record.handler.VisitHandler;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +19,8 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class RouterConfig {
     private final ApplyHandler applyHandler;
 
+    private final VisitHandler visitHandler;
+
     @Bean
     public RouterFunction<ServerResponse> router() {
         return route()
@@ -27,6 +30,9 @@ public class RouterConfig {
                 .GET("/unfinished_applies", applyHandler::getAllUnfinishedApplies)
                 .DELETE("/user_id/{user_id}/global_id/{global_id}", applyHandler::deleteApplyById)
                 .POST("/pass_apply", applyHandler::passApply)
+                .GET("/visitor_id/{visitor_id}/first_visit_records", visitHandler::listVisitRecordsByVisitorId)
+                .GET("/user_id/{user_id}/global_id/{global_id}", visitHandler::listSpecificVisitRecord)
+                .POST("/apply/global_id/{global_id}", visitHandler::submit)
                 .build();
     }
 }

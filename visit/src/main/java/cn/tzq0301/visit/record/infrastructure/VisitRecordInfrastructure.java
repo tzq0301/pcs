@@ -5,7 +5,7 @@ import cn.tzq0301.visit.record.repository.VisitRecordRepository;
 import lombok.AllArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -31,5 +31,9 @@ public class VisitRecordInfrastructure {
 
     public Mono<String> deleteById(final ObjectId visitRecordId) {
         return visitRecordRepository.deleteById(visitRecordId).map(it -> "OK");
+    }
+
+    public Flux<VisitRecord> findVisitRecordByVisitorId(final String visitorId) {
+        return visitRecordRepository.findVisitRecordByVisitorIdEquals(visitorId);
     }
 }
