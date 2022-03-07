@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import reactor.core.publisher.Mono;
 
+import static cn.tzq0301.util.Num.ONE;
+import static cn.tzq0301.util.Num.ZERO;
+
 /**
  * @author tzq0301
  * @version 1.0
@@ -52,7 +55,7 @@ class DutyServiceTest {
     }
 
     @Test
-//    @Disabled
+    @Disabled
     void add() {
 //        Mono.zip(
 //                dutyService.addRegularDutiesByUserId("555555555555555555",
@@ -64,13 +67,24 @@ class DutyServiceTest {
 //                        SpecialItems.newSpecialItem("20220307", 9, "", 1))
 //        ).subscribe();
 
+//        dutyService.addSpecialDutiesByUserId("5555555555555",
+//                        SpecialItems.newSpecialItem("20220308", 10, "", 1))
+//                        SpecialItems.newSpecialItem("20220306", 10, "太古里", 0))
+//                SpecialItems.newSpecialItem("20220307", 9, "", 1))
+//                .subscribe();
+        dutyService.addRegularDutiesByUserId("5555555555555",
+                        Patterns.newPattern(1, 9, "太古里"),
+                        Patterns.newPattern(1, 10, "春熙路"),
+                        Patterns.newPattern(2, 10, "白石桥")).subscribe();
+    }
+
+    @Test
+    @Disabled
+    void add2() {
         dutyService.addSpecialDutiesByUserId("5555555555555",
-                SpecialItems.newSpecialItem("20220306", 10, "太古里", 0),
-                SpecialItems.newSpecialItem("20220307", 9, "", 1)).subscribe();
-//        dutyService.addRegularDutiesByUserId("5555555555555",
-//                        Patterns.newPattern(1, 9, "太古里"),
-//                        Patterns.newPattern(1, 10, "春熙路"),
-//                        Patterns.newPattern(2, 10, "白石桥")).subscribe();
+                SpecialItems.newSpecialItem("20220307", 11, "339", ZERO),
+                SpecialItems.newSpecialItem("20220307", 9, "", ONE))
+                .subscribe();
     }
 
     @Test

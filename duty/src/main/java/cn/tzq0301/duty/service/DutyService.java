@@ -13,12 +13,9 @@ import cn.tzq0301.duty.infrastructure.DutyInfrastructure;
 import cn.tzq0301.duty.manager.DutyManager;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author tzq0301
@@ -31,7 +28,7 @@ public class DutyService {
 
     private final DutyManager dutyManager;
 
-    public Mono<Duty> getDutyByUserId(String userId) {
+    public Mono<Duty> findDutyByUserId(String userId) {
         return dutyInfrastructure.getDutyByUserId(userId);
     }
 
