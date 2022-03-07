@@ -49,10 +49,34 @@ public class Duty implements Serializable {
     }
 
     public void addPattern(final Pattern pattern) {
+        if (this.patterns.contains(pattern)) {
+            return;
+        }
+
         this.patterns.add(pattern);
     }
 
+    public void removePattern(final Pattern pattern) {
+        if (!this.patterns.contains(pattern)) {
+            return;
+        }
+
+        this.patterns.remove(pattern);
+    }
+
     public void addSpecial(final SpecialItem specialItem) {
+        if (this.specials.contains(specialItem)) {
+            return;
+        }
+
         this.specials.add(specialItem);
+    }
+
+    public void removeSpecial(final SpecialItem specialItem) {
+        if (!this.specials.contains(specialItem)) {
+            return;
+        }
+
+        this.specials.remove(specialItem);
     }
 }

@@ -46,6 +46,13 @@ public class DutyService {
                 .flatMap(dutyInfrastructure::saveDuty);
     }
 
+    public Mono<Duty> removeRegularDuty(final String userId, final Pattern pattern) {
+        return dutyInfrastructure.getDutyByUserId(userId)
+                .switchIfEmpty(Mono.just(Duties.newDuty(userId)))
+                .doOnNext(duty -> duty.removePattern(pattern))
+                .flatMap(dutyInfrastructure::saveDuty);
+    }
+
     public Mono<Duty> addSpecialDutyByUserId(final String userId, final SpecialItem specialItem) {
         return dutyInfrastructure.getDutyByUserId(userId)
                 .switchIfEmpty(Mono.just(Duties.newDuty(userId)))

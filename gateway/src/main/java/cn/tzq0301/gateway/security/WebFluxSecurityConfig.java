@@ -63,6 +63,9 @@ public class WebFluxSecurityConfig {
                 .pathMatchers("/visit/**").permitAll()
                 .pathMatchers(POST, "/visit/pass_apply").hasRole(ADMIN.getRole())
 
+                .pathMatchers(POST, "/duty/user_id/{user_id}/duty/weekday/{weekday}/from/{from}/address/{address}").hasRole(ADMIN.getRole())
+                .pathMatchers(DELETE, "/duty/user_id/{user_id}/duty/weekday/{weekday}/from/{from}/address/{address}").hasRole(ADMIN.getRole())
+
                 .pathMatchers("/addresses").permitAll()
 
 //                .pathMatchers("/student").hasRole(Role.STUDENT.getRole())
