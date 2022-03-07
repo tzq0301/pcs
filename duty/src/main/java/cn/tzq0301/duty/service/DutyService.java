@@ -4,16 +4,21 @@ import cn.tzq0301.duty.entity.duty.Duties;
 import cn.tzq0301.duty.entity.duty.Duty;
 import cn.tzq0301.duty.entity.duty.Pattern;
 import cn.tzq0301.duty.entity.duty.SpecialItem;
+import cn.tzq0301.duty.entity.duty.vo.AllDutyDetails;
+import cn.tzq0301.duty.entity.duty.vo.DutyDetail;
 import cn.tzq0301.duty.entity.work.Work;
 import cn.tzq0301.duty.entity.work.WorkItem;
 import cn.tzq0301.duty.entity.work.Works;
 import cn.tzq0301.duty.infrastructure.DutyInfrastructure;
+import cn.tzq0301.duty.manager.DutyManager;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author tzq0301
@@ -23,6 +28,8 @@ import java.util.Arrays;
 @AllArgsConstructor
 public class DutyService {
     private final DutyInfrastructure dutyInfrastructure;
+
+    private final DutyManager dutyManager;
 
     public Mono<Duty> getDutyByUserId(String userId) {
         return dutyInfrastructure.getDutyByUserId(userId);
@@ -65,6 +72,17 @@ public class DutyService {
                 .switchIfEmpty(Mono.just(Duties.newDuty(userId)))
                 .doOnNext(duty -> Arrays.stream(specialItems).forEach(duty::addSpecial))
                 .flatMap(dutyInfrastructure::saveDuty);
+    }
+
+    public Mono<AllDutyDetails> findAllDuties() {
+        return dutyInfrastructure.findAllDuties()
+                .flatMap(duty -> dutyManager.findUserInfoByUserId(duty.getUserId())
+                        .map(userInfo -> new DutyDetail(userInfo.getUserId(), userInfo.getName(),
+                                userInfo.getRole(), userInfo.getSex(), userInfo.getPhone(), userInfo.getEmail(),
+                                duty.getPatterns(), duty.getSpecials()))
+                )
+                .collectList()
+                .map(dutyDetails -> new AllDutyDetails(dutyDetails, dutyDetails.size()));
     }
 
     public Mono<Work> getWorkByUserId(String userId) {

@@ -17,7 +17,7 @@ import java.time.LocalDate;
 public class SpecialItem implements Serializable {
     private static final long serialVersionUID = 3116398446713742957L;
 
-    private LocalDate date;
+    private LocalDate day;
 
     private Integer from;
 

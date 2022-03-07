@@ -4,9 +4,13 @@ import cn.tzq0301.duty.entity.duty.Duties;
 import cn.tzq0301.duty.entity.duty.Pattern;
 import cn.tzq0301.duty.entity.duty.Patterns;
 import cn.tzq0301.duty.entity.duty.SpecialItem;
+import cn.tzq0301.duty.entity.duty.vo.DutyResponse;
 import cn.tzq0301.duty.entity.work.WorkItems;
+import cn.tzq0301.duty.entity.work.WorkResponse;
 import cn.tzq0301.duty.service.DutyService;
+import cn.tzq0301.result.Result;
 import cn.tzq0301.util.DateUtils;
+import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -19,6 +23,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static cn.tzq0301.util.Num.ZERO;
+import static java.util.Objects.requireNonNull;
 
 /**
  * @author tzq0301
@@ -40,7 +45,7 @@ public class DutyHandler {
                 .map(duty -> {
                     Optional<String> address = duty.getSpecials().stream()
                             .filter(specialItem -> ZERO.equals(specialItem.getType()))
-                            .filter(specialItem -> Objects.equals(day, specialItem.getDate()))
+                            .filter(specialItem -> Objects.equals(day, specialItem.getDay()))
                             .filter(specialItem -> Objects.equals(from, specialItem.getFrom()))
                             .findAny()
                             .map(SpecialItem::getAddress);
@@ -105,5 +110,40 @@ public class DutyHandler {
 
         return dutyService.removeRegularDuty(userId, Patterns.newPattern(weekday, from, address))
                 .flatMap(duty -> ServerResponse.noContent().build());
+    }
+
+    public Mono<ServerResponse> findDutyByUserId(ServerRequest request) {
+        return dutyService.getDutyByUserId(request.pathVariable("user_id"))
+                .map(duty -> new DutyResponse(duty.getPatterns(), duty.getSpecials()))
+                .map(Result::success)
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    public Mono<ServerResponse> findWorkByUserId(ServerRequest request) {
+        return dutyService.getWorkByUserId(request.pathVariable("user_id"))
+                .map(work -> new WorkResponse(work.getWorks()))
+                .map(Result::success)
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    public Mono<ServerResponse> findAllDuties(ServerRequest request) {
+        long offset = Long.parseLong(requireNonNull(getAttributeFromServerRequest(request, "offset")));
+        long limit = Long.parseLong(requireNonNull(getAttributeFromServerRequest(request, "limit")));
+        String subname = getAttributeFromServerRequest(request, "subname");
+
+        return dutyService.findAllDuties()
+                .doOnNext(allDutyDetails -> {
+                    if (Strings.isNullOrEmpty(subname)) {
+                        allDutyDetails.page(offset, limit);
+                    } else {
+                        allDutyDetails.page(offset, limit, s -> s.contains(subname));
+                    }
+                })
+                .map(Result::success)
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    private static String getAttributeFromServerRequest(ServerRequest request, String attribute) {
+        return request.exchange().getRequest().getQueryParams().getFirst(attribute);
     }
 }
