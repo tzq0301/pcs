@@ -1,4 +1,4 @@
-package cn.tzq0301.visit.config;
+package cn.tzq0301.duty.config;
 
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;

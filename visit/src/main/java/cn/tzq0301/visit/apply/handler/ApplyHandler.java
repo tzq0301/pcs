@@ -5,31 +5,28 @@ import cn.tzq0301.util.DateUtils;
 import cn.tzq0301.util.JWTUtils;
 import cn.tzq0301.util.PageUtils;
 import cn.tzq0301.visit.apply.entity.Applies;
-import cn.tzq0301.visit.apply.entity.Apply;
 import cn.tzq0301.visit.apply.entity.applyrequest.ApplyRequest;
 import cn.tzq0301.visit.apply.entity.applyrequest.ApplyRequestException;
 import cn.tzq0301.visit.apply.entity.applyrequest.ApplyRequestResult;
 import cn.tzq0301.visit.apply.entity.getapply.GetApply;
 import cn.tzq0301.visit.apply.entity.getapply.GetApplyResult;
+import cn.tzq0301.visit.apply.entity.passapply.PassApplyRequest;
 import cn.tzq0301.visit.apply.service.ApplyService;
+import cn.tzq0301.visit.record.service.VisitRecordService;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static cn.tzq0301.result.DefaultResultEnum.SUCCESS;
-import static cn.tzq0301.util.Num.ONE;
+import static cn.tzq0301.util.Num.*;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 /**
@@ -41,6 +38,8 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @Log4j2
 public class ApplyHandler {
     private final ApplyService applyService;
+
+    private final VisitRecordService visitRecordService;
 
     public Mono<ServerResponse> requestApply(ServerRequest request) {
         String jwt = getJWT(request);
@@ -103,14 +102,28 @@ public class ApplyHandler {
     public Mono<ServerResponse> getAllUnfinishedApplies(ServerRequest request) {
         int offset = getOffset(request);
         int limit = getLimit(request);
+        String str = getStr(request);
+
+        if (!Strings.isNullOrEmpty(str)) {
+            return PageUtils.pagingFlux(
+                            applyService.getAllUnfinishedApplies(),
+                            apply -> apply.getName().contains(str),
+                            offset, limit, Applies::toGetApplies)
+                    .flatMap(applies -> ServerResponse.ok().bodyValue(Result.success(applies, SUCCESS)));
+        }
 
         return PageUtils.pagingFlux(applyService.getAllUnfinishedApplies(), offset, limit, Applies::toGetApplies)
                 .flatMap(applies -> ServerResponse.ok().bodyValue(Result.success(applies, SUCCESS)));
     }
 
-    // FIXME 接口尚未测试
     /**
-     * 学生可以提前一天撤销初访申请记录
+     * 学生撤销初访申请记录
+     * <p>
+     * 需要满足以下任一条件：
+     * <ul>
+     *     <li>初访申请尚未通过</li>
+     *     <li>初访申请已通过，但在初访时间一天之前</li>
+     * </ul>
      *
      * @param request 请求
      * @return 响应
@@ -120,31 +133,53 @@ public class ApplyHandler {
         String userId = request.pathVariable("user_id");
 
         if (!Objects.equals(userId, userIdFromJWT)) {
-            log.info("\nIn Path: id = {}\nIn JWT:  id = {}", userId, userIdFromJWT);
-            return ServerResponse.ok().bodyValue(Result.error(2, "用户 ID 不匹配"));
+            log.info("In Path: id = {}", userId);
+            log.info("In JWT:  id = {}", userIdFromJWT);
+            return Mono.just(Result.error(2, "用户 ID 不匹配"))
+                    .doOnNext(result -> log.info("{}", result))
+                    .flatMap(ServerResponse.ok()::bodyValue);
         }
 
         String applyId = request.pathVariable("global_id");
 
         return applyService.getApplyByApplyId(applyId)
+                .doOnNext(apply -> log.info("Got Apply: {}", apply.toString()))
                 .flatMap(apply -> {
                     if (!Objects.equals(userId, apply.getUserId())) {
                         return Mono.just(Result.error(4, "用户无权查看此记录（用户 ID 与 Global ID 不匹配）"));
                     }
 
-                    if (!ONE.equals(apply.getStatus())) {
-                        return Mono.just(Result.error(5, "该初访预约申请尚未通过，无法撤销"));
+                    if (TWO.equals(apply.getStatus())) {
+                        return Mono.just(Result.error(5, "该初访预约申请已被拒绝，无法撤销"));
                     }
 
-                    if (!LocalDate.now().plusDays(1).isBefore(apply.getApplyPassTime())) {
-                        return Mono.just(Result.error(1, "撤销失败（必须提前一天撤销）"));
+                    if (THREE.equals(apply.getStatus())) {
+                        return Mono.just(Result.error(6, "该初访预约申请已被撤销，无需重复操作"));
                     }
 
-                    return applyService.revokeApply(apply)
-                            .map(it -> Result.success(0, "撤销成功"));
+                    log.info("Global ID: {}", apply.getId().toHexString());
+                    return visitRecordService.findVisitRecordById(apply.getId())
+                            .doOnNext(visitRecord -> log.info("Got VisitRecord: {}", visitRecord.toString()))
+                            .flatMap(record -> {
+                                if (ONE.equals(apply.getStatus())
+                                        && LocalDate.now().plusDays(1).isAfter(record.getDay())) {
+                                    return Mono.just(Result.error(1, "撤销失败（已被通过的申请必须提前一天撤销）"));
+                                }
+
+                                return applyService.revokeApply(apply)
+                                        .doOnNext(tuple -> log.info("撤销 {} 撤销后的 Apply: {}", tuple.getT2(), tuple.getT1()))
+                                        .map(it -> Result.success(0, "撤销成功"));
+                            });
                 })
                 .switchIfEmpty(Mono.just(Result.error(3, "没有该初访预约申请")))
+                .doOnNext(result -> log.info("{}", result))
                 .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    public Mono<ServerResponse> passApply(ServerRequest request) {
+        return request.bodyToMono(PassApplyRequest.class)
+                .flatMap(applyService::passApply)
+                .flatMap(it -> ServerResponse.ok().build());
     }
 
     private String getJWT(ServerRequest request) {
@@ -190,5 +225,14 @@ public class ApplyHandler {
         }
 
         return Integer.parseInt(limit);
+    }
+
+    /**
+     * 获取请求参数中的 str
+     *
+     * @return str
+     */
+    private String getStr(ServerRequest request) {
+        return request.exchange().getRequest().getQueryParams().getFirst("str");
     }
 }

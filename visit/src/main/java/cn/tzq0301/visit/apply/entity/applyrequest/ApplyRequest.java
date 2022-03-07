@@ -31,4 +31,6 @@ public class ApplyRequest {
     private String address; // 初访地点
 
     private List<Integer> scores; // 分数列表（共 84 个分数，最后 4 个分数需要乘 20
+
+    private String visitorId; // 预选初访员
 }

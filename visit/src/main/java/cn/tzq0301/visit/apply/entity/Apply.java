@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 import java.time.LocalDate;
 import java.util.List;
 
+import static cn.tzq0301.util.Num.ONE;
 import static cn.tzq0301.util.Num.THREE;
 
 /**
@@ -29,17 +30,19 @@ public class Apply {
     @MongoId(FieldType.OBJECT_ID)
     private ObjectId id; // Global ID
 
-    private String userId; // 学工号
+    private String userId; // 学生学工号
 
-    private Integer sex; // 性别
+    private String name; // 学生姓名
 
-    private LocalDate birthday; // 生日
+    private Integer sex; // 学生性别
 
-    private String phone; // 电话号码
+    private LocalDate birthday; // 学生生日
 
-    private String email; // 邮箱
+    private String phone; // 学生电话号码
 
-    private String identity; // 身份证
+    private String email; // 学生邮箱
+
+    private String identity; // 学生身份证
 
     private Integer problemId; // 问题类型
 
@@ -59,17 +62,20 @@ public class Apply {
 
     private Integer order; // 根据 sumScore 计算出 order
 
-    private LocalDate applyPassTime; // 初访审核通过时间
+    private LocalDate applyPassTime; // 初访审核通过时间（若未通过，则为 null）
 
     private Integer status; // 申请状态
 
+    private String visitorId; // 预选初访员
+
     private LocalDate createdTime; // 创建时间
 
-    Apply(String userId, Integer sex, LocalDate birthday, String phone, String email, String identity,
+    Apply(String userId, String name, Integer sex, LocalDate birthday, String phone, String email, String identity,
                  Integer problemId, String problemDetail, LocalDate day, Integer from, String address,
                  List<Integer> scores, Integer sumScore, String scaleResult, Integer order,
-                 LocalDate applyPassTime, Integer status, LocalDate createdTime) {
+                 LocalDate applyPassTime, Integer status, String visitorId, LocalDate createdTime) {
         this.userId = userId;
+        this.name = name;
         this.sex = sex;
         this.birthday = birthday;
         this.phone = phone;
@@ -86,10 +92,15 @@ public class Apply {
         this.order = order;
         this.applyPassTime = applyPassTime;
         this.status = status;
+        this.visitorId = visitorId;
         this.createdTime = createdTime;
     }
 
     public void revoke() {
         this.status = THREE;
+    }
+
+    public void pass() {
+        this.status = ONE;
     }
 }
