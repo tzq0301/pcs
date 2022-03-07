@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import reactor.core.publisher.Mono;
 
 /**
  * @author tzq0301
@@ -48,6 +49,28 @@ class DutyServiceTest {
         dutyService.addSpecialDutyByUserId("3333333333333",
                         SpecialItems.newSpecialItem("20220306", 9, "太古里", 0))
                 .subscribe();
+    }
+
+    @Test
+//    @Disabled
+    void add() {
+//        Mono.zip(
+//                dutyService.addRegularDutiesByUserId("555555555555555555",
+//                        Patterns.newPattern(1, 9, "太古里"),
+//                        Patterns.newPattern(1, 10, "春熙路"),
+//                        Patterns.newPattern(2, 10, "白石桥")),
+//                dutyService.addSpecialDutiesByUserId("555555555555555555",
+//                        SpecialItems.newSpecialItem("20220306", 10, "太古里", 0),
+//                        SpecialItems.newSpecialItem("20220307", 9, "", 1))
+//        ).subscribe();
+
+        dutyService.addSpecialDutiesByUserId("5555555555555",
+                SpecialItems.newSpecialItem("20220306", 10, "太古里", 0),
+                SpecialItems.newSpecialItem("20220307", 9, "", 1)).subscribe();
+//        dutyService.addRegularDutiesByUserId("5555555555555",
+//                        Patterns.newPattern(1, 9, "太古里"),
+//                        Patterns.newPattern(1, 10, "春熙路"),
+//                        Patterns.newPattern(2, 10, "白石桥")).subscribe();
     }
 
     @Test

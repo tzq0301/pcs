@@ -6,6 +6,7 @@ import cn.tzq0301.duty.repository.DutyRepository;
 import cn.tzq0301.duty.repository.WorkRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -25,6 +26,10 @@ public class DutyInfrastructure {
 
     public Mono<Duty> saveDuty(Duty duty) {
         return dutyRepository.save(duty);
+    }
+
+    public Flux<Duty> findAllDuties() {
+        return dutyRepository.findAll();
     }
 
     public Mono<Work> getWorkByUserId(String userId) {
