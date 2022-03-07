@@ -39,12 +39,14 @@ public class Work implements Serializable {
         this.works = Lists.newArrayList();
     }
 
-    public void addWork(final WorkItem workItem) {
+    public boolean addWork(final WorkItem workItem) {
         if (this.works.contains(workItem)) {
-            return;
+            return false;
         }
 
         this.works.add(workItem);
+
+        return true;
     }
 
     public void deleteWork(final WorkItem workItem) {

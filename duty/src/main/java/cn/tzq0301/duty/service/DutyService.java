@@ -82,7 +82,7 @@ public class DutyService {
                 .map(dutyDetails -> new AllDutyDetails(dutyDetails, dutyDetails.size()));
     }
 
-    public Mono<Work> getWorkByUserId(String userId) {
+    public Mono<Work> findWorkByUserId(String userId) {
         return dutyInfrastructure.getWorkByUserId(userId);
     }
 
