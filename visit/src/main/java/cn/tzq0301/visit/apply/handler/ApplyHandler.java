@@ -1,5 +1,6 @@
 package cn.tzq0301.visit.apply.handler;
 
+import cn.tzq0301.entity.Records;
 import cn.tzq0301.result.Result;
 import cn.tzq0301.util.DateUtils;
 import cn.tzq0301.util.JWTUtils;
@@ -96,6 +97,7 @@ public class ApplyHandler {
         int limit = getLimit(request);
 
         return PageUtils.pagingFlux(applyService.getAppliesByUserId(userId), offset, limit, Applies::toGetApplies)
+                .map(Records::new)
                 .flatMap(applies -> ServerResponse.ok().bodyValue(Result.success(applies, SUCCESS)));
     }
 
@@ -113,6 +115,7 @@ public class ApplyHandler {
         }
 
         return PageUtils.pagingFlux(applyService.getAllUnfinishedApplies(), offset, limit, Applies::toGetApplies)
+                .map(Records::new)
                 .flatMap(applies -> ServerResponse.ok().bodyValue(Result.success(applies, SUCCESS)));
     }
 

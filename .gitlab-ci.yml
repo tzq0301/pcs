@@ -1,0 +1,7 @@
+stages:
+  - test
+sonarqube_master_job:
+  stage: test
+  script:
+    - export ENCRYPT_KEY=`echo $CI_PROJECT_URL.git | md5sum | cut -d' ' -f1`
+    - mvn --batch-mode verify sonar:sonar -Dsonar.projectKey=p$ENCRYPT_KEY -Dsonar.host.url=http://118.113.19.161:29000

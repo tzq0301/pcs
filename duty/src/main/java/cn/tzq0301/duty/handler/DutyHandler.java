@@ -2,6 +2,7 @@ package cn.tzq0301.duty.handler;
 
 import cn.tzq0301.duty.entity.duty.Duties;
 import cn.tzq0301.duty.entity.duty.Pattern;
+import cn.tzq0301.duty.entity.duty.Patterns;
 import cn.tzq0301.duty.entity.duty.SpecialItem;
 import cn.tzq0301.duty.entity.work.WorkItems;
 import cn.tzq0301.duty.service.DutyService;
@@ -12,6 +13,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Optional;
@@ -71,5 +73,37 @@ public class DutyHandler {
                         request.pathVariable("day"), Integer.parseInt(request.pathVariable("from")),
                         request.pathVariable("address")))
                 .flatMap(it -> ServerResponse.ok().bodyValue("OK"));
+    }
+
+    /**
+     * 新增值班记录
+     *
+     * @param request 请求
+     * @return 响应
+     */
+    public Mono<ServerResponse> addRegularDuty(ServerRequest request) {
+        String userId = request.pathVariable("user_id");
+        int weekday = Integer.parseInt(request.pathVariable("weekday"));
+        int from = Integer.parseInt(request.pathVariable("from"));
+        String address = request.pathVariable("address");
+
+        return dutyService.addRegularDutyByUserId(userId, Patterns.newPattern(weekday, from, address))
+                .flatMap(duty -> ServerResponse.created(URI.create("/duty/user_id/pattern/weekday/from/address")).build());
+    }
+
+    /**
+     * 删除值班记录
+     *
+     * @param request 请求
+     * @return 响应
+     */
+    public Mono<ServerResponse> removeRegularDuty(ServerRequest request) {
+        String userId = request.pathVariable("user_id");
+        int weekday = Integer.parseInt(request.pathVariable("weekday"));
+        int from = Integer.parseInt(request.pathVariable("from"));
+        String address = request.pathVariable("address");
+
+        return dutyService.removeRegularDuty(userId, Patterns.newPattern(weekday, from, address))
+                .flatMap(duty -> ServerResponse.noContent().build());
     }
 }

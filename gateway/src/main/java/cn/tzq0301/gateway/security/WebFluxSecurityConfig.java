@@ -12,8 +12,7 @@ import org.springframework.security.web.server.context.ServerSecurityContextRepo
 import reactor.core.publisher.Mono;
 
 import static cn.tzq0301.user.Role.*;
-import static org.springframework.http.HttpMethod.DELETE;
-import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.*;
 
 /**
  * @author tzq0301
@@ -60,8 +59,14 @@ public class WebFluxSecurityConfig {
                 .pathMatchers("/visit/id/{id}/apply_id/{apply_id}").hasRole(STUDENT.getRole())
                 .pathMatchers("/visit/unfinished_applies").hasRole(ADMIN.getRole())
                 .pathMatchers(DELETE, "/visit/user_id/{user_id}/global_id/{global_id}").hasRole(STUDENT.getRole())
-                .pathMatchers("/visit/**").permitAll()
                 .pathMatchers(POST, "/visit/pass_apply").hasRole(ADMIN.getRole())
+                .pathMatchers(GET, "/visit/visitor_id/{visitor_id}/first_visit_records").hasRole(VISITOR.getRole())
+                .pathMatchers(GET, "/visit/user_id/{user_id}/global_id/{global_id}").hasRole(VISITOR.getRole())
+                .pathMatchers(POST, "/visit/apply/global_id/{global_id}").hasRole(VISITOR.getRole())
+                .pathMatchers("/visit/**").permitAll()
+
+                .pathMatchers(POST, "/duty/user_id/{user_id}/duty/weekday/{weekday}/from/{from}/address/{address}").hasRole(ADMIN.getRole())
+                .pathMatchers(DELETE, "/duty/user_id/{user_id}/duty/weekday/{weekday}/from/{from}/address/{address}").hasRole(ADMIN.getRole())
 
                 .pathMatchers("/addresses").permitAll()
 

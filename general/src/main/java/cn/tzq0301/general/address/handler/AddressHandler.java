@@ -1,5 +1,6 @@
 package cn.tzq0301.general.address.handler;
 
+import cn.tzq0301.entity.Records;
 import cn.tzq0301.general.address.service.AddressService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
@@ -22,6 +23,7 @@ public class AddressHandler {
     public Mono<ServerResponse> listAddresses(ServerRequest request) {
         return addressService.listAddress()
                 .collect(Collectors.toList())
+                .map(Records::new)
                 .flatMap(ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)::bodyValue);
     }
 }

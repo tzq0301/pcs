@@ -9,6 +9,8 @@ import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 /**
  * @author tzq0301
  * @version 1.0
@@ -45,5 +47,10 @@ public class VisitRecordService {
                 .doOnNext(visitRecord -> log.info("Got VisitRecord: {}", visitRecord))
                 .flatMap(visitRecord -> visitRecordManager.deleteWorkByUserId(visitRecord.getVisitorId(),
                         visitRecord.getDay(), visitRecord.getFrom(), visitRecord.getAddress()));
+    }
+
+    public Mono<List<VisitRecord>> findVisitRecordByVisitorId(final String visitorId) {
+        return visitRecordInfrastructure.findVisitRecordByVisitorId(visitorId)
+                .collectList();
     }
 }
