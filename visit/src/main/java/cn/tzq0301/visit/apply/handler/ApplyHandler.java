@@ -107,19 +107,6 @@ public class ApplyHandler {
         int limit = getLimit(request);
         String str = getStr(request);
 
-//        if (!Strings.isNullOrEmpty(str)) {
-//            return PageUtils.pagingFlux(
-//                            applyService.getAllUnfinishedApplies(),
-//                            apply -> apply.getStudentName().contains(str),
-//                            offset, limit)
-//                    .map(Records::new)
-//                    .flatMap(applies -> ServerResponse.ok().bodyValue(Result.success(applies, SUCCESS)));
-//        }
-
-//        return PageUtils.pagingFlux(applyService.getAllUnfinishedApplies(), offset, limit)
-//                .map(Records::new)
-//                .flatMap(applies -> ServerResponse.ok().bodyValue(Result.success(applies, SUCCESS)));
-
         return applyService.getAllUnfinishedApplies()
                 .collectList()
                 .map(unfinishedApplies -> Strings.isNullOrEmpty(str)
