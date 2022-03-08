@@ -26,17 +26,29 @@ public class ApplyInfrastructure {
                 .doOnNext(it -> log.info("Save apply: {}", apply));
     }
 
-    public Mono<Apply> getApplyByApplyId(final String applyId) {
+    public Mono<Apply> findApplyByApplyId(final String applyId) {
         return Mono.defer(() -> applyRepository.findById(new ObjectId(applyId)))
                 .onErrorResume(IllegalArgumentException.class, e -> Mono.empty());
     }
 
-    public Flux<Apply> getAppliesByUserId(final String userId) {
+    public Flux<Apply> listAppliesByUserId(final String userId) {
         return applyRepository.findByUserId(userId);
     }
 
-    public Flux<Apply> getAllAppliesByStatus(final Integer status) {
+    public Flux<Apply> listAllAppliesByStatus(final Integer status) {
         return applyRepository.findAll()
                 .filter(apply -> Objects.equals(status, apply.getStatus()));
+    }
+
+    public Flux<Apply> listAllApplies() {
+        return applyRepository.findAll();
+    }
+
+    public Mono<Void> deleteApplyById(final String id) {
+        return applyRepository.deleteById(new ObjectId(id));
+    }
+
+    public Mono<Void> deleteApplyById(final ObjectId id) {
+        return applyRepository.deleteById(id);
     }
 }

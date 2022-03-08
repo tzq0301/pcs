@@ -34,6 +34,10 @@ public class RouterConfig {
                 .GET("/user_id/{user_id}/global_id/{global_id}", visitHandler::listSpecificVisitRecord)
                 .POST("/apply/global_id/{global_id}", visitHandler::submit)
                 .GET("/applys", visitHandler::unhandledApplies)
+                .GET("/global_id/{global_id}", visitHandler::findVisitRecordById)
+                .GET("/first_records", applyHandler::getAllApplies)
+                .DELETE("/reject/apply_id/{apply_id}", applyHandler::rejectApply)
+                .DELETE("/records/global_id/{global_id}", applyHandler::deleteApplyByGlobalId)
                 .build();
     }
 }

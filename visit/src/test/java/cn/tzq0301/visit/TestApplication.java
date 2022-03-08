@@ -24,7 +24,7 @@ public class TestApplication {
     @Test
     @Disabled
     void test() {
-        applyInfrastructure.getApplyByApplyId("622365e9767e3c73408923f0")
+        applyInfrastructure.findApplyByApplyId("622365e9767e3c73408923f0")
                 .map(apply -> {
                     apply.setApplyPassTime(LocalDate.of(2022, 3, 8));
                     return apply;

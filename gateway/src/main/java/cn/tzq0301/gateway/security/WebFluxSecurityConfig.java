@@ -1,6 +1,7 @@
 package cn.tzq0301.gateway.security;
 
 import lombok.AllArgsConstructor;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -63,9 +64,13 @@ public class WebFluxSecurityConfig {
                 .pathMatchers(GET, "/visit/visitor_id/{visitor_id}/first_visit_records").hasRole(VISITOR.getRole())
                 .pathMatchers(GET, "/visit/user_id/{user_id}/global_id/{global_id}").hasRole(VISITOR.getRole())
                 .pathMatchers(POST, "/visit/apply/global_id/{global_id}").hasRole(VISITOR.getRole())
+                .pathMatchers(GET, "/visit/first_records").hasRole(ADMIN.getRole())
+                .pathMatchers(DELETE, "/visit/reject/apply_id/{apply_id}").hasRole(ADMIN.getRole())
+                .pathMatchers(DELETE, "/visit/records/global_id/{global_id}").hasRole(ADMIN.getRole())
                 .pathMatchers("/visit/**").permitAll()
 
                 .pathMatchers(GET, "/consult/applys").hasRole(ASSISTANT.getRole())
+                .pathMatchers(POST, "/consult/global_id/{global_id}/weekday/{weekday}/from/{from}/address/{address}").hasRole(ASSISTANT.getRole())
 
                 .pathMatchers(GET, "/duty/user_id/{user_id}/duties").hasAnyRole(VISITOR.getRole(), CONSULTANT.getRole(), ASSISTANT.getRole(), ADMIN.getRole())
                 .pathMatchers(GET, "/duty/user_id/{user_id}/works").hasAnyRole(VISITOR.getRole(), CONSULTANT.getRole(), ASSISTANT.getRole(), ADMIN.getRole())

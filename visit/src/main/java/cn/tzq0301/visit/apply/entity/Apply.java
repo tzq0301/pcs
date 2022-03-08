@@ -15,6 +15,7 @@ import java.util.List;
 
 import static cn.tzq0301.util.Num.ONE;
 import static cn.tzq0301.util.Num.THREE;
+import static cn.tzq0301.visit.apply.entity.ApplyStatusEnum.*;
 
 /**
  * @author tzq0301
@@ -97,10 +98,14 @@ public class Apply {
     }
 
     public void revoke() {
-        this.status = THREE;
+        this.status = REVOKE.getCode();
     }
 
     public void pass() {
-        this.status = ONE;
+        this.status = PASS.getCode();
+    }
+
+    public void reject() {
+        this.status = REJECT.getCode();
     }
 }

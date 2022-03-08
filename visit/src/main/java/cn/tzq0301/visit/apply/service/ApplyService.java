@@ -4,6 +4,7 @@ import cn.tzq0301.util.DateUtils;
 import cn.tzq0301.visit.apply.entity.Applies;
 import cn.tzq0301.visit.apply.entity.Apply;
 import cn.tzq0301.visit.apply.entity.UserInfo;
+import cn.tzq0301.visit.apply.entity.all.FirstRecord;
 import cn.tzq0301.visit.apply.entity.applyrequest.ApplyRequest;
 import cn.tzq0301.visit.apply.entity.applyrequest.ApplyRequestException;
 import cn.tzq0301.visit.apply.entity.passapply.PassApplyRequest;
@@ -21,10 +22,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
-import java.util.List;
-
 import static cn.tzq0301.util.Num.ONE;
 import static cn.tzq0301.util.Num.ZERO;
+import static cn.tzq0301.visit.apply.entity.ApplyStatusEnum.PASS;
+import static cn.tzq0301.visit.apply.entity.ApplyStatusEnum.PENDING_REVIEW;
 
 /**
  * @author tzq0301
@@ -64,21 +65,32 @@ public class ApplyService {
     }
 
     public Mono<Apply> getApplyByApplyId(String applyId) {
-        return applyInfrastructure.getApplyByApplyId(applyId);
+        return applyInfrastructure.findApplyByApplyId(applyId);
     }
 
     public Flux<Apply> getAppliesByUserId(final String userId) {
-        return applyInfrastructure.getAppliesByUserId(userId);
+        return applyInfrastructure.listAppliesByUserId(userId);
     }
 
     public Flux<UnfinishedApply> getAllUnfinishedApplies() {
-        return applyInfrastructure.getAllAppliesByStatus(ZERO)
+        return applyInfrastructure.listAllAppliesByStatus(PENDING_REVIEW.getCode())
                 .flatMap(apply -> applyManager.findUserInfoByUserId(apply.getVisitorId())
                         .map(userInfo -> new UnfinishedApply(apply.getId().toString(), apply.getUserId(),
                                 apply.getName(), apply.getSex(), apply.getPhone(), apply.getEmail(),
                                 apply.getProblemId(), apply.getProblemDetail(), apply.getOrder(),
                                 DateUtils.localDateToString(apply.getDay()),
                                 apply.getFrom(), apply.getAddress(), apply.getVisitorId(), userInfo.getName())));
+    }
+
+    public Flux<FirstRecord> getAllApplies() {
+        return applyInfrastructure.listAllApplies()
+                .flatMap(apply -> applyManager.findUserInfoByUserId(apply.getVisitorId())
+                        .map(userInfo -> new FirstRecord(apply.getId().toString(), apply.getUserId(),
+                                apply.getName(), apply.getSex(), apply.getPhone(), apply.getEmail(),
+                                apply.getProblemId(), apply.getProblemDetail(), apply.getOrder(),
+                                DateUtils.localDateToString(apply.getDay()),
+                                apply.getFrom(), apply.getAddress(), apply.getVisitorId(), userInfo.getName(),
+                                userInfo.getPhone(), userInfo.getEmail())));
     }
 
     // 撤销成功需要：修改初访申请状态、删除初访员工作安排
@@ -111,7 +123,7 @@ public class ApplyService {
     public Mono<?> passApply(PassApplyRequest passApplyRequest) {
         return Mono.zip(
                         // 1.1. 根据 globalId 查 Apply 信息
-                        applyInfrastructure.getApplyByApplyId(passApplyRequest.getGlobalId()),
+                        applyInfrastructure.findApplyByApplyId(passApplyRequest.getGlobalId()),
                         // 1.2. 根据 visitorId 查 UserInfo
                         applyManager.findUserInfoByUserId(passApplyRequest.getVisitorId()),
                         // 1.3. 根据 visitorId、day、from 查看 address
@@ -129,5 +141,18 @@ public class ApplyService {
                 .flatMap(visitRecordInfrastructure::saveVisitRecord)
                 // 2.3. 为初访员添加工作安排
                 .flatMap(visitRecord -> visitRecordManager.addWorkByUserId(visitRecord.getVisitorId(), visitRecord.getDay(), visitRecord.getFrom(), visitRecord.getAddress()));
+    }
+
+    public Mono<?> rejectApply(final String applyId) {
+        return applyInfrastructure.findApplyByApplyId(applyId)
+                .flatMap(apply -> {
+                    apply.reject();
+                    return applyInfrastructure.saveApply(apply);
+                })
+                .doOnNext(apply -> log.info("Save Apply: {}", apply.toString()));
+    }
+
+    public Mono<Void> deleteApplyById(final String globalId) {
+        return applyInfrastructure.deleteApplyById(globalId);
     }
 }

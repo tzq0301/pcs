@@ -111,7 +111,24 @@ public class ApplyHandler {
                 .collectList()
                 .map(unfinishedApplies -> Strings.isNullOrEmpty(str)
                         ? new RecordsWithTotal<>(unfinishedApplies, offset, limit)
-                        : new RecordsWithTotal<>(unfinishedApplies, apply -> apply.getStudentName().contains(str), offset, limit))
+                        : new RecordsWithTotal<>(unfinishedApplies,
+                        apply -> apply.getStudentName().contains(str) || apply.getVisitorName().contains(str),
+                        offset, limit))
+                .flatMap(it -> ServerResponse.ok().bodyValue(Result.success(it, SUCCESS)));
+    }
+
+    public Mono<ServerResponse> getAllApplies(ServerRequest request) {
+        int offset = getOffset(request);
+        int limit = getLimit(request);
+        String str = getStr(request);
+
+        return applyService.getAllApplies()
+                .collectList()
+                .map(firstRecords -> Strings.isNullOrEmpty(str)
+                        ? new RecordsWithTotal<>(firstRecords, offset, limit)
+                        : new RecordsWithTotal<>(firstRecords,
+                        apply -> apply.getStudentName().contains(str) || apply.getVisitorName().contains(str),
+                        offset, limit))
                 .flatMap(it -> ServerResponse.ok().bodyValue(Result.success(it, SUCCESS)));
     }
 
@@ -179,6 +196,18 @@ public class ApplyHandler {
         return request.bodyToMono(PassApplyRequest.class)
                 .flatMap(applyService::passApply)
                 .flatMap(it -> ServerResponse.ok().build());
+    }
+
+    public Mono<ServerResponse> rejectApply(ServerRequest request) {
+        return applyService.rejectApply(request.pathVariable("apply_id"))
+                .map(it -> Result.success())
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    public Mono<ServerResponse> deleteApplyByGlobalId(ServerRequest request) {
+        return applyService.deleteApplyById(request.pathVariable("global_id"))
+                .flatMap(it -> ServerResponse.ok().build())
+                .switchIfEmpty(ServerResponse.ok().build());
     }
 
     private String getJWT(ServerRequest request) {
