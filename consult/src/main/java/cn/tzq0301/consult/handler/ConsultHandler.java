@@ -78,7 +78,12 @@ public class ConsultHandler {
     }
 
     public Mono<ServerResponse> listAllConsultRecordsOfConsultorByConsultorId(ServerRequest request) {
-        return null;
+        String consultorId = request.pathVariable("consultor_id");
+
+        return consultService.listAllConsultRecordsOfConsultorByConsultorId(consultorId)
+                .map(Records::new)
+                .map(Result::success)
+                .flatMap(ServerResponse.ok()::bodyValue);
     }
 
     private String getJWT(ServerRequest request) {

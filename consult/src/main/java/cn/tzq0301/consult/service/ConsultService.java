@@ -5,6 +5,7 @@ import cn.tzq0301.consult.entity.Consults;
 import cn.tzq0301.consult.entity.Record;
 import cn.tzq0301.consult.entity.UserInfo;
 import cn.tzq0301.consult.entity.assistant.ConsultRecordForAssistant;
+import cn.tzq0301.consult.entity.consultor.ConsultRecordOfConsultor;
 import cn.tzq0301.consult.entity.student.StudentConsult;
 import cn.tzq0301.consult.entity.student.StudentConsultDetail;
 import cn.tzq0301.consult.entity.visit.VisitRecord;
@@ -14,6 +15,7 @@ import cn.tzq0301.consult.manager.ConsultManager;
 import cn.tzq0301.problem.ProblemEnum;
 import cn.tzq0301.util.DateUtils;
 import cn.tzq0301.util.SexUtils;
+import jdk.jfr.Frequency;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.bson.types.ObjectId;
@@ -83,6 +85,14 @@ public class ConsultService {
                 .map(consult -> new ConsultRecordForAssistant(consult.getId().toString(), consult.getStudentId(),
                         consult.getStudentName(), consult.getConsultorId(), consult.getConsultorName(),
                         consult.getTimes(), consult.getConsultStatus(), consult.getPattern()))
+                .collectList();
+    }
+
+    public Mono<List<ConsultRecordOfConsultor>> listAllConsultRecordsOfConsultorByConsultorId(final String consultorId) {
+        return consultInfrastructure.findAllConsultsByConsultorId(consultorId)
+                .map(consult -> new ConsultRecordOfConsultor(consult.getId().toString(), consult.getStudentId(),
+                        consult.getStudentName(), consult.getStudentPhone(), consult.getTimes(),
+                        consult.getConsultStatus(), consult.getPattern()))
                 .collectList();
     }
 }

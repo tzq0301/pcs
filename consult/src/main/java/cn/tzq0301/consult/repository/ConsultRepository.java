@@ -11,4 +11,6 @@ import reactor.core.publisher.Flux;
  */
 public interface ConsultRepository extends ReactiveMongoRepository<Consult, ObjectId> {
     Flux<Consult> findAllByStudentId(final String studentId);
+
+    Flux<Consult> findAllByConsultorId(final String consultorId);
 }

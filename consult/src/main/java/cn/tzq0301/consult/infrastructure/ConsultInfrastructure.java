@@ -36,4 +36,8 @@ public class ConsultInfrastructure {
     public Flux<Consult> findAllConsults() {
         return consultRepository.findAll();
     }
+
+    public Flux<Consult> findAllConsultsByConsultorId(final String consultorId) {
+        return consultRepository.findAllByConsultorId(consultorId);
+    }
 }
