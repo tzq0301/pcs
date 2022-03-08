@@ -188,10 +188,17 @@ public class DutyHandler {
                     }
                     return  dutyService.saveDuty(duty);
                 })
-                .map(duty -> {
-                    log.info("Save Duty: {}", duty);
-                    return Result.success();
-                })
+                .doOnNext(duty -> log.info("Save Duty: {}", duty))
+                .flatMap(duty -> dutyService.findWorkByUserId(userId)
+                        .flatMap(work -> {
+                            boolean isSuccess = work.removeWork(day, from);
+                            if (!isSuccess) {
+                                return Mono.empty();
+                            }
+                            return dutyService.saveWork(work);
+                        }))
+                .doOnNext(work -> log.info("Save Work -> {}", work))
+                .map(it -> Result.success())
                 .switchIfEmpty(Mono.just(Result.error()))
                 .flatMap(ServerResponse.ok()::bodyValue);
 

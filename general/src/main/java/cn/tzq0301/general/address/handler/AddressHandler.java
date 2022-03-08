@@ -26,4 +26,8 @@ public class AddressHandler {
                 .map(Records::new)
                 .flatMap(ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)::bodyValue);
     }
+
+    public Mono<ServerResponse> listAvailableAddressesByDay(ServerRequest request) {
+        return null;
+    }
 }

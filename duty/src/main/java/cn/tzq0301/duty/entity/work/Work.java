@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -12,7 +13,10 @@ import org.springframework.data.mongodb.core.mapping.FieldType;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author tzq0301
@@ -22,6 +26,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Log4j2
 public class Work implements Serializable {
     private static final long serialVersionUID = 1829097272373289004L;
 
@@ -49,7 +54,28 @@ public class Work implements Serializable {
         return true;
     }
 
-    public void deleteWork(final WorkItem workItem) {
-        this.works.remove(workItem);
+    public boolean removeWork(final WorkItem workItem) {
+
+        boolean isRemoveSuccess = this.works.removeIf(item -> Objects.equals(item.getDay(), workItem.getDay())
+                && Objects.equals(item.getFrom(), workItem.getFrom())
+                && Objects.equals(item.getAddress(), workItem.getAddress()));
+
+        if (!isRemoveSuccess) {
+            log.info("Cannot remove WorkItem -> {}", workItem);
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean removeWork(final LocalDate day, final Integer from) {
+        boolean isRemoveSuccess = this.works.removeIf(
+                item -> Objects.equals(item.getDay(), day) && Objects.equals(item.getFrom(), from));
+
+        if (!isRemoveSuccess) {
+            return false;
+        }
+
+        return true;
     }
 }

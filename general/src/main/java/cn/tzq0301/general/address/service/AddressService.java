@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 /**
  * @author tzq0301
  * @version 1.0
@@ -17,4 +20,11 @@ public class AddressService {
     public Flux<String> listAddress() {
         return addressManager.listAddress();
     }
+
+//    private Object listAvailableAddressesByDay(String day, Integer from) {
+//        return addressManager.listAddress()
+//                .collect(Collectors.toSet())
+//
+//
+//    }
 }

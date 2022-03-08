@@ -74,6 +74,7 @@ public class WebFluxSecurityConfig {
                 .pathMatchers(DELETE, "/duty/user_id/{user_id}/duty/day/{day}/from/{from}/type/{type}").hasRole(ADMIN.getRole())
 
                 .pathMatchers("/addresses").permitAll()
+                .pathMatchers("/general/**").permitAll()
 
 //                .pathMatchers("/student").hasRole(Role.STUDENT.getRole())
 //                .pathMatchers("/admin").hasRole(Role.ADMIN.getRole())
