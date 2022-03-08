@@ -36,4 +36,8 @@ public class VisitRecordInfrastructure {
     public Flux<VisitRecord> findVisitRecordByVisitorId(final String visitorId) {
         return visitRecordRepository.findVisitRecordByVisitorIdEquals(visitorId);
     }
+
+    public Flux<VisitRecord> findAllVisitRecord() {
+        return visitRecordRepository.findAll();
+    }
 }

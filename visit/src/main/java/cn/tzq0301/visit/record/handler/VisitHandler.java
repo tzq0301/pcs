@@ -4,9 +4,11 @@ import cn.tzq0301.entity.Records;
 import cn.tzq0301.result.Result;
 import cn.tzq0301.util.DateUtils;
 import cn.tzq0301.util.JWTUtils;
+import cn.tzq0301.util.SexUtils;
 import cn.tzq0301.visit.record.entity.VisitRecord;
 import cn.tzq0301.visit.record.entity.vo.ResponsibleVisitRecord;
 import cn.tzq0301.visit.record.entity.vo.ResponsibleVisitRecordDetail;
+import cn.tzq0301.visit.record.entity.vo.UnHandledConsultApply;
 import cn.tzq0301.visit.record.entity.vo.VisitRecordSubmitRequest;
 import cn.tzq0301.visit.record.service.VisitRecordService;
 import lombok.AllArgsConstructor;
@@ -89,6 +91,19 @@ public class VisitHandler {
                 })
                 .flatMap(visitRecordService::saveVisitRecord)
                 .map(it -> Result.success())
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    public Mono<ServerResponse> unhandledApplies(ServerRequest request) {
+        return visitRecordService.findAllVisitRecord()
+                .map(list -> Result.success(new Records<>(list.stream()
+                        .map(visitRecord -> new UnHandledConsultApply(visitRecord.getId().toString(),
+                                visitRecord.getStudentId(), visitRecord.getStudentName(), SexUtils.sexOfString(visitRecord.getStudentSex()),
+                                visitRecord.getStudentPhone(), visitRecord.getProblemId(), visitRecord.getProblemDetail(),
+                                DateUtils.localDateToString(visitRecord.getDay()), visitRecord.getScaleResult(),
+                                visitRecord.getDangerLevel(), visitRecord.getResult(), visitRecord.getConsultApplyStatus(),
+                                visitRecord.getVisitorName()))
+                        .collect(Collectors.toList()))))
                 .flatMap(ServerResponse.ok()::bodyValue);
     }
 

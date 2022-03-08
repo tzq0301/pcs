@@ -33,6 +33,7 @@ public class RouterConfig {
                 .GET("/visitor_id/{visitor_id}/first_visit_records", visitHandler::listVisitRecordsByVisitorId)
                 .GET("/user_id/{user_id}/global_id/{global_id}", visitHandler::listSpecificVisitRecord)
                 .POST("/apply/global_id/{global_id}", visitHandler::submit)
+                .GET("/applys", visitHandler::unhandledApplies)
                 .build();
     }
 }

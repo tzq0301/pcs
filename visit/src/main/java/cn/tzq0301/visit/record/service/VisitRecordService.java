@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -51,6 +52,11 @@ public class VisitRecordService {
 
     public Mono<List<VisitRecord>> findVisitRecordByVisitorId(final String visitorId) {
         return visitRecordInfrastructure.findVisitRecordByVisitorId(visitorId)
+                .collectList();
+    }
+
+    public Mono<List<VisitRecord>> findAllVisitRecord() {
+        return visitRecordInfrastructure.findAllVisitRecord()
                 .collectList();
     }
 }
