@@ -1,6 +1,7 @@
 package cn.tzq0301.consult.handler;
 
 import cn.tzq0301.consult.service.ConsultService;
+import cn.tzq0301.entity.Records;
 import cn.tzq0301.entity.RecordsWithTotal;
 import cn.tzq0301.result.Result;
 import cn.tzq0301.util.JWTUtils;
@@ -70,6 +71,13 @@ public class ConsultHandler {
     }
 
     public Mono<ServerResponse> listAllConsultRecordsForAssistant(ServerRequest request) {
+        return consultService.listAllConsultRecordsForAssistant()
+                .map(Records::new)
+                .map(Result::success)
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    public Mono<ServerResponse> listAllConsultRecordsOfConsultorByConsultorId(ServerRequest request) {
         return null;
     }
 

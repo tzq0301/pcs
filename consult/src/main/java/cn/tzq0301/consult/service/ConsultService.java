@@ -4,6 +4,7 @@ import cn.tzq0301.consult.entity.Consult;
 import cn.tzq0301.consult.entity.Consults;
 import cn.tzq0301.consult.entity.Record;
 import cn.tzq0301.consult.entity.UserInfo;
+import cn.tzq0301.consult.entity.assistant.ConsultRecordForAssistant;
 import cn.tzq0301.consult.entity.student.StudentConsult;
 import cn.tzq0301.consult.entity.student.StudentConsultDetail;
 import cn.tzq0301.consult.entity.visit.VisitRecord;
@@ -75,5 +76,13 @@ public class ConsultService {
                         ProblemEnum.getName(consult.getProblemId()), consult.getProblemDetail(),
                         consult.getConsultorName(), SexUtils.sexOfString(consult.getConsultorSex()),
                         consult.getConsultorPhone(), consult.getConsultorEmail(), consult.getTimes()));
+    }
+
+    public Mono<List<ConsultRecordForAssistant>> listAllConsultRecordsForAssistant() {
+        return consultInfrastructure.findAllConsults()
+                .map(consult -> new ConsultRecordForAssistant(consult.getId().toString(), consult.getStudentId(),
+                        consult.getStudentName(), consult.getConsultorId(), consult.getConsultorName(),
+                        consult.getTimes(), consult.getConsultStatus(), consult.getPattern()))
+                .collectList();
     }
 }

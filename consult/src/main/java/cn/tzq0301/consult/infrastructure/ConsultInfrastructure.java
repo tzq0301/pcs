@@ -32,4 +32,8 @@ public class ConsultInfrastructure {
     public Mono<Consult> findConsultById(final String id) {
         return consultRepository.findById(new ObjectId(id));
     }
+
+    public Flux<Consult> findAllConsults() {
+        return consultRepository.findAll();
+    }
 }
