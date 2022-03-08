@@ -1,6 +1,7 @@
 package cn.tzq0301.visit.apply.handler;
 
 import cn.tzq0301.entity.Records;
+import cn.tzq0301.entity.RecordsWithTotal;
 import cn.tzq0301.result.Result;
 import cn.tzq0301.util.DateUtils;
 import cn.tzq0301.util.JWTUtils;
@@ -106,17 +107,25 @@ public class ApplyHandler {
         int limit = getLimit(request);
         String str = getStr(request);
 
-        if (!Strings.isNullOrEmpty(str)) {
-            return PageUtils.pagingFlux(
-                            applyService.getAllUnfinishedApplies(),
-                            apply -> apply.getName().contains(str),
-                            offset, limit, Applies::toGetApplies)
-                    .flatMap(applies -> ServerResponse.ok().bodyValue(Result.success(applies, SUCCESS)));
-        }
+//        if (!Strings.isNullOrEmpty(str)) {
+//            return PageUtils.pagingFlux(
+//                            applyService.getAllUnfinishedApplies(),
+//                            apply -> apply.getStudentName().contains(str),
+//                            offset, limit)
+//                    .map(Records::new)
+//                    .flatMap(applies -> ServerResponse.ok().bodyValue(Result.success(applies, SUCCESS)));
+//        }
 
-        return PageUtils.pagingFlux(applyService.getAllUnfinishedApplies(), offset, limit, Applies::toGetApplies)
-                .map(Records::new)
-                .flatMap(applies -> ServerResponse.ok().bodyValue(Result.success(applies, SUCCESS)));
+//        return PageUtils.pagingFlux(applyService.getAllUnfinishedApplies(), offset, limit)
+//                .map(Records::new)
+//                .flatMap(applies -> ServerResponse.ok().bodyValue(Result.success(applies, SUCCESS)));
+
+        return applyService.getAllUnfinishedApplies()
+                .collectList()
+                .map(unfinishedApplies -> Strings.isNullOrEmpty(str)
+                        ? new RecordsWithTotal<>(unfinishedApplies, offset, limit)
+                        : new RecordsWithTotal<>(unfinishedApplies, apply -> apply.getStudentName().contains(str), offset, limit))
+                .flatMap(it -> ServerResponse.ok().bodyValue(Result.success(it, SUCCESS)));
     }
 
     /**

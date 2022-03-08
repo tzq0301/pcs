@@ -3,6 +3,7 @@ package cn.tzq0301.visit.apply.entity;
 import cn.tzq0301.util.DateUtils;
 import cn.tzq0301.visit.apply.entity.applyrequest.ApplyRequest;
 import cn.tzq0301.visit.apply.entity.getapplies.GetApplies;
+import cn.tzq0301.visit.apply.entity.unfinished.UnfinishedApply;
 
 import java.time.LocalDate;
 import java.util.List;

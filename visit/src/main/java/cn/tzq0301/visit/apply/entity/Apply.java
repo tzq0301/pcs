@@ -66,7 +66,7 @@ public class Apply {
 
     private Integer status; // 申请状态
 
-    private String visitorId; // 预选初访员
+    private String visitorId; // 预选初访员 ID
 
     private LocalDate createdTime; // 创建时间
 

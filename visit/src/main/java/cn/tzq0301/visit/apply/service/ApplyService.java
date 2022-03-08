@@ -1,11 +1,13 @@
 package cn.tzq0301.visit.apply.service;
 
+import cn.tzq0301.util.DateUtils;
 import cn.tzq0301.visit.apply.entity.Applies;
 import cn.tzq0301.visit.apply.entity.Apply;
 import cn.tzq0301.visit.apply.entity.UserInfo;
 import cn.tzq0301.visit.apply.entity.applyrequest.ApplyRequest;
 import cn.tzq0301.visit.apply.entity.applyrequest.ApplyRequestException;
 import cn.tzq0301.visit.apply.entity.passapply.PassApplyRequest;
+import cn.tzq0301.visit.apply.entity.unfinished.UnfinishedApply;
 import cn.tzq0301.visit.apply.infrastructure.ApplyInfrastructure;
 import cn.tzq0301.visit.apply.manager.ApplyManager;
 import cn.tzq0301.visit.record.entity.VisitRecord;
@@ -69,8 +71,14 @@ public class ApplyService {
         return applyInfrastructure.getAppliesByUserId(userId);
     }
 
-    public Flux<Apply> getAllUnfinishedApplies() {
-        return applyInfrastructure.getAllAppliesByStatus(ZERO);
+    public Flux<UnfinishedApply> getAllUnfinishedApplies() {
+        return applyInfrastructure.getAllAppliesByStatus(ZERO)
+                .flatMap(apply -> applyManager.findUserInfoByUserId(apply.getVisitorId())
+                        .map(userInfo -> new UnfinishedApply(apply.getId().toString(), apply.getUserId(),
+                                apply.getName(), apply.getSex(), apply.getPhone(), apply.getEmail(),
+                                apply.getProblemId(), apply.getProblemDetail(), apply.getOrder(),
+                                DateUtils.localDateToString(apply.getDay()),
+                                apply.getFrom(), apply.getAddress(), apply.getVisitorId(), userInfo.getName())));
     }
 
     // 撤销成功需要：修改初访申请状态、删除初访员工作安排

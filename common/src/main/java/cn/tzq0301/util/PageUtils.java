@@ -28,6 +28,15 @@ public final class PageUtils {
                 .map(list -> list.stream().map(function).collect(Collectors.toList()));
     }
 
+    public static <T> Mono<List<T>> pagingFlux(Flux<T> flux, Predicate<T> predicate, int offset, int limit) {
+        return flux.collectList()
+                .map(list -> list.stream()
+                        .filter(predicate)
+                        .skip(offset)
+                        .limit(limit)
+                        .collect(Collectors.toList()));
+    }
+
     public static <T, U> Mono<List<U>> pagingFlux(Flux<T> flux, Predicate<T> predicate, int offset, int limit, Function<T, U> function) {
         return flux.collectList()
                 .map(list -> list.stream()
