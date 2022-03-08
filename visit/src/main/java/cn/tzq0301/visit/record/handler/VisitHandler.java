@@ -115,6 +115,12 @@ public class VisitHandler {
                 .flatMap(ServerResponse.ok()::bodyValue);
     }
 
+    public Mono<ServerResponse> arrangeVisitRecord(ServerRequest request) {
+        String globalId = request.pathVariable("global_id");
+        return visitRecordService.arrangeVisitRecord(globalId)
+                .flatMap(it -> ServerResponse.ok().bodyValue("OK"));
+    }
+
     private String getJWT(ServerRequest request) {
         return Objects.requireNonNull(request.headers().firstHeader(AUTHORIZATION))
                 .substring(JWTUtils.AUTHORIZATION_HEADER_PREFIX.length());

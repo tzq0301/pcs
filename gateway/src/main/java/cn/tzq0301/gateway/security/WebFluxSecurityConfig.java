@@ -70,7 +70,10 @@ public class WebFluxSecurityConfig {
                 .pathMatchers("/visit/**").permitAll()
 
                 .pathMatchers(GET, "/consult/applys").hasRole(ASSISTANT.getRole())
-                .pathMatchers(POST, "/consult/global_id/{global_id}/weekday/{weekday}/from/{from}/address/{address}").hasRole(ASSISTANT.getRole())
+                .pathMatchers(POST, "/consult/global_id/{global_id}/weekday/{weekday}/from/{from}/address/{address}/consultor_id/{consultor_id}").hasRole(ASSISTANT.getRole())
+                .pathMatchers(GET, "/consult/user_id/{user_id}/consult_records").hasRole(STUDENT.getRole())
+                .pathMatchers(GET, "/consult/user_id/{user_id}/global_id/{global_id}/consult/records").hasRole(STUDENT.getRole())
+                .pathMatchers(GET, "/consult/records").hasRole(ASSISTANT.getRole())
 
                 .pathMatchers(GET, "/duty/user_id/{user_id}/duties").hasAnyRole(VISITOR.getRole(), CONSULTANT.getRole(), ASSISTANT.getRole(), ADMIN.getRole())
                 .pathMatchers(GET, "/duty/user_id/{user_id}/works").hasAnyRole(VISITOR.getRole(), CONSULTANT.getRole(), ASSISTANT.getRole(), ADMIN.getRole())

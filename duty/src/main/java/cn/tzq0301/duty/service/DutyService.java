@@ -12,10 +12,15 @@ import cn.tzq0301.duty.entity.work.Works;
 import cn.tzq0301.duty.infrastructure.DutyInfrastructure;
 import cn.tzq0301.duty.manager.DutyManager;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author tzq0301
@@ -23,6 +28,7 @@ import java.util.Arrays;
  */
 @Service
 @AllArgsConstructor
+@Log4j2
 public class DutyService {
     private final DutyInfrastructure dutyInfrastructure;
 
@@ -109,5 +115,16 @@ public class DutyService {
                 .switchIfEmpty(Mono.just(Works.newWork(userId)))
                 .doOnNext(work -> work.removeWork(workItem))
                 .flatMap(dutyInfrastructure::saveWork);
+    }
+
+    public Flux<LocalDate> addWorkItemOfTimesForUser(final String userId, final int weekday, final int from,
+                                                           final String address, final int times) {
+        return dutyInfrastructure.getWorkByUserId(userId)
+                .doOnNext(work -> log.info("Got Work -> {}", work))
+                .map(work -> work.arrangeWorks(weekday, from, address, times))
+                .flatMap(dutyInfrastructure::saveWork)
+                .map(work -> work.getWorks().subList(work.getWorks().size() - times, work.getWorks().size()))
+                .map(list -> list.stream().map(WorkItem::getDay))
+                .flatMapMany(Flux::fromStream);
     }
 }

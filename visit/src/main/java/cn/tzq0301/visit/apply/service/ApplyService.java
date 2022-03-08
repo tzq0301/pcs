@@ -90,7 +90,7 @@ public class ApplyService {
                                 apply.getProblemId(), apply.getProblemDetail(), apply.getOrder(),
                                 DateUtils.localDateToString(apply.getDay()),
                                 apply.getFrom(), apply.getAddress(), apply.getVisitorId(), userInfo.getName(),
-                                userInfo.getPhone(), userInfo.getEmail())));
+                                userInfo.getPhone(), userInfo.getEmail(), apply.getStatus())));
     }
 
     // 撤销成功需要：修改初访申请状态、删除初访员工作安排

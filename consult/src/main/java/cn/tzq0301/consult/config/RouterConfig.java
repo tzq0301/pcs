@@ -21,7 +21,10 @@ public class RouterConfig {
     @Bean
     public RouterFunction<ServerResponse> router() {
         return route()
-                .POST("/global_id/{global_id}/weekday/{weekday}/from/{from}/address/{address}", consultHandler::generateConsult)
+                .POST("/global_id/{global_id}/weekday/{weekday}/from/{from}/address/{address}/consultor_id/{consultor_id}", consultHandler::generateConsult)
+                .GET("/user_id/{user_id}/consult_records", consultHandler::listStudentConsultByStudentId)
+                .GET("/user_id/{user_id}/global_id/{global_id}/consult/records", consultHandler::findStudentConsultDetailByGlobalId)
+                .GET("/records", consultHandler::listAllConsultRecordsForAssistant)
                 .build();
     }
 }

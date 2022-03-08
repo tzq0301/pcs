@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+import static cn.tzq0301.util.Num.ONE;
 import static cn.tzq0301.visit.apply.entity.ApplyStatusEnum.PENDING_REVIEW;
 
 /**
@@ -62,5 +63,14 @@ public class VisitRecordService {
     public Mono<List<VisitRecord>> findAllVisitRecord() {
         return visitRecordInfrastructure.findAllVisitRecord()
                 .collectList();
+    }
+
+    public Mono<VisitRecord> arrangeVisitRecord(final String globalId) {
+        return visitRecordInfrastructure.findVisitRecordById(globalId)
+                .map(visitRecord -> {
+                    visitRecord.setConsultApplyStatus(ONE);
+                    return visitRecord;
+                })
+                .flatMap(visitRecordInfrastructure::saveVisitRecord);
     }
 }

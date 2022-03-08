@@ -13,7 +13,7 @@ import java.time.LocalDate;
 public final class VisitRecords {
     public static VisitRecord newVisitRecord(Apply apply, UserInfo visitor, Integer problemId, String problemDetail,
                                       String day, Integer from, String address) {
-        return new VisitRecord(apply.getId(), apply.getName(), apply.getUserId(), apply.getSex(), apply.getBirthday(),
+        return new VisitRecord(apply.getId(), apply.getUserId(), apply.getName(), apply.getSex(), apply.getBirthday(),
                 apply.getPhone(), apply.getEmail(), apply.getIdentity(), visitor.getUserId(), visitor.getName(),
                 visitor.getSex(), visitor.getPhone(), visitor.getEmail(), problemId, problemDetail, DateUtils.stringToLocalDate(day),
                 from, address, apply.getScores(), apply.getSumScore(), apply.getScaleResult(), LocalDate.now(),

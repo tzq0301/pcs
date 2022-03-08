@@ -43,4 +43,6 @@ public class FirstRecord {
     private String visitorPhone; // 初访员电话
 
     private String visitorEmail; // 初访员邮箱
+
+    private Integer status; // 状态
 }

@@ -1,5 +1,6 @@
 package cn.tzq0301.duty.entity.work;
 
+import cn.tzq0301.duty.entity.duty.SpecialItem;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -77,5 +78,32 @@ public class Work implements Serializable {
         }
 
         return true;
+    }
+
+    public Work arrangeWorks(final int weekday, final int from, final String address, int times) {
+        LocalDate day = LocalDate.now();
+        int left = times;
+
+        while (day.getDayOfWeek().getValue() != weekday) {
+            day = day.plusDays(1);
+        }
+
+        while (left > 0) {
+            if (!hasPreviousWorkArrange(day, from)) {
+                addWork(WorkItems.newWorkItem(day, from, address));
+                left--;
+            }
+            day = day.plusWeeks(1);
+        }
+
+        log.info("Add works: {}", this.works.subList(this.works.size() - times, this.works.size()));
+
+        return this;
+    }
+
+    private boolean hasPreviousWorkArrange(final LocalDate day, int from) {
+        return this.works.stream()
+                .anyMatch(workItem -> Objects.equals(workItem.getDay(), day)
+                        && Objects.equals(workItem.getFrom(), from));
     }
 }

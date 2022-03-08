@@ -38,6 +38,7 @@ public class RouterConfig {
                 .GET("/first_records", applyHandler::getAllApplies)
                 .DELETE("/reject/apply_id/{apply_id}", applyHandler::rejectApply)
                 .DELETE("/records/global_id/{global_id}", applyHandler::deleteApplyByGlobalId)
+                .PATCH("/record/global_id/{global_id}/arrange", visitHandler::arrangeVisitRecord)
                 .build();
     }
 }

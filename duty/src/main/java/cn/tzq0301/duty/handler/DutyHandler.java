@@ -201,7 +201,18 @@ public class DutyHandler {
                 .map(it -> Result.success())
                 .switchIfEmpty(Mono.just(Result.error()))
                 .flatMap(ServerResponse.ok()::bodyValue);
+    }
 
+    public Mono<ServerResponse> addWorkItemOfTimesForUser(ServerRequest request) {
+        String userId = request.pathVariable("user_id");
+        int weekday = Integer.parseInt(request.pathVariable("weekday"));
+        int from = Integer.parseInt(request.pathVariable("from"));
+        String address = request.pathVariable("address");
+        int times = Integer.parseInt(request.pathVariable("times"));
+
+        return dutyService.addWorkItemOfTimesForUser(userId, weekday, from, address, times)
+                .collectList()
+                .flatMap(ServerResponse.ok()::bodyValue);
     }
 
     private static String getAttributeFromServerRequest(ServerRequest request, String attribute) {
