@@ -7,3 +7,6 @@ spring:
     nacos:
       config:
         file-extension: yaml
+        shared-configs:
+          - dataId: mongo.yaml
+            refresh: true
