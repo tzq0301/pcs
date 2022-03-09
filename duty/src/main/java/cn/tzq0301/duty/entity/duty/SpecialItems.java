@@ -9,12 +9,12 @@ import java.time.LocalDate;
  * @version 1.0
  */
 public final class SpecialItems {
-    public static SpecialItem newSpecialItem(LocalDate date, Integer from, String address, Integer type) {
-        return new SpecialItem(date, from, address, type);
+    public static SpecialItem newSpecialItem(LocalDate day, Integer from, String address, Integer type) {
+        return new SpecialItem(day, from, address, type);
     }
 
-    public static SpecialItem newSpecialItem(String date, Integer from, String address, Integer type) {
-        return new SpecialItem(DateUtils.stringToLocalDate(date), from, address, type);
+    public static SpecialItem newSpecialItem(String day, Integer from, String address, Integer type) {
+        return new SpecialItem(DateUtils.stringToLocalDate(day), from, address, type);
     }
 
     private SpecialItems() {}

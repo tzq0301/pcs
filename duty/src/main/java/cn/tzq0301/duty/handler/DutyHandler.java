@@ -1,9 +1,6 @@
 package cn.tzq0301.duty.handler;
 
-import cn.tzq0301.duty.entity.duty.Duties;
-import cn.tzq0301.duty.entity.duty.Pattern;
-import cn.tzq0301.duty.entity.duty.Patterns;
-import cn.tzq0301.duty.entity.duty.SpecialItem;
+import cn.tzq0301.duty.entity.duty.*;
 import cn.tzq0301.duty.entity.duty.vo.DutyResponse;
 import cn.tzq0301.duty.entity.work.WorkItems;
 import cn.tzq0301.duty.entity.work.WorkResponse;
@@ -12,6 +9,7 @@ import cn.tzq0301.result.Result;
 import cn.tzq0301.util.DateUtils;
 import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -31,6 +29,7 @@ import static java.util.Objects.requireNonNull;
  */
 @Component
 @AllArgsConstructor
+@Log4j2
 public class DutyHandler {
     private final DutyService dutyService;
 
@@ -39,7 +38,7 @@ public class DutyHandler {
         LocalDate day = DateUtils.stringToLocalDate(request.pathVariable("day"));
         int from = Integer.parseInt(request.pathVariable("from"));
 
-        return dutyService.getDutyByUserId(userId)
+        return dutyService.findDutyByUserId(userId)
                 .switchIfEmpty(Mono.just(Duties.newDuty(userId)))
                 .doOnNext(dutyService::saveDuty)
                 .map(duty -> {
@@ -68,8 +67,8 @@ public class DutyHandler {
 
     public Mono<ServerResponse> addWorkItem(ServerRequest request) {
         return dutyService.addWorkByUserId(request.pathVariable("user_id"), WorkItems.newWorkItem(
-                request.pathVariable("day"), Integer.parseInt(request.pathVariable("from")),
-                request.pathVariable("address")))
+                        request.pathVariable("day"), Integer.parseInt(request.pathVariable("from")),
+                        request.pathVariable("address")))
                 .flatMap(it -> ServerResponse.ok().build());
     }
 
@@ -113,7 +112,7 @@ public class DutyHandler {
     }
 
     public Mono<ServerResponse> findDutyByUserId(ServerRequest request) {
-        return dutyService.getDutyByUserId(request.pathVariable("user_id"))
+        return dutyService.findDutyByUserId(request.pathVariable("user_id"))
                 .map(duty -> new DutyResponse(duty.getPatterns(), duty.getSpecials()))
                 .map(Result::success)
                 .flatMap(ServerResponse.ok()::bodyValue);
@@ -141,6 +140,52 @@ public class DutyHandler {
                 })
                 .map(Result::success)
                 .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    public Mono<ServerResponse> addWorkOvertimeRecord(ServerRequest request) {
+        String userId = request.pathVariable("user_id");
+        LocalDate day = DateUtils.stringToLocalDate(request.pathVariable("day"));
+        int from = Integer.parseInt(request.pathVariable("from"));
+        String address = request.pathVariable("address");
+        int type = Integer.parseInt(request.pathVariable("type"));
+
+        return dutyService.findDutyByUserId(userId)
+                .flatMap(duty -> {
+                    boolean isSuccess = duty.addSpecial(SpecialItems.newSpecialItem(day, from, address, type));
+                    if (!isSuccess) {
+                        return Mono.empty();
+                    }
+                    return dutyService.saveDuty(duty);
+                })
+                .map(it -> {
+                    log.info("Save Duty: {}", it);
+                    return Result.success();
+                })
+                .switchIfEmpty(Mono.just(Result.error()))
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    public Mono<ServerResponse> removeWorkOvertimeRecord(ServerRequest request) {
+        String userId = request.pathVariable("user_id");
+        LocalDate day = DateUtils.stringToLocalDate(request.pathVariable("day"));
+        int from = Integer.parseInt(request.pathVariable("from"));
+        int type = Integer.parseInt(request.pathVariable("type"));
+
+        return dutyService.findDutyByUserId(userId)
+                .flatMap(duty -> {
+                    boolean isSuccess = duty.removeSpecial(SpecialItems.newSpecialItem(day, from, "", type));
+                    if (!isSuccess) {
+                        return Mono.empty();
+                    }
+                    return  dutyService.saveDuty(duty);
+                })
+                .map(duty -> {
+                    log.info("Save Duty: {}", duty);
+                    return Result.success();
+                })
+                .switchIfEmpty(Mono.just(Result.error()))
+                .flatMap(ServerResponse.ok()::bodyValue);
+
     }
 
     private static String getAttributeFromServerRequest(ServerRequest request, String attribute) {
