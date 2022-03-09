@@ -96,6 +96,8 @@ public class WebFluxSecurityConfig {
                 .pathMatchers("/addresses").permitAll()
                 .pathMatchers("/general/**").permitAll()
 
+                .pathMatchers(GET, "/statics/infos").hasRole(ADMIN.getRole())
+
 //                .pathMatchers("/student").hasRole(Role.STUDENT.getRole())
 //                .pathMatchers("/admin").hasRole(Role.ADMIN.getRole())
                 .anyExchange().authenticated()

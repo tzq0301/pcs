@@ -50,3 +50,10 @@ spring:
             - Path=/duty/**
           filters:
             - StripPrefix=1
+
+        - id: statics
+          uri: lb://pcs-statics
+          predicates:
+            - Path=/statics/**
+          filters:
+            - StripPrefix=1

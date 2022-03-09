@@ -190,6 +190,8 @@ flowchart LR
 | 初访 | visit   | 12104 |
 | 咨询 | consult | 12105 |
 | 值班 | duty    | 12106 |
+| 统计 ｜ statics | 12107 |
+
 
 ## 部署架构
 
