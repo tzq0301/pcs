@@ -7,6 +7,7 @@ import cn.tzq0301.util.DateUtils;
 import cn.tzq0301.util.JWTUtils;
 import cn.tzq0301.util.PageUtils;
 import cn.tzq0301.visit.apply.entity.Applies;
+import cn.tzq0301.visit.apply.entity.ProblemEnum;
 import cn.tzq0301.visit.apply.entity.applyrequest.ApplyRequest;
 import cn.tzq0301.visit.apply.entity.applyrequest.ApplyRequestException;
 import cn.tzq0301.visit.apply.entity.applyrequest.ApplyRequestResult;
@@ -66,10 +67,12 @@ public class ApplyHandler {
         String applyId = request.pathVariable("apply_id");
 
         return applyService.getApplyByApplyId(applyId)
-                .flatMap(apply -> ServerResponse.ok().bodyValue(Result.success(new GetApply(apply.getPhone(),
-                        apply.getEmail(), apply.getProblemId(), apply.getProblemDetail(),
+                .map(apply -> new GetApply(apply.getPhone(), apply.getEmail(),
+                        ProblemEnum.getName(apply.getProblemId()), apply.getProblemDetail(),
                         DateUtils.localDateToString(apply.getDay()),
-                        apply.getFrom(), apply.getAddress()), GetApplyResult.SUCCESS)))
+                        apply.getFrom(), apply.getAddress()))
+                .map(apply -> Result.success(apply, GetApplyResult.SUCCESS))
+                .flatMap(ServerResponse.ok()::bodyValue)
                 .switchIfEmpty(ServerResponse.ok().bodyValue(Result.error(GetApplyResult.APPLY_NOT_FOUNT)));
     }
 
