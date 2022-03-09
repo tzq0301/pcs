@@ -7,12 +7,17 @@ import cn.tzq0301.statics.service.StaticsService;
 import cn.tzq0301.util.JWTUtils;
 import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -22,6 +27,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
  */
 @Component
 @AllArgsConstructor
+@Log4j2
 public class StaticsHandler {
     private final StaticsService staticsService;
 
@@ -67,6 +73,17 @@ public class StaticsHandler {
                                         || info.getVisitorName().contains(name)
                                         || info.getConsultorName().contains(name))
                         , offset, limit))
+                .map(Result::success)
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    public Mono<ServerResponse> exportConsultReports(ServerRequest request) {
+        return request.bodyToMono(new ParameterizedTypeReference<List<String>>() {
+                })
+                .doOnNext(it -> log.info("Global IDs -> {}", it))
+                .flatMapMany(Flux::fromIterable)
+                .flatMap(staticsService::exportConsultReport)
+                .collectList()
                 .map(Result::success)
                 .flatMap(ServerResponse.ok()::bodyValue);
     }

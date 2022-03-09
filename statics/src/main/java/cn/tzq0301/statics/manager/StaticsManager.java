@@ -1,6 +1,6 @@
 package cn.tzq0301.statics.manager;
 
-import cn.tzq0301.entity.RecordsWithTotal;
+import cn.tzq0301.statics.entity.PdfInfo;
 import cn.tzq0301.statics.entity.StaticsInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -20,14 +20,17 @@ import java.util.List;
 public class StaticsManager {
     private final WebClient.Builder builder;
 
+    private final WebClient.Builder builderWithOutLoadBalanced;
+
     @Value("${go.host}")
     private String host;
 
     @Value("${go.port}")
     private String port;
 
-    public StaticsManager(WebClient.Builder builder) {
+    public StaticsManager(WebClient.Builder builder, WebClient.Builder builderWithOutLoadBalanced) {
         this.builder = builder;
+        this.builderWithOutLoadBalanced = builderWithOutLoadBalanced;
     }
 
     public Mono<List<StaticsInfo>> listAllStaticsInfos() {
@@ -36,5 +39,20 @@ public class StaticsManager {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<StaticsInfo>>() {
                 });
+    }
+
+    public Mono<PdfInfo> findPdfInfoByGlobalId(final String globalId) {
+        return builder.build().get()
+                .uri("lb://pcs-consult/pdf_info/global_id/{global_id}", globalId)
+                .retrieve()
+                .bodyToMono(PdfInfo.class);
+    }
+
+    public Mono<String> exportPdf(final PdfInfo pdfInfo) {
+        return builderWithOutLoadBalanced.build().post()
+                .uri("http://" + host + ":" + port + "/export/pdf")
+                .bodyValue(pdfInfo)
+                .retrieve()
+                .bodyToMono(String.class);
     }
 }

@@ -124,6 +124,12 @@ public class ConsultHandler {
                 .flatMap(ServerResponse.ok()::bodyValue);
     }
 
+    public Mono<ServerResponse> findPdfInfoByGlobalId(ServerRequest request) {
+        String globalId = request.pathVariable("global_id");
+        return consultService.findPdfInfoByGlobalId(globalId)
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
     private String getJWT(ServerRequest request) {
         return Objects.requireNonNull(request.headers().firstHeader(AUTHORIZATION))
                 .substring(JWTUtils.AUTHORIZATION_HEADER_PREFIX.length());

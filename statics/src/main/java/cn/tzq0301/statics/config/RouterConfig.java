@@ -22,6 +22,7 @@ public class RouterConfig {
     public RouterFunction<ServerResponse> router() {
         return route()
                 .GET("/infos", staticsHandler::listInfos)
+                .GET("/reports/pdf", staticsHandler::exportConsultReports)
                 .build();
     }
 }

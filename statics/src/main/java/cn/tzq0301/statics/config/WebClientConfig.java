@@ -16,4 +16,9 @@ public class WebClientConfig {
     public WebClient.Builder builder() {
         return WebClient.builder();
     }
+
+    @Bean
+    public WebClient.Builder builderWithOutLoadBalanced() {
+        return WebClient.builder();
+    }
 }

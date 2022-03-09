@@ -8,6 +8,8 @@ import cn.tzq0301.consult.entity.assistant.ConsultRecordForAssistant;
 import cn.tzq0301.consult.entity.consultor.ConsultRecordForConsultor;
 import cn.tzq0301.consult.entity.consultor.ConsultRecordOfConsultor;
 import cn.tzq0301.consult.entity.consultor.FinishConsult;
+import cn.tzq0301.consult.entity.statics.ConsultRecord;
+import cn.tzq0301.consult.entity.statics.PdfInfo;
 import cn.tzq0301.consult.entity.statics.StaticsInfo;
 import cn.tzq0301.consult.entity.student.StudentConsult;
 import cn.tzq0301.consult.entity.student.StudentConsultDetail;
@@ -160,5 +162,19 @@ public class ConsultService {
                         consult.getConsultorName(), consult.getConsultorPhone(),
                         consult.getProblemId(), consult.getProblemDetail()))
                 .collectList();
+    }
+
+    public Mono<PdfInfo> findPdfInfoByGlobalId(final String globalId) {
+        log.info("Global ID -> {}", globalId);
+        return consultInfrastructure.findConsultById(globalId)
+                .map(consult -> new PdfInfo(consult.getStudentName(), consult.getStudentSex(),
+                        consult.getStudentPhone(), consult.getStudentEmail(), consult.getStudentBirthday(),
+                        consult.getConsultorName(), consult.getConsultorSex(), consult.getConsultorPhone(),
+                        consult.getConsultorEmail(), consult.getSelfComment(), consult.getDetail(),
+                        consult.getRecords().stream().map(record -> new ConsultRecord(
+                                DateUtils.formatToChineseDateString(record.getDay()),
+                                record.getAddress(), record.getDetail()))
+                                .collect(Collectors.toList()), consult.getCreatedTime()))
+                .doOnNext(pdfInfo -> log.info("Got information for PDF -> {}", pdfInfo));
     }
 }
