@@ -26,12 +26,4 @@ public class GeneralManager {
     public void sendValidationCode(final String phone) throws AmqpException {
         amqpTemplate.convertAndSend(phone);
     }
-
-    public Flux<String> listAddresses() {
-        return builder.build()
-                .get()
-                .uri("lb://pcs-general/addresses")
-                .retrieve()
-                .bodyToFlux(String.class);
-    }
 }
