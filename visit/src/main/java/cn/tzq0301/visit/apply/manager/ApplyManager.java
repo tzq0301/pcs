@@ -51,14 +51,16 @@ public class ApplyManager {
         return builder.build().get()
                 .uri("lb://pcs-auth/user_id/{user_id}/info", userId)
                 .retrieve()
-                .bodyToMono(UserInfo.class);
+                .bodyToMono(UserInfo.class)
+                .doOnNext(userInfo -> log.info("Got UserInfo -> {}", userInfo));
     }
 
     public Mono<String> findAddressByUserIdAndDayAndFrom(final String userId, final String day, final Integer from) {
         return builder.build().get()
                 .uri("lb://pcs-duty/user_id/{user_id}/day/{day}/from/{from}", userId, day, from.toString())
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(String.class)
+                .doOnNext(address -> log.info("Got Address -> {}", address));
     }
 
     public Mono<String> deleteVisitorWorkById(final ObjectId id) {

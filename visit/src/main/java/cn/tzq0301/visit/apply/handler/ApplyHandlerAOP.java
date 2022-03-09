@@ -1,8 +1,10 @@
 package cn.tzq0301.visit.apply.handler;
 
+import cn.tzq0301.util.CommonUtils;
 import cn.tzq0301.util.JWTUtils;
 import com.google.common.base.Strings;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -27,6 +29,9 @@ public class ApplyHandlerAOP {
     @Pointcut("execution(public * cn.tzq0301.visit.apply.handler.ApplyHandler.requestApply())")
     public void requestApply() {}
 
+    @Pointcut("execution(public * cn.tzq0301.visit.apply.handler.ApplyHandler.deleteApplyById())")
+    public void deleteApplyById() {}
+
     @Before(value = "requestApply()")
     public void beforeRequestApply(JoinPoint joinPoint) {
         ServerRequest request = getRequest(joinPoint);
@@ -36,6 +41,16 @@ public class ApplyHandlerAOP {
         }
 
         log.info("{} tries to request for first visit apply", JWTUtils.extractUserId(getJWT(request)));
+    }
+
+    @Before("deleteApplyById()")
+    public void beforeDeleteApplyById(JoinPoint joinPoint) {
+        CommonUtils.printlnBefore(log, "Delete Apply");
+    }
+
+    @After("deleteApplyById()")
+    public void afterDeleteApplyById(JoinPoint joinPoint) {
+        CommonUtils.printlnAfter(log, "Delete Apply");
     }
 
     private static ServerRequest getRequest(JoinPoint joinPoint) {

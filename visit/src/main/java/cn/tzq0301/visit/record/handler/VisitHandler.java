@@ -1,14 +1,18 @@
 package cn.tzq0301.visit.record.handler;
 
 import cn.tzq0301.entity.Records;
+import cn.tzq0301.entity.RecordsWithTotal;
 import cn.tzq0301.result.Result;
 import cn.tzq0301.util.DateUtils;
 import cn.tzq0301.util.JWTUtils;
+import cn.tzq0301.util.SexUtils;
 import cn.tzq0301.visit.record.entity.VisitRecord;
 import cn.tzq0301.visit.record.entity.vo.ResponsibleVisitRecord;
 import cn.tzq0301.visit.record.entity.vo.ResponsibleVisitRecordDetail;
+import cn.tzq0301.visit.record.entity.vo.UnHandledConsultApply;
 import cn.tzq0301.visit.record.entity.vo.VisitRecordSubmitRequest;
 import cn.tzq0301.visit.record.service.VisitRecordService;
+import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -18,6 +22,7 @@ import reactor.core.publisher.Mono;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static cn.tzq0301.result.DefaultResultEnum.SUCCESS;
 import static cn.tzq0301.util.Num.ONE;
 import static cn.tzq0301.util.Num.ZERO;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -46,7 +51,7 @@ public class VisitHandler {
                                 visitRecord.getStudentPhone(), DateUtils.localDateToString(visitRecord.getDay()),
                                 visitRecord.getFrom(), visitRecord.getAddress(), visitRecord.getStatus()))
                         .collect(Collectors.toList()))
-                .map(Records::new)
+                .map(it -> Result.success(new Records<>(it)))
                 .flatMap(ServerResponse.ok()::bodyValue);
     }
 
@@ -62,10 +67,11 @@ public class VisitHandler {
 
         return visitRecordService.findVisitRecordById(globalId)
                 .map(visitRecord -> new ResponsibleVisitRecordDetail(visitRecord.getId().toString(),
-                        visitRecord.getStudentId(), visitRecord.getStudentName(), visitRecord.getStudentSex(),
+                        visitRecord.getStudentId(), visitRecord.getStudentName(), SexUtils.sexOfString(visitRecord.getStudentSex()),
                         visitRecord.getStudentPhone(), DateUtils.localDateToString(visitRecord.getDay()),
                         visitRecord.getFrom(), visitRecord.getAddress(), visitRecord.getStatus(),
                         visitRecord.getDangerLevel(), visitRecord.getProblemId(), visitRecord.getProblemDetail()))
+                .map(Result::success)
                 .flatMap(ServerResponse.ok()::bodyValue);
     }
 
@@ -90,6 +96,30 @@ public class VisitHandler {
                 .flatMap(visitRecordService::saveVisitRecord)
                 .map(it -> Result.success())
                 .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    public Mono<ServerResponse> unhandledApplies(ServerRequest request) {
+        return visitRecordService.findAllVisitRecord()
+                .map(list -> Result.success(new Records<>(list.stream()
+                        .map(visitRecord -> new UnHandledConsultApply(visitRecord.getId().toString(),
+                                visitRecord.getStudentId(), visitRecord.getStudentName(), SexUtils.sexOfString(visitRecord.getStudentSex()),
+                                visitRecord.getStudentPhone(), visitRecord.getProblemId(), visitRecord.getProblemDetail(),
+                                DateUtils.localDateToString(visitRecord.getDay()), visitRecord.getScaleResult(),
+                                visitRecord.getDangerLevel(), visitRecord.getResult(), visitRecord.getConsultApplyStatus(),
+                                visitRecord.getVisitorName()))
+                        .collect(Collectors.toList()))))
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    public Mono<ServerResponse> findVisitRecordById(ServerRequest request) {
+        return visitRecordService.findVisitRecordById(request.pathVariable("global_id"))
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    public Mono<ServerResponse> arrangeVisitRecord(ServerRequest request) {
+        String globalId = request.pathVariable("global_id");
+        return visitRecordService.arrangeVisitRecord(globalId)
+                .flatMap(it -> ServerResponse.ok().bodyValue("OK"));
     }
 
     private String getJWT(ServerRequest request) {

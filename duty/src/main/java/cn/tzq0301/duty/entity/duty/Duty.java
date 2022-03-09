@@ -131,8 +131,7 @@ public class Duty implements Serializable {
         while (iterator.hasNext()) {
             SpecialItem item = iterator.next();
             if (Objects.equals(item.getDay(), specialItem.getDay())
-                    && Objects.equals(item.getFrom(), specialItem.getFrom())
-                    && Objects.equals(item.getType(), specialItem.getType())) {
+                    && Objects.equals(item.getFrom(), specialItem.getFrom())) {
                 iterator.remove();
                 return true;
             }

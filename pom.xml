@@ -49,6 +49,7 @@
         <module>visit</module>
         <module>consult</module>
         <module>duty</module>
+        <module>statics</module>
     </modules>
 
     <properties>

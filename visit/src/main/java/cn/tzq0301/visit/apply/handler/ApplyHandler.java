@@ -1,11 +1,13 @@
 package cn.tzq0301.visit.apply.handler;
 
 import cn.tzq0301.entity.Records;
+import cn.tzq0301.entity.RecordsWithTotal;
 import cn.tzq0301.result.Result;
 import cn.tzq0301.util.DateUtils;
 import cn.tzq0301.util.JWTUtils;
 import cn.tzq0301.util.PageUtils;
 import cn.tzq0301.visit.apply.entity.Applies;
+import cn.tzq0301.visit.apply.entity.ProblemEnum;
 import cn.tzq0301.visit.apply.entity.applyrequest.ApplyRequest;
 import cn.tzq0301.visit.apply.entity.applyrequest.ApplyRequestException;
 import cn.tzq0301.visit.apply.entity.applyrequest.ApplyRequestResult;
@@ -65,10 +67,12 @@ public class ApplyHandler {
         String applyId = request.pathVariable("apply_id");
 
         return applyService.getApplyByApplyId(applyId)
-                .flatMap(apply -> ServerResponse.ok().bodyValue(Result.success(new GetApply(apply.getPhone(),
-                        apply.getEmail(), apply.getProblemId(), apply.getProblemDetail(),
+                .map(apply -> new GetApply(apply.getPhone(), apply.getEmail(),
+                        ProblemEnum.getName(apply.getProblemId()), apply.getProblemDetail(),
                         DateUtils.localDateToString(apply.getDay()),
-                        apply.getFrom(), apply.getAddress()), GetApplyResult.SUCCESS)))
+                        apply.getFrom(), apply.getAddress()))
+                .map(apply -> Result.success(apply, GetApplyResult.SUCCESS))
+                .flatMap(ServerResponse.ok()::bodyValue)
                 .switchIfEmpty(ServerResponse.ok().bodyValue(Result.error(GetApplyResult.APPLY_NOT_FOUNT)));
     }
 
@@ -106,17 +110,29 @@ public class ApplyHandler {
         int limit = getLimit(request);
         String str = getStr(request);
 
-        if (!Strings.isNullOrEmpty(str)) {
-            return PageUtils.pagingFlux(
-                            applyService.getAllUnfinishedApplies(),
-                            apply -> apply.getName().contains(str),
-                            offset, limit, Applies::toGetApplies)
-                    .flatMap(applies -> ServerResponse.ok().bodyValue(Result.success(applies, SUCCESS)));
-        }
+        return applyService.getAllUnfinishedApplies()
+                .collectList()
+                .map(unfinishedApplies -> Strings.isNullOrEmpty(str)
+                        ? new RecordsWithTotal<>(unfinishedApplies, offset, limit)
+                        : new RecordsWithTotal<>(unfinishedApplies,
+                        apply -> apply.getStudentName().contains(str) || apply.getVisitorName().contains(str),
+                        offset, limit))
+                .flatMap(it -> ServerResponse.ok().bodyValue(Result.success(it, SUCCESS)));
+    }
 
-        return PageUtils.pagingFlux(applyService.getAllUnfinishedApplies(), offset, limit, Applies::toGetApplies)
-                .map(Records::new)
-                .flatMap(applies -> ServerResponse.ok().bodyValue(Result.success(applies, SUCCESS)));
+    public Mono<ServerResponse> getAllApplies(ServerRequest request) {
+        int offset = getOffset(request);
+        int limit = getLimit(request);
+        String str = getStr(request);
+
+        return applyService.getAllApplies()
+                .collectList()
+                .map(firstRecords -> Strings.isNullOrEmpty(str)
+                        ? new RecordsWithTotal<>(firstRecords, offset, limit)
+                        : new RecordsWithTotal<>(firstRecords,
+                        apply -> apply.getStudentName().contains(str) || apply.getVisitorName().contains(str),
+                        offset, limit))
+                .flatMap(it -> ServerResponse.ok().bodyValue(Result.success(it, SUCCESS)));
     }
 
     /**
@@ -172,7 +188,10 @@ public class ApplyHandler {
                                 return applyService.revokeApply(apply)
                                         .doOnNext(tuple -> log.info("撤销 {} 撤销后的 Apply: {}", tuple.getT2(), tuple.getT1()))
                                         .map(it -> Result.success(0, "撤销成功"));
-                            });
+                            })
+                            .switchIfEmpty(applyService.revokeUnPassedApply(apply)
+                                    .doOnNext(it -> log.info("撤销 Apply: {}", apply))
+                                    .map(it -> Result.success(0, "撤销成功")));
                 })
                 .switchIfEmpty(Mono.just(Result.error(3, "没有该初访预约申请")))
                 .doOnNext(result -> log.info("{}", result))
@@ -183,6 +202,18 @@ public class ApplyHandler {
         return request.bodyToMono(PassApplyRequest.class)
                 .flatMap(applyService::passApply)
                 .flatMap(it -> ServerResponse.ok().build());
+    }
+
+    public Mono<ServerResponse> rejectApply(ServerRequest request) {
+        return applyService.rejectApply(request.pathVariable("apply_id"))
+                .map(it -> Result.success())
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    public Mono<ServerResponse> deleteApplyByGlobalId(ServerRequest request) {
+        return applyService.deleteApplyById(request.pathVariable("global_id"))
+                .flatMap(it -> ServerResponse.ok().build())
+                .switchIfEmpty(ServerResponse.ok().build());
     }
 
     private String getJWT(ServerRequest request) {

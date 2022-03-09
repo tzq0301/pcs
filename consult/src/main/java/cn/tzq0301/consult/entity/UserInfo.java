@@ -1,4 +1,4 @@
-package cn.tzq0301.auth.user.entity;
+package cn.tzq0301.consult.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

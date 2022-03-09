@@ -18,7 +18,7 @@ public class ResponsibleVisitRecordDetail {
 
     private String studentName;
 
-    private Integer studentSex;
+    private String studentSex;
 
     private String studentPhone;
 
@@ -34,5 +34,5 @@ public class ResponsibleVisitRecordDetail {
 
     private Integer problemId;
 
-    private String problemDetali;
+    private String problemDetail;
 }

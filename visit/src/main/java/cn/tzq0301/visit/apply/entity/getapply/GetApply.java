@@ -16,7 +16,7 @@ public class GetApply {
 
     private String email; // 邮箱
 
-    private Integer problemId; // 问题类型
+    private String problemId; // 问题类型
 
     private String problemDetail; // 问题详述
 

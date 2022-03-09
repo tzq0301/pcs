@@ -1,6 +1,7 @@
 package cn.tzq0301.gateway.security;
 
 import lombok.AllArgsConstructor;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -52,6 +53,12 @@ public class WebFluxSecurityConfig {
                 .pathMatchers("/auth/test").permitAll()
                 .pathMatchers("/auth/student").hasRole(STUDENT.getRole())
                 .pathMatchers("/auth/admin").hasRole(ADMIN.getRole())
+                .pathMatchers(GET, "/auth/users").hasRole(ADMIN.getRole())
+                .pathMatchers(POST, "/auth/users").hasRole(ADMIN.getRole())
+                .pathMatchers(PATCH, "/auth/user_id/{user_id}/old_password/{old_password}/new_password/{new_password}").permitAll()
+                .pathMatchers(GET, "/auth/user_id/{user_id}").permitAll()
+                .pathMatchers(PATCH, "/auth/user_id/{user_id}").permitAll()
+                .pathMatchers(DELETE, "/auth/user_id/{user_id}").hasRole(ADMIN.getRole())
                 .pathMatchers("/auth/**").permitAll() // FIXME 需要细化
 
                 .pathMatchers(POST, "/visit/apply").hasRole(STUDENT.getRole())
@@ -63,7 +70,20 @@ public class WebFluxSecurityConfig {
                 .pathMatchers(GET, "/visit/visitor_id/{visitor_id}/first_visit_records").hasRole(VISITOR.getRole())
                 .pathMatchers(GET, "/visit/user_id/{user_id}/global_id/{global_id}").hasRole(VISITOR.getRole())
                 .pathMatchers(POST, "/visit/apply/global_id/{global_id}").hasRole(VISITOR.getRole())
+                .pathMatchers(GET, "/visit/first_records").hasRole(ADMIN.getRole())
+                .pathMatchers(DELETE, "/visit/reject/apply_id/{apply_id}").hasRole(ADMIN.getRole())
+                .pathMatchers(DELETE, "/visit/records/global_id/{global_id}").hasRole(ADMIN.getRole())
                 .pathMatchers("/visit/**").permitAll()
+
+                .pathMatchers(GET, "/consult/applys").hasRole(ASSISTANT.getRole())
+                .pathMatchers(POST, "/consult/global_id/{global_id}/weekday/{weekday}/from/{from}/address/{address}/consultor_id/{consultor_id}").hasRole(ASSISTANT.getRole())
+                .pathMatchers(GET, "/consult/user_id/{user_id}/consult_records").hasRole(STUDENT.getRole())
+                .pathMatchers(GET, "/consult/user_id/{user_id}/global_id/{global_id}/consult/records").hasRole(STUDENT.getRole())
+                .pathMatchers(GET, "/consult/records").hasRole(ASSISTANT.getRole())
+                .pathMatchers(GET, "/consult/consultor_id/{consultor_id}/records").hasRole(CONSULTANT.getRole())
+                .pathMatchers(GET, "/consult/consultor_id/{consultor_id}/record/global_id/{global_id}").hasRole(CONSULTANT.getRole())
+                .pathMatchers(POST, "/consult/global_id/{global_id}").hasRole(CONSULTANT.getRole())
+                .pathMatchers(POST, "/consult/global_id/{global_id}/finish").hasRole(CONSULTANT.getRole())
 
                 .pathMatchers(GET, "/duty/user_id/{user_id}/duties").hasAnyRole(VISITOR.getRole(), CONSULTANT.getRole(), ASSISTANT.getRole(), ADMIN.getRole())
                 .pathMatchers(GET, "/duty/user_id/{user_id}/works").hasAnyRole(VISITOR.getRole(), CONSULTANT.getRole(), ASSISTANT.getRole(), ADMIN.getRole())
@@ -74,6 +94,9 @@ public class WebFluxSecurityConfig {
                 .pathMatchers(DELETE, "/duty/user_id/{user_id}/duty/day/{day}/from/{from}/type/{type}").hasRole(ADMIN.getRole())
 
                 .pathMatchers("/addresses").permitAll()
+                .pathMatchers("/general/**").permitAll()
+
+                .pathMatchers(GET, "/statics/infos").hasRole(ADMIN.getRole())
 
 //                .pathMatchers("/student").hasRole(Role.STUDENT.getRole())
 //                .pathMatchers("/admin").hasRole(Role.ADMIN.getRole())

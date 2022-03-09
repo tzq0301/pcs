@@ -11,27 +11,39 @@ spring:
             - Path=/auth/**
           filters:
             - StripPrefix=1
+
         - id: general
           uri: lb://pcs-general
           predicates:
             - Path=/general/**
           filters:
             - StripPrefix=1
+
         - id: addresses
           uri: lb://pcs-general
           predicates:
             - Path=/addresses
+
         - id: visit
           uri: lb://pcs-visit
           predicates:
             - Path=/visit/**
           filters: StripPrefix=1
+
+        - id: unhandled-applys
+          uri: lb://pcs-visit
+          predicates:
+            - Path=/consult/applys
+          filters:
+            - StripPrefix=1
+
         - id: consult
           uri: lb://pcs-consult
           predicates:
             - Path=/consult/**
           filters:
             - StripPrefix=1
+
         - id: duty
           uri: lb://pcs-duty
           predicates:
@@ -39,3 +51,9 @@ spring:
           filters:
             - StripPrefix=1
 
+        - id: statics
+          uri: lb://pcs-statics
+          predicates:
+            - Path=/statics/**
+          filters:
+            - StripPrefix=1

@@ -15,5 +15,7 @@ public final class Num {
 
     public static final Integer FOUR = 4;
 
+    public static final Integer FIVE = 5;
+
     private Num() {}
 }

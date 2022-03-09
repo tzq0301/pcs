@@ -1,6 +1,7 @@
 package cn.tzq0301.visit.record.manager;
 
 import cn.tzq0301.util.DateUtils;
+import cn.tzq0301.visit.apply.entity.UserInfo;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -32,5 +33,12 @@ public class VisitRecordManager {
                         userId, DateUtils.localDateToString(day), from.toString(), address)
                 .retrieve()
                 .bodyToMono(String.class);
+    }
+
+    public Mono<UserInfo> findUserInfoByUserId(String userId) {
+        return builder.build().get()
+                .uri("lb://pcs-auth/user_id/{user_id}/info", userId)
+                .retrieve()
+                .bodyToMono(UserInfo.class);
     }
 }

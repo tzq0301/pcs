@@ -1,6 +1,5 @@
 package cn.tzq0301.auth.user.handler;
 
-import cn.tzq0301.result.Result;
 import cn.tzq0301.util.JWTUtils;
 import com.google.common.base.Strings;
 import org.aspectj.lang.JoinPoint;
@@ -11,14 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
-import org.springframework.web.reactive.function.server.ServerResponse;
 
 import java.util.Objects;
 
-import static cn.tzq0301.auth.user.entity.UserResultEnum.USER_ID_NOT_MATCH;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 /**
  * @author tzq0301

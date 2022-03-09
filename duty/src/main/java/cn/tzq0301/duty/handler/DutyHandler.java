@@ -4,6 +4,7 @@ import cn.tzq0301.duty.entity.duty.*;
 import cn.tzq0301.duty.entity.duty.vo.DutyResponse;
 import cn.tzq0301.duty.entity.work.WorkItems;
 import cn.tzq0301.duty.entity.work.WorkResponse;
+import cn.tzq0301.duty.entity.work.Works;
 import cn.tzq0301.duty.service.DutyService;
 import cn.tzq0301.result.Result;
 import cn.tzq0301.util.DateUtils;
@@ -72,6 +73,16 @@ public class DutyHandler {
                 .flatMap(it -> ServerResponse.ok().build());
     }
 
+    public Mono<ServerResponse> addWorkItemAndReturn(ServerRequest request) {
+        int weekday = Integer.parseInt(request.pathVariable("weekday"));
+        int from = Integer.parseInt(request.pathVariable("from"));
+        String address = request.pathVariable("address");
+
+
+        return dutyService.addWorkByUserIdAndReturn(request.pathVariable("user_id"), weekday, from, address)
+                .flatMap(it -> ServerResponse.ok().bodyValue(it.getDay()));
+    }
+
     public Mono<ServerResponse> deleteWorkItem(ServerRequest request) {
         return dutyService.deleteWorkByUserId(request.pathVariable("user_id"), WorkItems.newWorkItem(
                         request.pathVariable("day"), Integer.parseInt(request.pathVariable("from")),
@@ -119,7 +130,7 @@ public class DutyHandler {
     }
 
     public Mono<ServerResponse> findWorkByUserId(ServerRequest request) {
-        return dutyService.getWorkByUserId(request.pathVariable("user_id"))
+        return dutyService.findWorkByUserId(request.pathVariable("user_id"))
                 .map(work -> new WorkResponse(work.getWorks()))
                 .map(Result::success)
                 .flatMap(ServerResponse.ok()::bodyValue);
@@ -157,10 +168,18 @@ public class DutyHandler {
                     }
                     return dutyService.saveDuty(duty);
                 })
-                .map(it -> {
-                    log.info("Save Duty: {}", it);
-                    return Result.success();
-                })
+                .doOnNext(duty -> log.info("Save Duty -> {}", duty))
+                .flatMap(duty -> dutyService.findWorkByUserId(userId)
+                        .switchIfEmpty(Mono.just(Works.newWork(userId)))
+                        .flatMap(work -> {
+                            boolean isSuccess = work.addWork(WorkItems.newWorkItem(day, from, address));
+                            if (!isSuccess) {
+                                return Mono.empty();
+                            }
+                            return dutyService.saveWork(work);
+                        }))
+                .doOnNext(work -> log.info("Save Work -> {}", work))
+                .map(it -> Result.success())
                 .switchIfEmpty(Mono.just(Result.error()))
                 .flatMap(ServerResponse.ok()::bodyValue);
     }
@@ -179,13 +198,31 @@ public class DutyHandler {
                     }
                     return  dutyService.saveDuty(duty);
                 })
-                .map(duty -> {
-                    log.info("Save Duty: {}", duty);
-                    return Result.success();
-                })
+                .doOnNext(duty -> log.info("Save Duty: {}", duty))
+                .flatMap(duty -> dutyService.findWorkByUserId(userId)
+                        .flatMap(work -> {
+                            boolean isSuccess = work.removeWork(day, from);
+                            if (!isSuccess) {
+                                return Mono.empty();
+                            }
+                            return dutyService.saveWork(work);
+                        }))
+                .doOnNext(work -> log.info("Save Work -> {}", work))
+                .map(it -> Result.success())
                 .switchIfEmpty(Mono.just(Result.error()))
                 .flatMap(ServerResponse.ok()::bodyValue);
+    }
 
+    public Mono<ServerResponse> addWorkItemOfTimesForUser(ServerRequest request) {
+        String userId = request.pathVariable("user_id");
+        int weekday = Integer.parseInt(request.pathVariable("weekday"));
+        int from = Integer.parseInt(request.pathVariable("from"));
+        String address = request.pathVariable("address");
+        int times = Integer.parseInt(request.pathVariable("times"));
+
+        return dutyService.addWorkItemOfTimesForUser(userId, weekday, from, address, times)
+                .collectList()
+                .flatMap(ServerResponse.ok()::bodyValue);
     }
 
     private static String getAttributeFromServerRequest(ServerRequest request, String attribute) {

@@ -22,6 +22,7 @@ public class RouterConfig {
     public RouterFunction<ServerResponse> router() {
         return route()
                 .GET("/addresses", addressHandler::listAddresses)
+                .GET("/day/{day}/from/{from}/addresses", addressHandler::listAvailableAddressesByDay)
                 .build();
     }
 }
