@@ -51,7 +51,7 @@ public class VisitHandler {
                                 visitRecord.getStudentPhone(), DateUtils.localDateToString(visitRecord.getDay()),
                                 visitRecord.getFrom(), visitRecord.getAddress(), visitRecord.getStatus()))
                         .collect(Collectors.toList()))
-                .map(Records::new)
+                .map(it -> Result.success(new Records<>(it)))
                 .flatMap(ServerResponse.ok()::bodyValue);
     }
 

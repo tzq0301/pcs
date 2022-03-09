@@ -1,5 +1,7 @@
 package cn.tzq0301.util;
 
+import org.slf4j.Logger;
+
 import java.util.Optional;
 
 /**
@@ -12,5 +14,14 @@ public final class CommonUtils {
         return (Optional<T>) obj;
     }
 
+    public static void printlnBefore(final Logger log, final String str) {
+        log.info(">>>>>>>>>>>>>>>>>>>>>>>>>\tBefore {}\t>>>>>>>>>>>>>>>>>>>>>>>>>", str);
+    }
+
+    public static void printlnAfter(final Logger log, final String str) {
+        log.info(">>>>>>>>>>>>>>>>>>>>>>>>>\tAfter  {}\t>>>>>>>>>>>>>>>>>>>>>>>>>", str);
+    }
+
     private CommonUtils() {}
+
 }

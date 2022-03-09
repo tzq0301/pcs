@@ -27,7 +27,9 @@ public class ApplyInfrastructure {
     }
 
     public Mono<Apply> findApplyByApplyId(final String applyId) {
-        return Mono.defer(() -> applyRepository.findById(new ObjectId(applyId)))
+        log.info("Apply Id -> {}", applyId);
+        return applyRepository.findById(new ObjectId(applyId))
+                .doOnNext(apply -> log.info("Got Apply -> {}", apply))
                 .onErrorResume(IllegalArgumentException.class, e -> Mono.empty());
     }
 
