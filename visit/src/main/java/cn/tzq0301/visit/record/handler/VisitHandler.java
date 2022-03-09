@@ -67,10 +67,11 @@ public class VisitHandler {
 
         return visitRecordService.findVisitRecordById(globalId)
                 .map(visitRecord -> new ResponsibleVisitRecordDetail(visitRecord.getId().toString(),
-                        visitRecord.getStudentId(), visitRecord.getStudentName(), visitRecord.getStudentSex(),
+                        visitRecord.getStudentId(), visitRecord.getStudentName(), SexUtils.sexOfString(visitRecord.getStudentSex()),
                         visitRecord.getStudentPhone(), DateUtils.localDateToString(visitRecord.getDay()),
                         visitRecord.getFrom(), visitRecord.getAddress(), visitRecord.getStatus(),
                         visitRecord.getDangerLevel(), visitRecord.getProblemId(), visitRecord.getProblemDetail()))
+                .map(Result::success)
                 .flatMap(ServerResponse.ok()::bodyValue);
     }
 
