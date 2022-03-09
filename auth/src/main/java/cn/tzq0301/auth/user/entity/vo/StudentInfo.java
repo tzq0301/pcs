@@ -1,5 +1,6 @@
-package cn.tzq0301.auth.user.entity;
+package cn.tzq0301.auth.user.entity.vo;
 
+import cn.tzq0301.auth.user.entity.vo.UserInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

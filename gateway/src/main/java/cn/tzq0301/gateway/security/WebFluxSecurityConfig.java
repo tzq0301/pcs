@@ -54,6 +54,7 @@ public class WebFluxSecurityConfig {
                 .pathMatchers("/auth/student").hasRole(STUDENT.getRole())
                 .pathMatchers("/auth/admin").hasRole(ADMIN.getRole())
                 .pathMatchers(GET, "/auth/users").hasRole(ADMIN.getRole())
+                .pathMatchers(POST, "/auth/users").hasRole(ADMIN.getRole())
                 .pathMatchers(PATCH, "/auth/user_id/{user_id}/old_password/{old_password}/new_password/{new_password}").permitAll()
                 .pathMatchers(GET, "/auth/user_id/{user_id}").permitAll()
                 .pathMatchers(PATCH, "/auth/user_id/{user_id}").permitAll()

@@ -41,6 +41,7 @@ public class RouterConfig {
                 .PATCH("/user_id/{user_id}/student_status/{student_status}", userHandler::setStudentStatusToOne)
                 .GET("/users", userHandler::listUserInfos)
                 .DELETE("/user_id/{user_id}", userHandler::deleteUserByUserId)
+                .POST("/users", userHandler::importUsers)
                 .build();
     }
 }

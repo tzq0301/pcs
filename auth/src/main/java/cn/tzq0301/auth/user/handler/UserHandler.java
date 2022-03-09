@@ -1,10 +1,9 @@
 package cn.tzq0301.auth.user.handler;
 
 import cn.tzq0301.auth.user.entity.User;
-import cn.tzq0301.auth.user.entity.UserInfo;
-import cn.tzq0301.auth.user.entity.UserResultEnum;
+import cn.tzq0301.auth.user.entity.vo.ImportStudentInfo;
+import cn.tzq0301.auth.user.entity.vo.UserResultEnum;
 import cn.tzq0301.auth.user.entity.Users;
-import cn.tzq0301.auth.user.entity.vo.UserInfoVO;
 import cn.tzq0301.auth.user.service.UserService;
 import cn.tzq0301.entity.RecordsWithTotal;
 import cn.tzq0301.result.Result;
@@ -22,7 +21,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Objects;
 
-import static cn.tzq0301.auth.user.entity.UserResultEnum.*;
+import static cn.tzq0301.auth.user.entity.vo.UserResultEnum.*;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -185,6 +184,12 @@ public class UserHandler {
     public Mono<ServerResponse> deleteUserByUserId(ServerRequest request) {
         return userService.deleteUserByUserId(request.pathVariable("user_id"))
                 .flatMap(it -> ServerResponse.noContent().build());
+    }
+
+    public Mono<ServerResponse> importUsers(ServerRequest request) {
+        return userService.saveUsers(request.bodyToFlux(ImportStudentInfo.class))
+                .map(it -> Result.success())
+                .flatMap(ServerResponse.ok()::bodyValue);
     }
 
     /**

@@ -2,6 +2,8 @@ package cn.tzq0301.auth.user.entity;
 
 import cn.tzq0301.auth.login.entity.LoginResponse;
 import cn.tzq0301.auth.login.entity.LoginResponseCode;
+import cn.tzq0301.auth.user.entity.vo.StudentInfo;
+import cn.tzq0301.auth.user.entity.vo.UserInfoResponse;
 import cn.tzq0301.result.Result;
 import cn.tzq0301.user.Role;
 import cn.tzq0301.user.Sex;

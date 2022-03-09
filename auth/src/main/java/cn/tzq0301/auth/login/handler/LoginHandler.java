@@ -2,7 +2,7 @@ package cn.tzq0301.auth.login.handler;
 
 import cn.tzq0301.auth.user.entity.Users;
 import cn.tzq0301.auth.login.service.LoginService;
-import cn.tzq0301.auth.user.entity.UserResponse;
+import cn.tzq0301.auth.user.entity.vo.UserResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;

@@ -1,12 +1,14 @@
 package cn.tzq0301.auth.user.service;
 
 import cn.tzq0301.auth.user.entity.User;
-import cn.tzq0301.auth.user.entity.UserInfo;
+import cn.tzq0301.auth.user.entity.Users;
+import cn.tzq0301.auth.user.entity.vo.ImportStudentInfo;
 import cn.tzq0301.auth.user.entity.vo.UserInfoVO;
 import cn.tzq0301.auth.user.infrastraction.UserInfrastructure;
 import cn.tzq0301.util.DateUtils;
 import cn.tzq0301.util.SexUtils;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -19,11 +21,19 @@ import java.util.List;
  * @version 1.0
  */
 @Service
-@AllArgsConstructor
+@RefreshScope
 public class UserService {
     private final UserInfrastructure userInfrastructure;
 
     private final PasswordEncoder passwordEncoder;
+
+    @Value("${auth.password}")
+    private String defaultPassword;
+
+    public UserService(UserInfrastructure userInfrastructure, PasswordEncoder passwordEncoder) {
+        this.userInfrastructure = userInfrastructure;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public Mono<Boolean> isPhoneInEnduranceContainer(final String phone) {
         return userInfrastructure.findByPhone(phone)
@@ -75,5 +85,18 @@ public class UserService {
                     return user;
                 })
                 .flatMap(userInfrastructure::saveUser);
+    }
+
+    public Mono<List<User>> saveUsers(final Flux<ImportStudentInfo> studentInfos) {
+        return studentInfos
+                .flatMap(userInfo -> {
+                    String birthday = userInfo.getIdentity().substring(6, 14); // 取身份证的出生日期部分
+                    return userInfrastructure.saveUser(Users.newUser(
+                            userInfo.getId(), userInfo.getUsername(),
+                            passwordEncoder.encode(defaultPassword),
+                            userInfo.getRole(), userInfo.getSex(), DateUtils.stringToLocalDate(birthday),
+                            userInfo.getPhone(), userInfo.getEmail(), userInfo.getIdentity()));
+                })
+                .collectList();
     }
 }
