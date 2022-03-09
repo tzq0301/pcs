@@ -1,10 +1,8 @@
-package cn.tzq0301.auth.user.entity;
+package cn.tzq0301.auth.user.entity.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 
 /**
  * @author tzq0301
@@ -13,16 +11,16 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserInfo {
-    private String userId; // 学工号
+public class UserInfoVO {
+    private String id; // 学工号
 
     private String name; // 姓名
 
     private String role; // 角色
 
-    private Integer sex; // 性别
+    private String sex; // 性别
 
-    private LocalDate birthday; // 出生日期
+    private String birthday; // 出生日期
 
     private String phone; // 手机号码
 

@@ -96,10 +96,10 @@ public final class Users {
                 user.getPhone(), user.getEmail(), user.getIdentity());
     }
 
-    public static UserInfo userToUserInfo(User user) {
+    public static StudentInfo userToUserInfo(User user) {
         Objects.requireNonNull(user);
 
-        return new UserInfo(user.getUserId(), user.getName(), user.getRole(), user.getSex(), user.getBirthday(),
+        return new StudentInfo(user.getUserId(), user.getName(), user.getRole(), user.getSex(), user.getBirthday(),
                 user.getPhone(), user.getEmail(), user.getIdentity(), user.getStudentStatus());
     }
 

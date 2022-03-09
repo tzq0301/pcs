@@ -3,6 +3,7 @@ package cn.tzq0301.auth.user.repository;
 import cn.tzq0301.auth.user.entity.User;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -15,4 +16,6 @@ public interface UserRepository extends ReactiveMongoRepository<User, ObjectId> 
     Mono<User> findByIdentity(String identity);
 
     Mono<User> findByPhone(String phone);
+
+    Flux<User> findAllByRole(final String role);
 }

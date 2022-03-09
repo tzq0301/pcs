@@ -3,6 +3,7 @@ package cn.tzq0301.auth.user.infrastraction;
 import cn.tzq0301.auth.user.entity.User;
 import cn.tzq0301.auth.user.repository.UserRepository;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -31,5 +32,13 @@ public class UserInfrastructure {
 
     public Mono<User> saveUser(User user) {
         return userRepository.save(user);
+    }
+
+    public Flux<User> listAllUsers() {
+        return userRepository.findAll();
+    }
+
+    public Flux<User> listAllUsersByRole(final String role) {
+        return userRepository.findAllByRole(role);
     }
 }

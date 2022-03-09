@@ -1,9 +1,12 @@
 package cn.tzq0301.auth.user.handler;
 
 import cn.tzq0301.auth.user.entity.User;
+import cn.tzq0301.auth.user.entity.UserInfo;
 import cn.tzq0301.auth.user.entity.UserResultEnum;
 import cn.tzq0301.auth.user.entity.Users;
+import cn.tzq0301.auth.user.entity.vo.UserInfoVO;
 import cn.tzq0301.auth.user.service.UserService;
+import cn.tzq0301.entity.RecordsWithTotal;
 import cn.tzq0301.result.Result;
 import cn.tzq0301.util.DateUtils;
 import cn.tzq0301.util.JWTUtils;
@@ -164,5 +167,62 @@ public class UserHandler {
                 .findByUserId(userId)
                 .map(Users::userToUserInfo)
                 .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    public Mono<ServerResponse> listUserInfos(ServerRequest request) {
+        int offset = getOffset(request);
+        int limit = getLimit(request);
+        String role = getAttribute(request, "role");
+
+        return Mono.defer(() -> Strings.isNullOrEmpty(role)
+                ? userService.listAllUsers()
+                : userService.listAllUsersByRole(role))
+                .map(list -> new RecordsWithTotal<>(list, offset, limit))
+                .map(Result::success)
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    public Mono<ServerResponse> deleteUserByUserId(ServerRequest request) {
+        return userService.deleteUserByUserId(request.pathVariable("user_id"))
+                .flatMap(it -> ServerResponse.noContent().build());
+    }
+
+    /**
+     * 获取请求参数中的 offset
+     *
+     * @return offset（默认值为 0）
+     */
+    private int getOffset(ServerRequest request) {
+        String offset = request.exchange().getRequest().getQueryParams().getFirst("offset");
+
+        if (Strings.isNullOrEmpty(offset)) {
+            return 0;
+        }
+
+        return Integer.parseInt(offset);
+    }
+
+    /**
+     * 获取请求参数中的 limit
+     *
+     * @return limit（默认值为 {@code Integer.MAX_VALUE}）
+     */
+    private int getLimit(ServerRequest request) {
+        String limit = request.exchange().getRequest().getQueryParams().getFirst("limit");
+
+        if (Strings.isNullOrEmpty(limit)) {
+            return Integer.MAX_VALUE;
+        }
+
+        return Integer.parseInt(limit);
+    }
+
+    /**
+     * 获取指定请求参数
+     *
+     * @return 指定
+     */
+    private String getAttribute(ServerRequest request, final String attribute) {
+        return request.exchange().getRequest().getQueryParams().getFirst(attribute);
     }
 }
