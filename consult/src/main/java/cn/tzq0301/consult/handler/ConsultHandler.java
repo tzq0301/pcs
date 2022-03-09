@@ -119,6 +119,11 @@ public class ConsultHandler {
                 .flatMap(ServerResponse.ok()::bodyValue);
     }
 
+    public Mono<ServerResponse> listAllStaticsInfos(ServerRequest request) {
+        return consultService.listAllStaticsInfos()
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
     private String getJWT(ServerRequest request) {
         return Objects.requireNonNull(request.headers().firstHeader(AUTHORIZATION))
                 .substring(JWTUtils.AUTHORIZATION_HEADER_PREFIX.length());

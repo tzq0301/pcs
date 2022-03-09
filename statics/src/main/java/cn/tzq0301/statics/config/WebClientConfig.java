@@ -1,6 +1,7 @@
 package cn.tzq0301.statics.config;
 
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -11,6 +12,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @SpringBootConfiguration
 public class WebClientConfig {
     @Bean
+    @LoadBalanced
     public WebClient.Builder builder() {
         return WebClient.builder();
     }

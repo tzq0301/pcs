@@ -29,6 +29,7 @@ public class RouterConfig {
                 .GET("/consultor_id/{consultor_id}/record/global_id/{global_id}", consultHandler::findConsultRecordForConsultorByGlobalId)
                 .POST("/global_id/{global_id}", consultHandler::commitRecordByGlobalId)
                 .POST("/global_id/{global_id}/finish", consultHandler::finishConsultByGlobalId)
+                .GET("/statics_infos", consultHandler::listAllStaticsInfos)
                 .build();
     }
 }

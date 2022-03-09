@@ -8,12 +8,14 @@ import cn.tzq0301.consult.entity.assistant.ConsultRecordForAssistant;
 import cn.tzq0301.consult.entity.consultor.ConsultRecordForConsultor;
 import cn.tzq0301.consult.entity.consultor.ConsultRecordOfConsultor;
 import cn.tzq0301.consult.entity.consultor.FinishConsult;
+import cn.tzq0301.consult.entity.statics.StaticsInfo;
 import cn.tzq0301.consult.entity.student.StudentConsult;
 import cn.tzq0301.consult.entity.student.StudentConsultDetail;
 import cn.tzq0301.consult.entity.visit.VisitRecord;
 import cn.tzq0301.consult.entity.work.WorkArrange;
 import cn.tzq0301.consult.infrastructure.ConsultInfrastructure;
 import cn.tzq0301.consult.manager.ConsultManager;
+import cn.tzq0301.entity.RecordsWithTotal;
 import cn.tzq0301.problem.ProblemEnum;
 import cn.tzq0301.util.DateUtils;
 import cn.tzq0301.util.SexUtils;
@@ -148,5 +150,15 @@ public class ConsultService {
                     return consult;
                 })
                 .flatMap(consultInfrastructure::saveConsult);
+    }
+
+    public Mono<List<StaticsInfo>> listAllStaticsInfos() {
+        return consultInfrastructure.findAllConsults()
+                .map(consult -> new StaticsInfo(consult.getId().toString(),
+                        consult.getStudentName(), consult.getStudentPhone(),
+                        consult.getVisitorName(), consult.getVisitorPhone(),
+                        consult.getConsultorName(), consult.getConsultorPhone(),
+                        consult.getProblemId(), consult.getProblemDetail()))
+                .collectList();
     }
 }
