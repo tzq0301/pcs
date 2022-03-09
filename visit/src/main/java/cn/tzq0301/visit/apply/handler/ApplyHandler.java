@@ -188,7 +188,10 @@ public class ApplyHandler {
                                 return applyService.revokeApply(apply)
                                         .doOnNext(tuple -> log.info("撤销 {} 撤销后的 Apply: {}", tuple.getT2(), tuple.getT1()))
                                         .map(it -> Result.success(0, "撤销成功"));
-                            });
+                            })
+                            .switchIfEmpty(applyService.revokeUnPassedApply(apply)
+                                    .doOnNext(it -> log.info("撤销 Apply: {}", apply))
+                                    .map(it -> Result.success(0, "撤销成功")));
                 })
                 .switchIfEmpty(Mono.just(Result.error(3, "没有该初访预约申请")))
                 .doOnNext(result -> log.info("{}", result))

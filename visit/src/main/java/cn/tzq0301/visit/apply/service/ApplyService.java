@@ -24,7 +24,6 @@ import reactor.util.function.Tuple2;
 
 import static cn.tzq0301.util.Num.ONE;
 import static cn.tzq0301.util.Num.ZERO;
-import static cn.tzq0301.visit.apply.entity.ApplyStatusEnum.PASS;
 import static cn.tzq0301.visit.apply.entity.ApplyStatusEnum.PENDING_REVIEW;
 
 /**
@@ -91,6 +90,12 @@ public class ApplyService {
                                 DateUtils.localDateToString(apply.getDay()),
                                 apply.getFrom(), apply.getAddress(), apply.getVisitorId(), userInfo.getName(),
                                 userInfo.getPhone(), userInfo.getEmail(), apply.getStatus())));
+    }
+
+    public Mono<Apply> revokeUnPassedApply(final Apply apply) {
+        apply.revoke();
+
+        return applyInfrastructure.saveApply(apply);
     }
 
     // 撤销成功需要：修改初访申请状态、删除初访员工作安排
