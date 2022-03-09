@@ -73,6 +73,16 @@ public class DutyHandler {
                 .flatMap(it -> ServerResponse.ok().build());
     }
 
+    public Mono<ServerResponse> addWorkItemAndReturn(ServerRequest request) {
+        int weekday = Integer.parseInt(request.pathVariable("weekday"));
+        int from = Integer.parseInt(request.pathVariable("from"));
+        String address = request.pathVariable("address");
+
+
+        return dutyService.addWorkByUserIdAndReturn(request.pathVariable("user_id"), weekday, from, address)
+                .flatMap(it -> ServerResponse.ok().bodyValue(it.getDay()));
+    }
+
     public Mono<ServerResponse> deleteWorkItem(ServerRequest request) {
         return dutyService.deleteWorkByUserId(request.pathVariable("user_id"), WorkItems.newWorkItem(
                         request.pathVariable("day"), Integer.parseInt(request.pathVariable("from")),

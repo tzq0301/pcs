@@ -23,7 +23,8 @@ public final class Consults {
                 visitRecord.getSumScore(), visitRecord.getScaleResult(), visitRecord.getApplyPassTime(),
                 visitRecord.getStatus(), visitRecord.getDangerLevel(), consultor.getUserId(),
                 consultor.getName(), consultor.getSex(), consultor.getPhone(), consultor.getEmail(), 0,
-                ConsultStatusEnum.IN_PROGRESS.getCode(), new Pattern(weekday, from, address), records, LocalDate.now());
+                ConsultStatusEnum.IN_PROGRESS.getCode(), new Pattern(weekday, from, address), records,
+                null, null, LocalDate.now());
     }
 
     private Consults() {}

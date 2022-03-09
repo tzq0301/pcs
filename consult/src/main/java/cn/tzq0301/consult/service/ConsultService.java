@@ -7,6 +7,7 @@ import cn.tzq0301.consult.entity.UserInfo;
 import cn.tzq0301.consult.entity.assistant.ConsultRecordForAssistant;
 import cn.tzq0301.consult.entity.consultor.ConsultRecordForConsultor;
 import cn.tzq0301.consult.entity.consultor.ConsultRecordOfConsultor;
+import cn.tzq0301.consult.entity.consultor.FinishConsult;
 import cn.tzq0301.consult.entity.student.StudentConsult;
 import cn.tzq0301.consult.entity.student.StudentConsultDetail;
 import cn.tzq0301.consult.entity.visit.VisitRecord;
@@ -22,6 +23,7 @@ import lombok.extern.log4j.Log4j2;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
@@ -29,8 +31,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import static cn.tzq0301.util.Num.FIVE;
-import static cn.tzq0301.util.Num.ZERO;
+import static cn.tzq0301.util.Num.*;
 
 /**
  * @author tzq0301
@@ -102,6 +103,50 @@ public class ConsultService {
                 .map(consult -> new ConsultRecordForConsultor(globalId, consult.getStudentId(), consult.getStudentName(),
                         SexUtils.sexOfString(consult.getStudentSex()), consult.getStudentPhone(), consult.getScaleResult(),
                         consult.getVisitorName(), consult.getProblemId(), consult.getProblemDetail(), consult.getDangerLevel(),
-                        consult.getTimes(), consult.getConsultStatus(), consult.getRecords(), consult.getPattern()));
+                        consult.getTimes(), consult.getConsultStatus(), consult.getRecords(), consult.getPattern(),
+                        consult.getSelfComment(), consult.getDetail()));
+    }
+
+    public Mono<Consult> commitRecordByGlobalId(final String globalId, final Mono<Record> recordMono) {
+        return Mono.zip(consultInfrastructure.findConsultById(globalId), recordMono)
+                .flatMap(tuple -> {
+                    Consult consult = tuple.getT1();
+                    Record record = tuple.getT2();
+                    List<Record> noUse = consult.addRecord(record);
+
+                    // 如果是提前结案，删除多余的咨询师工作安排
+                    if (consult.isFinishedAdvanced()) {
+                        return Flux.fromIterable(noUse)
+                                .flatMap(it -> consultManager.deleteWorkItemByUserId(consult.getConsultorId(),
+                                        it.getDay(), it.getFrom(), it.getAddress()))
+                                .collectList()
+                                .map(it -> consult);
+                    }
+                    // 如果是仍需追加，则增加咨询师工作安排
+                    else if (FOUR.equals(record.getStatus())) {
+                        return consultManager.addWorkItemForUser(consult.getConsultorId(), consult.getPattern())
+                                .doOnNext(day -> consult.arrangeTheLastRecord(new Record("", FIVE,
+                                        DateUtils.localDateToString(day), consult.getFrom(), consult.getAddress())))
+                                .map(it -> consult);
+                    }
+
+                    return Mono.just(consult);
+                })
+                .flatMap(consultInfrastructure::saveConsult);
+    }
+
+    public Mono<Consult> finishConsultByGlobalId(final String globalId, final Mono<FinishConsult> finishConsultMono) {
+        return Mono.zip(consultInfrastructure.findConsultById(globalId), finishConsultMono)
+                .map(tuple -> {
+                    Consult consult = tuple.getT1();
+                    FinishConsult finishConsult = tuple.getT2();
+
+                    consult.setConsultStatus(TWO);
+                    consult.setSelfComment(finishConsult.getSelfComment());
+                    consult.setDetail(finishConsult.getDetail());
+
+                    return consult;
+                })
+                .flatMap(consultInfrastructure::saveConsult);
     }
 }

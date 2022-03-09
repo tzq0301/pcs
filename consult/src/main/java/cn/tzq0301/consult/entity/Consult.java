@@ -1,5 +1,6 @@
 package cn.tzq0301.consult.entity;
 
+import cn.tzq0301.util.DateUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,9 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static cn.tzq0301.util.Num.*;
 
 /**
  * @author tzq0301
@@ -24,7 +28,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Consult implements Serializable {
+
     private static final long serialVersionUID = 1316023038426580037L;
+
+    private static final int REGULAR_TIMES = 8;
 
     @Id
     @Field("_id")
@@ -95,5 +102,36 @@ public class Consult implements Serializable {
 
     private List<Record> records;
 
+    private String selfComment;
+
+    private String detail;
+
     private LocalDate createdTime; // 创建时间
+
+    public List<Record> addRecord(final Record record) {
+        List<Record> noUse = null;
+
+        records.set(times, record);
+        times++;
+
+        if (THREE.equals(record.getStatus())) { // FINISHED
+            consultStatus = ONE;
+            if (times < REGULAR_TIMES) { // 提前结案
+                noUse = records.stream().skip(times).collect(Collectors.toList());
+                records = records.stream().limit(times).collect(Collectors.toList());
+            }
+        } else if (FOUR.equals(record.getStatus())) { // CONTINUE
+            records.add(new Record("", FIVE, null, null, null));
+        }
+
+        return noUse;
+    }
+
+    public void arrangeTheLastRecord(final Record record) {
+        records.set(records.size() - 1, record);
+    }
+
+    public boolean isFinishedAdvanced() {
+        return !ZERO.equals(consultStatus) && times < REGULAR_TIMES;
+    }
 }

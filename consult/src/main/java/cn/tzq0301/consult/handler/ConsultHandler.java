@@ -1,5 +1,7 @@
 package cn.tzq0301.consult.handler;
 
+import cn.tzq0301.consult.entity.Record;
+import cn.tzq0301.consult.entity.consultor.FinishConsult;
 import cn.tzq0301.consult.service.ConsultService;
 import cn.tzq0301.entity.Records;
 import cn.tzq0301.entity.RecordsWithTotal;
@@ -86,7 +88,7 @@ public class ConsultHandler {
                 .flatMap(ServerResponse.ok()::bodyValue);
     }
 
-    public Mono<ServerResponse> listConsultRecordsForConsultorByGlobalId(ServerRequest request) {
+    public Mono<ServerResponse> findConsultRecordForConsultorByGlobalId(ServerRequest request) {
         String consultorId = request.pathVariable("consultor_id");
         String consultorIdFromJWT = JWTUtils.extractUserId(getJWT(request));
 
@@ -98,6 +100,22 @@ public class ConsultHandler {
         String globalId = request.pathVariable("global_id");
         return consultService.findConsultRecordForConsultorByGlobalId(globalId)
                 .map(Result::success)
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    public Mono<ServerResponse> commitRecordByGlobalId(ServerRequest request) {
+        final String globalId = request.pathVariable("global_id");
+
+        Mono<Record> recordMono = request.bodyToMono(Record.class);
+
+        return consultService.commitRecordByGlobalId(globalId, recordMono)
+                .flatMap(it -> ServerResponse.ok().bodyValue(Result.success()));
+    }
+
+    public Mono<ServerResponse> finishConsultByGlobalId(ServerRequest request) {
+        return consultService.finishConsultByGlobalId(
+                request.pathVariable("global_id"), request.bodyToMono(FinishConsult.class))
+                .map(it -> Result.success())
                 .flatMap(ServerResponse.ok()::bodyValue);
     }
 

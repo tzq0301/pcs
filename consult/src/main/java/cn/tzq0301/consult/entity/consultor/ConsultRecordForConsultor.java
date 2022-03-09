@@ -43,4 +43,8 @@ public class ConsultRecordForConsultor {
     private List<Record> records;
 
     private Pattern pattern;
+
+    private String selfComment;
+
+    private String detail;
 }

@@ -103,6 +103,23 @@ public class DutyService {
                 .flatMap(dutyInfrastructure::saveWork);
     }
 
+    public Mono<WorkItem> addWorkByUserIdAndReturn(final String userId, final WorkItem workItem) {
+        return dutyInfrastructure.getWorkByUserId(userId)
+                .switchIfEmpty(Mono.just(Works.newWork(userId)))
+                .doOnNext(work -> work.addWork(workItem))
+                .flatMap(dutyInfrastructure::saveWork)
+                .map(it -> workItem);
+    }
+
+    public Mono<WorkItem> addWorkByUserIdAndReturn(final String userId, final int weekday,
+                                                   final int from, final String address) {
+        return dutyInfrastructure.getWorkByUserId(userId)
+                .switchIfEmpty(Mono.just(Works.newWork(userId)))
+                .map(work -> work.arrangeWorks(weekday, from, address, 1))
+                .flatMap(dutyInfrastructure::saveWork)
+                .map(work -> work.getWorks().get(work.getWorks().size() - 1));
+    }
+
     public Mono<Work> addWorksByUserId(final String userId, final WorkItem... workItems) {
         return dutyInfrastructure.getWorkByUserId(userId)
                 .switchIfEmpty(Mono.just(Works.newWork(userId)))

@@ -1,5 +1,6 @@
 package cn.tzq0301.consult.manager;
 
+import cn.tzq0301.consult.entity.Pattern;
 import cn.tzq0301.consult.entity.UserInfo;
 import cn.tzq0301.consult.entity.visit.VisitRecord;
 import cn.tzq0301.consult.entity.work.WorkArrange;
@@ -48,9 +49,25 @@ public class ConsultManager {
                 .bodyToFlux(LocalDate.class);
     }
 
+    public Mono<LocalDate> addWorkItemForUser(final String userId, final Pattern pattern) {
+        return builder.build().post()
+                .uri("lb://pcs-duty/user_id/{user_id}/work/weekday/{weekday}/from/{from}/address/{address}",
+                        userId, pattern.getWeekday(), pattern.getFrom(), pattern.getAddress())
+                .retrieve()
+                .bodyToMono(LocalDate.class);
+    }
+
     public Mono<String> passVisitRecord(final String id) {
         return builder.build().patch()
                 .uri("lb://pcs-visit/record/global_id/{global_id}/arrange", id)
+                .retrieve()
+                .bodyToMono(String.class);
+    }
+
+    public Mono<String> deleteWorkItemByUserId(final String userId, final String day, final Integer from, final String address) {
+        return builder.build().delete()
+                .uri("lb://pcs-duty/user_id/{user_id}/day/{day}/from/{from}/address/{address}",
+                        userId, day, from, address)
                 .retrieve()
                 .bodyToMono(String.class);
     }
