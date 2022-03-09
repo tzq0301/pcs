@@ -98,7 +98,7 @@ func (h *Handler) responseError(w http.ResponseWriter) {
 	w.WriteHeader(400)
 }
 
-func export(w http.ResponseWriter, r *http.Request) {
+func export_pdf(w http.ResponseWriter, r *http.Request) {
 	var buf []byte
 	buf, _ = ioutil.ReadAll(r.Body)
 	str := string(buf)

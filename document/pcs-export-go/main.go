@@ -15,7 +15,6 @@ const (
 	OSS_DIR = "pcs/pdf"
 )
 
-
 var bucketName *string
 
 func fillLink(link string) string {
@@ -31,7 +30,8 @@ func main() {
 
 	bucket = initOss(*keyId, *keySecret, *bucketName)
 
-	http.HandleFunc("/export", export)
+	http.HandleFunc("/export/pdf", export_pdf)
+	http.HandleFunc("/export/csv", export_csv)
 
 	err := http.ListenAndServe(":" + strconv.Itoa(*port), nil)
 	if err != nil {
