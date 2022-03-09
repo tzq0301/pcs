@@ -26,6 +26,7 @@ public class RouterConfig {
                 .GET("/user_id/{user_id}/global_id/{global_id}/consult/records", consultHandler::findStudentConsultDetailByGlobalId)
                 .GET("/records", consultHandler::listAllConsultRecordsForAssistant)
                 .GET("/consultor_id/{consultor_id}/records", consultHandler::listAllConsultRecordsOfConsultorByConsultorId)
+                .GET("/consultor_id/{consultor_id}/record/global_id/{global_id}", consultHandler::listConsultRecordsForConsultorByGlobalId)
                 .build();
     }
 }

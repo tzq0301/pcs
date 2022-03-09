@@ -119,6 +119,7 @@ flowchart LR
 | 短信发送      | 腾讯云 SMS                                          |                                                      |
 | 缓存        | Redis Cluster ( 1 Master & 2 Salves )            | 基于 Docker Compose 的"一主二从"三节点 Redis 集群                |
 | 消息队列      | RabbitMQ                                         | 阿里云 AMQP (RabbitMQ)                                  |
+| 对象存储      | 阿里云对象存储 OSS                                      |                                                      |
 
 ## 技术架构
 

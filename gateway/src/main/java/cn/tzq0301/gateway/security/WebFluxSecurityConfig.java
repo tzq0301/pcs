@@ -75,6 +75,7 @@ public class WebFluxSecurityConfig {
                 .pathMatchers(GET, "/consult/user_id/{user_id}/global_id/{global_id}/consult/records").hasRole(STUDENT.getRole())
                 .pathMatchers(GET, "/consult/records").hasRole(ASSISTANT.getRole())
                 .pathMatchers(GET, "/consult/consultor_id/{consultor_id}/records").hasRole(CONSULTANT.getRole())
+                .pathMatchers(GET, "/consult/consultor_id/{consultor_id}/record/global_id/{global_id}").hasRole(CONSULTANT.getRole())
 
                 .pathMatchers(GET, "/duty/user_id/{user_id}/duties").hasAnyRole(VISITOR.getRole(), CONSULTANT.getRole(), ASSISTANT.getRole(), ADMIN.getRole())
                 .pathMatchers(GET, "/duty/user_id/{user_id}/works").hasAnyRole(VISITOR.getRole(), CONSULTANT.getRole(), ASSISTANT.getRole(), ADMIN.getRole())

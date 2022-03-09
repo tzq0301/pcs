@@ -86,6 +86,21 @@ public class ConsultHandler {
                 .flatMap(ServerResponse.ok()::bodyValue);
     }
 
+    public Mono<ServerResponse> listConsultRecordsForConsultorByGlobalId(ServerRequest request) {
+        String consultorId = request.pathVariable("consultor_id");
+        String consultorIdFromJWT = JWTUtils.extractUserId(getJWT(request));
+
+        if (!Objects.equals(consultorId, consultorIdFromJWT)) {
+            return Mono.just(Result.error(1, "用户 ID 不匹配"))
+                    .flatMap(ServerResponse.ok()::bodyValue);
+        }
+
+        String globalId = request.pathVariable("global_id");
+        return consultService.findConsultRecordForConsultorByGlobalId(globalId)
+                .map(Result::success)
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
     private String getJWT(ServerRequest request) {
         return Objects.requireNonNull(request.headers().firstHeader(AUTHORIZATION))
                 .substring(JWTUtils.AUTHORIZATION_HEADER_PREFIX.length());

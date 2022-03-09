@@ -5,6 +5,7 @@ import cn.tzq0301.consult.entity.Consults;
 import cn.tzq0301.consult.entity.Record;
 import cn.tzq0301.consult.entity.UserInfo;
 import cn.tzq0301.consult.entity.assistant.ConsultRecordForAssistant;
+import cn.tzq0301.consult.entity.consultor.ConsultRecordForConsultor;
 import cn.tzq0301.consult.entity.consultor.ConsultRecordOfConsultor;
 import cn.tzq0301.consult.entity.student.StudentConsult;
 import cn.tzq0301.consult.entity.student.StudentConsultDetail;
@@ -94,5 +95,13 @@ public class ConsultService {
                         consult.getStudentName(), consult.getStudentPhone(), consult.getTimes(),
                         consult.getConsultStatus(), consult.getPattern()))
                 .collectList();
+    }
+
+    public Mono<ConsultRecordForConsultor> findConsultRecordForConsultorByGlobalId(final String globalId) {
+        return consultInfrastructure.findConsultById(new ObjectId(globalId))
+                .map(consult -> new ConsultRecordForConsultor(globalId, consult.getStudentId(), consult.getStudentName(),
+                        SexUtils.sexOfString(consult.getStudentSex()), consult.getStudentPhone(), consult.getScaleResult(),
+                        consult.getVisitorName(), consult.getProblemId(), consult.getProblemDetail(), consult.getDangerLevel(),
+                        consult.getTimes(), consult.getConsultStatus(), consult.getRecords(), consult.getPattern()));
     }
 }
