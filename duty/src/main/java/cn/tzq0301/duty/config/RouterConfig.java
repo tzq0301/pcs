@@ -36,6 +36,7 @@ public class RouterConfig {
                 .GET("/spare_visitors", dutyHandler::listSpareVisitorsByDay)
                 .GET("/user_id/{user_id}/spare_times", dutyHandler::listSpareTimesById)
                 .GET("/weekday/{weekday}/from/{from}/non_spare_addresses", dutyHandler::listNonSpareAddressesByWeekday)
+                .GET("/day/{day}/from/{from}/non_spare_addresses", dutyHandler::listNonSpareAddressesByDay)
                 .build();
     }
 }

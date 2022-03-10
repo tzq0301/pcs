@@ -3,6 +3,7 @@ package cn.tzq0301.general.address.handler;
 import cn.tzq0301.general.address.entity.Addresses;
 import cn.tzq0301.general.address.service.AddressService;
 import cn.tzq0301.result.Result;
+import cn.tzq0301.util.DateUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
@@ -30,10 +31,6 @@ public class AddressHandler {
                 .flatMap(ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)::bodyValue);
     }
 
-    public Mono<ServerResponse> listSpareAddressesByDay(ServerRequest request) {
-        return null;
-    }
-
     public Mono<ServerResponse> listSpareAddressesByWeekday(ServerRequest request) {
         return Mono.zip(
                         addressService.listAddress(),
@@ -51,6 +48,24 @@ public class AddressHandler {
                 })
                 .map(Addresses::new)
                 .flatMap(it -> ServerResponse.ok().bodyValue(Result.success(it)));
+    }
 
+    public Mono<ServerResponse> listSpareAddressesByDay(ServerRequest request) {
+        return Mono.zip(
+                        addressService.listAddress(),
+                        addressService.listNonSpareAddressByDay(
+                                DateUtils.stringToLocalDate(request.pathVariable("day")),
+                                Integer.parseInt(request.pathVariable("from"))))
+                .map(tuple -> {
+                    List<String> availableAddress = tuple.getT1();
+                    log.info("All addresses       -> {}", availableAddress);
+                    List<String> nonSpareAddresses = tuple.getT2();
+                    log.info("Non spare addresses -> {}", nonSpareAddresses);
+                    availableAddress.removeAll(nonSpareAddresses);
+                    log.info("All spare addresses -> {}", availableAddress);
+                    return availableAddress;
+                })
+                .map(Addresses::new)
+                .flatMap(it -> ServerResponse.ok().bodyValue(Result.success(it)));
     }
 }
