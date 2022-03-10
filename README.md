@@ -8,6 +8,27 @@
 
 需求来源：http://wiki.suncaper.net/pages/viewpage.action?pageId=50369779
 
+## 技术选型
+
+| 技术        | 选型                                               | 备注                                                   |
+|-----------|--------------------------------------------------|------------------------------------------------------|
+| 微服务注册中心   | Spring Cloud Alibaba Nacos                       ||
+| 微服务配置管理中心 | Spring Cloud Alibaba Nacos                       ||
+| 微服务网关     | Spring Cloud Gateway                             ||
+| 负载均衡      | Spring Cloud Loadbalancer (ReactiveLoadBalancer) | 使用响应式负载均衡 ReactiveLoadBalancer（而非 Ribbon 提供的阻塞式负载均衡） |
+| HTTP 客户端  | WebClient <br/> ~~(Spring Cloud OpenFeign)~~     | 使用响应式的 WebClient 作为 HTTP 客户端工具（并加以负载均衡）              |
+| 认证授权      | Spring Security + JWT                            |                                                      |
+| Web 服务    | Spring WebFlux                                   |                                                      |
+| 数据存储      | MongoDB                                          | 阿里云数据库（三节点副本集实例，价值 ¥9.99）                            |
+| 云服务器      | 阿里云轻量应用服务器、腾讯云轻量应用服务器                            |                                                      |
+| 短信发送      | 腾讯云 SMS                                          |                                                      |
+| 缓存        | Redis Cluster ( 1 Master & 2 Salves )            | 基于 Docker Compose 的"一主二从"三节点 Redis 集群                |
+| 消息队列      | 阿里云 AMQP ( RabbitMQ )                            |                                                      |
+| 对象存储      | 阿里云对象存储 OSS                                      |                                                      |
+
+## 技术架构
+
+
 ## 业务流程
 
 ![业务流程图](https://tzq-oos-1.oss-cn-hangzhou.aliyuncs.com/img/image-20220227103201232.png)
@@ -102,26 +123,6 @@ flowchart LR
 ## 数据模型
 
 ![数据模型 v5](https://tzq-oos-1.oss-cn-hangzhou.aliyuncs.com/img/%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%20v5.jpeg)
-
-## 技术选型
-
-| 技术        | 选型                                               | 备注                                                   |
-|-----------|--------------------------------------------------|------------------------------------------------------|
-| 微服务注册中心   | Spring Cloud Alibaba Nacos                       ||
-| 微服务配置管理中心 | Spring Cloud Alibaba Nacos                       ||
-| 微服务网关     | Spring Cloud Gateway                             ||
-| 负载均衡      | Spring Cloud Loadbalancer (ReactiveLoadBalancer) | 不实用 Ribbon 提供的阻塞式负载均衡，使用响应式负载均衡 ReactiveLoadBalancer |
-| HTTP 客户端  | WebClient <br/> ~~(Spring Cloud OpenFeign)~~     ||
-| 认证授权      | Spring Security + JWT                            |                                                      |
-| Web 服务    | Spring WebFlux                                   |                                                      |
-| 数据存储      | MongoDB                                          | 阿里云数据库（三节点副本集实例，价值 ¥9.99）                            |
-| 云服务器      | 阿里云轻量应用服务器、腾讯云轻量应用服务器                            |                                                      |
-| 短信发送      | 腾讯云 SMS                                          |                                                      |
-| 缓存        | Redis Cluster ( 1 Master & 2 Salves )            | 基于 Docker Compose 的"一主二从"三节点 Redis 集群                |
-| 消息队列      | 阿里云 AMQP ( RabbitMQ )                            | 阿里云 AMQP (RabbitMQ)                                  |
-| 对象存储      | 阿里云对象存储 OSS                                      |                                                      |
-
-## 技术架构
 
 ## 微服务管理
 
