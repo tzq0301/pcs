@@ -10,3 +10,5 @@ spring:
         shared-configs:
           - dataId: mongo.yaml
             refresh: true
+          - dataId: redis.yaml
+            refresh: true
