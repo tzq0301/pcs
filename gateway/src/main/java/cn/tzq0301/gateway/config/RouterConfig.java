@@ -4,16 +4,20 @@ import cn.tzq0301.gateway.general.handler.GeneralHandler;
 import cn.tzq0301.gateway.login.handler.LoginHandler;
 import cn.tzq0301.gateway.logout.handler.LogoutHandler;
 import cn.tzq0301.util.JWTUtils;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.security.SignatureException;
 import java.util.Objects;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -50,6 +54,18 @@ public class RouterConfig {
                     log.info("userId from JWT: {}", userIdFromJWT);
                     return ServerResponse.ok().build();
                 })
+                .GET("/test/authorization", request -> Mono.justOrEmpty(
+                                request.exchange().getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION))
+                        .filter(authorizationHeader -> authorizationHeader.startsWith(JWTUtils.AUTHORIZATION_HEADER_PREFIX)
+                                && authorizationHeader.length() > JWTUtils.AUTHORIZATION_HEADER_PREFIX.length())
+                        .map(authorizationHeader -> JWTUtils.extractUserId(authorizationHeader.substring(JWTUtils.AUTHORIZATION_HEADER_PREFIX.length())))
+                        .flatMap(it -> ServerResponse.ok().build())
+                        .onErrorResume(
+                                ex -> ex instanceof SignatureException
+                                        || ex instanceof ExpiredJwtException
+                                        || ex instanceof MalformedJwtException,
+                                exception -> ServerResponse.status(HttpStatus.UNAUTHORIZED).build())
+                        .switchIfEmpty(ServerResponse.status(HttpStatus.UNAUTHORIZED).build()))
 
                 // 正式接口
 
