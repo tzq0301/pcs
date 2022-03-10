@@ -23,6 +23,7 @@ public class RouterConfig {
         return route()
                 .GET("/infos", staticsHandler::listInfos)
                 .POST("/reports/pdf", staticsHandler::exportConsultReports)
+                .POST("/reports/pdf/zip", staticsHandler::exportConsultReportsByZip)
                 .GET("/global_id/{global_id}/info/pdf", staticsHandler::exportConsultReportByGlobalId)
                 .GET("/consultors", staticsHandler::exportConsultorInfos)
                 .build();

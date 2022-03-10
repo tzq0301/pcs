@@ -2,6 +2,7 @@ package cn.tzq0301.statics.manager;
 
 import cn.tzq0301.statics.entity.*;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.ParameterizedTypeReference;
@@ -30,7 +31,9 @@ public class StaticsManager {
     @Value("${go.port}")
     private String port;
 
-    public StaticsManager(WebClient.Builder builder, WebClient.Builder builderWithOutLoadBalanced) {
+    public StaticsManager(
+            WebClient.Builder builder,
+            WebClient.Builder builderWithOutLoadBalanced) {
         this.builder = builder;
         this.builderWithOutLoadBalanced = builderWithOutLoadBalanced;
     }
@@ -54,6 +57,14 @@ public class StaticsManager {
         return builderWithOutLoadBalanced.build().post()
                 .uri("http://" + host + ":" + port + "/export/pdf")
                 .bodyValue(pdfInfo)
+                .retrieve()
+                .bodyToMono(String.class);
+    }
+
+    public Mono<String> exportPdfsPackedByZip(final Flux<PdfInfo> pdfInfo) {
+        return builderWithOutLoadBalanced.build().post()
+                .uri("http://" + host + ":" + port + "/export/zip")
+                .body(pdfInfo, PdfInfo.class)
                 .retrieve()
                 .bodyToMono(String.class);
     }
