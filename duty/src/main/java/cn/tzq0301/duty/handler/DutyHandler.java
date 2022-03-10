@@ -4,7 +4,6 @@ import cn.tzq0301.duty.entity.duty.*;
 import cn.tzq0301.duty.entity.duty.vo.DutyResponse;
 import cn.tzq0301.duty.entity.work.WorkItems;
 import cn.tzq0301.duty.entity.work.WorkResponse;
-import cn.tzq0301.duty.entity.work.Works;
 import cn.tzq0301.duty.service.DutyService;
 import cn.tzq0301.result.Result;
 import cn.tzq0301.util.DateUtils;
@@ -196,7 +195,7 @@ public class DutyHandler {
                     if (!isSuccess) {
                         return Mono.empty();
                     }
-                    return  dutyService.saveDuty(duty);
+                    return dutyService.saveDuty(duty);
                 })
                 .doOnNext(duty -> log.info("Save Duty: {}", duty))
 //                .flatMap(duty -> dutyService.findWorkByUserId(userId)
@@ -225,13 +224,24 @@ public class DutyHandler {
                 .flatMap(ServerResponse.ok()::bodyValue);
     }
 
-    public Mono<ServerResponse> listSpareVisitors(ServerRequest request) {
+    public Mono<ServerResponse> listSpareVisitorsByDay(ServerRequest request) {
         String dayAttribute = getAttributeFromServerRequest(request, "day");
         String fromAttribute = getAttributeFromServerRequest(request, "from");
 
+        if ((Strings.isNullOrEmpty(dayAttribute) && !Strings.isNullOrEmpty(fromAttribute))
+                || (!Strings.isNullOrEmpty(dayAttribute) && Strings.isNullOrEmpty(fromAttribute))) {
+            return ServerResponse.ok().bodyValue(Result.error());
+        }
 
+        if (Strings.isNullOrEmpty(dayAttribute) && Strings.isNullOrEmpty(fromAttribute)) {
+            return dutyService.listSpareVisitors()
+                    .map(Result::success)
+                    .flatMap(ServerResponse.ok()::bodyValue);
+        }
 
-        return null;
+        return dutyService.listSpareVisitorsByDay(DateUtils.stringToLocalDate(dayAttribute), Integer.parseInt(fromAttribute))
+                .map(Result::success)
+                .flatMap(ServerResponse.ok()::bodyValue);
     }
 
     private static String getAttributeFromServerRequest(ServerRequest request, String attribute) {

@@ -95,6 +95,7 @@ public class WebFluxSecurityConfig {
                 .pathMatchers(GET, "/duty/user_id/{user_id}/spare_times").hasAnyRole(ASSISTANT.getRole(), ADMIN.getRole())
 
                 .pathMatchers("/addresses").permitAll()
+                .pathMatchers(GET, "/general/weekday/{weekday}/from/{from}/addresses").permitAll()
                 .pathMatchers("/general/**").permitAll()
 
                 .pathMatchers(GET, "/statics/infos").hasRole(ADMIN.getRole())

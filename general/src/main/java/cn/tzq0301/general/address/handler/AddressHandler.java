@@ -33,4 +33,8 @@ public class AddressHandler {
     public Mono<ServerResponse> listAvailableAddressesByDay(ServerRequest request) {
         return null;
     }
+
+    public Mono<ServerResponse> listAvailableAddressesByWeekday(ServerRequest request) {
+        return null;
+    }
 }

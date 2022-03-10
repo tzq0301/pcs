@@ -1,6 +1,5 @@
 package cn.tzq0301.duty.entity.work;
 
-import cn.tzq0301.duty.entity.duty.SpecialItem;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +14,6 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -89,7 +87,7 @@ public class Work implements Serializable {
         }
 
         while (left > 0) {
-            if (!hasPreviousWorkArrange(day, from)) {
+            if (!hasWorkArrange(day, from)) {
                 addWork(WorkItems.newWorkItem(day, from, address));
                 left--;
             }
@@ -101,9 +99,15 @@ public class Work implements Serializable {
         return this;
     }
 
-    private boolean hasPreviousWorkArrange(final LocalDate day, int from) {
+    public boolean hasWorkArrange(final LocalDate day, int from) {
         return this.works.stream()
                 .anyMatch(workItem -> Objects.equals(workItem.getDay(), day)
+                        && Objects.equals(workItem.getFrom(), from));
+    }
+
+    public boolean hasNoWorkArrange(final LocalDate day, int from) {
+        return this.works.stream()
+                .noneMatch(workItem -> Objects.equals(workItem.getDay(), day)
                         && Objects.equals(workItem.getFrom(), from));
     }
 }

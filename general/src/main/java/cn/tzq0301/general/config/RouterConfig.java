@@ -23,6 +23,7 @@ public class RouterConfig {
         return route()
                 .GET("/addresses", addressHandler::listAddresses)
                 .GET("/day/{day}/from/{from}/addresses", addressHandler::listAvailableAddressesByDay)
+                .GET("/weekday/{weekday}/from/{from}/addresses", addressHandler::listAvailableAddressesByWeekday)
                 .build();
     }
 }

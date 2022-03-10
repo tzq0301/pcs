@@ -1,12 +1,11 @@
 package cn.tzq0301.duty.service;
 
+import cn.tzq0301.duty.entity.UserInfo;
 import cn.tzq0301.duty.entity.duty.Duties;
 import cn.tzq0301.duty.entity.duty.Duty;
 import cn.tzq0301.duty.entity.duty.Pattern;
 import cn.tzq0301.duty.entity.duty.SpecialItem;
-import cn.tzq0301.duty.entity.duty.vo.AllDutyDetails;
-import cn.tzq0301.duty.entity.duty.vo.DutyDetail;
-import cn.tzq0301.duty.entity.duty.vo.SpareTime;
+import cn.tzq0301.duty.entity.duty.vo.*;
 import cn.tzq0301.duty.entity.work.Work;
 import cn.tzq0301.duty.entity.work.WorkItem;
 import cn.tzq0301.duty.entity.work.Works;
@@ -149,5 +148,26 @@ public class DutyService {
     public Mono<SpareTime> listSpareTimesById(final String userId) {
         return Mono.zip(dutyInfrastructure.getDutyByUserId(userId), dutyInfrastructure.getWorkByUserId(userId))
                 .map(tuple -> new SpareTime(tuple.getT1().getPatterns(), tuple.getT1().getSpecials(), tuple.getT2().getWorks()));
+    }
+
+    public Mono<SpareVisitors> listSpareVisitorsByDay(final LocalDate day, final int from) {
+        return dutyInfrastructure.findAllDuties()
+                .filter(duty -> duty.isOnDuty(day, from))
+                .flatMap(duty -> dutyInfrastructure.getWorkByUserId(duty.getUserId()))
+                .filter(work -> work.hasNoWorkArrange(day, from))
+                .map(Work::getUserId)
+                .flatMap(dutyManager::findUserInfoByUserId)
+                .map(userInfo -> new SpareVisitor(userInfo.getUserId(), userInfo.getName()))
+                .collectList()
+                .map(SpareVisitors::new);
+    }
+
+    public Mono<SpareVisitors> listSpareVisitors() {
+        return dutyInfrastructure.findAllDuties()
+                .map(Duty::getUserId)
+                .flatMap(dutyManager::findUserInfoByUserId)
+                .map(userInfo -> new SpareVisitor(userInfo.getUserId(), userInfo.getName()))
+                .collectList()
+                .map(SpareVisitors::new);
     }
 }
