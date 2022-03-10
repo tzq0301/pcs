@@ -169,16 +169,16 @@ public class DutyHandler {
                     return dutyService.saveDuty(duty);
                 })
                 .doOnNext(duty -> log.info("Save Duty -> {}", duty))
-                .flatMap(duty -> dutyService.findWorkByUserId(userId)
-                        .switchIfEmpty(Mono.just(Works.newWork(userId)))
-                        .flatMap(work -> {
-                            boolean isSuccess = work.addWork(WorkItems.newWorkItem(day, from, address));
-                            if (!isSuccess) {
-                                return Mono.empty();
-                            }
-                            return dutyService.saveWork(work);
-                        }))
-                .doOnNext(work -> log.info("Save Work -> {}", work))
+//                .flatMap(duty -> dutyService.findWorkByUserId(userId)
+//                        .switchIfEmpty(Mono.just(Works.newWork(userId)))
+//                        .flatMap(work -> {
+//                            boolean isSuccess = work.addWork(WorkItems.newWorkItem(day, from, address));
+//                            if (!isSuccess) {
+//                                return Mono.empty();
+//                            }
+//                            return dutyService.saveWork(work);
+//                        }))
+//                .doOnNext(work -> log.info("Save Work -> {}", work))
                 .map(it -> Result.success())
                 .switchIfEmpty(Mono.just(Result.error()))
                 .flatMap(ServerResponse.ok()::bodyValue);
@@ -188,26 +188,26 @@ public class DutyHandler {
         String userId = request.pathVariable("user_id");
         LocalDate day = DateUtils.stringToLocalDate(request.pathVariable("day"));
         int from = Integer.parseInt(request.pathVariable("from"));
-        int type = Integer.parseInt(request.pathVariable("type"));
 
         return dutyService.findDutyByUserId(userId)
+                .doOnNext(duty -> log.info("Got Duty: {}", duty))
                 .flatMap(duty -> {
-                    boolean isSuccess = duty.removeSpecial(SpecialItems.newSpecialItem(day, from, "", type));
+                    boolean isSuccess = duty.removeSpecial(day, from);
                     if (!isSuccess) {
                         return Mono.empty();
                     }
                     return  dutyService.saveDuty(duty);
                 })
                 .doOnNext(duty -> log.info("Save Duty: {}", duty))
-                .flatMap(duty -> dutyService.findWorkByUserId(userId)
-                        .flatMap(work -> {
-                            boolean isSuccess = work.removeWork(day, from);
-                            if (!isSuccess) {
-                                return Mono.empty();
-                            }
-                            return dutyService.saveWork(work);
-                        }))
-                .doOnNext(work -> log.info("Save Work -> {}", work))
+//                .flatMap(duty -> dutyService.findWorkByUserId(userId)
+//                        .flatMap(work -> {
+//                            boolean isSuccess = work.removeWork(day, from);
+//                            if (!isSuccess) {
+//                                return Mono.empty();
+//                            }
+//                            return dutyService.saveWork(work);
+//                        }))
+//                .doOnNext(work -> log.info("Save Work -> {}", work))
                 .map(it -> Result.success())
                 .switchIfEmpty(Mono.just(Result.error()))
                 .flatMap(ServerResponse.ok()::bodyValue);

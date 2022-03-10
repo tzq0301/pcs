@@ -31,7 +31,7 @@ public class RouterConfig {
                 .POST("/user_id/{user_id}/duty/weekday/{weekday}/from/{from}/address/{address}", dutyHandler::addRegularDuty)
                 .DELETE("/user_id/{user_id}/duty/weekday/{weekday}/from/{from}/address/{address}", dutyHandler::removeRegularDuty)
                 .POST("/user_id/{user_id}/duty/day/{day}/from/{from}/address/{address}/type/{type}", dutyHandler::addWorkOvertimeRecord)
-                .DELETE("/user_id/{user_id}/duty/day/{day}/from/{from}/type/{type}", dutyHandler::removeWorkOvertimeRecord)
+                .DELETE("/user_id/{user_id}/duty/day/{day}/from/{from}", dutyHandler::removeWorkOvertimeRecord)
                 .POST("/user_id/{user_id}/work/weekday/{weekday}/from/{from}/address/{address}/times/{times}", dutyHandler::addWorkItemOfTimesForUser)
                 .build();
     }

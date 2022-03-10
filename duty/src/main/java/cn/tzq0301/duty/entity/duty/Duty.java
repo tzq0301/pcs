@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.mapping.FieldType;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -132,6 +133,20 @@ public class Duty implements Serializable {
             SpecialItem item = iterator.next();
             if (Objects.equals(item.getDay(), specialItem.getDay())
                     && Objects.equals(item.getFrom(), specialItem.getFrom())) {
+                iterator.remove();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean removeSpecial(final LocalDate day, final Integer from) {
+        Iterator<SpecialItem> iterator = this.specials.iterator();
+        while (iterator.hasNext()) {
+            SpecialItem item = iterator.next();
+            if (Objects.equals(item.getDay(), day)
+                    && Objects.equals(item.getFrom(), from)) {
                 iterator.remove();
                 return true;
             }

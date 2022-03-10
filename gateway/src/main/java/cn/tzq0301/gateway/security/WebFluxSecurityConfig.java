@@ -90,7 +90,7 @@ public class WebFluxSecurityConfig {
                 .pathMatchers(POST, "/duty/user_id/{user_id}/duty/weekday/{weekday}/from/{from}/address/{address}").hasRole(ADMIN.getRole())
                 .pathMatchers(DELETE, "/duty/user_id/{user_id}/duty/weekday/{weekday}/from/{from}/address/{address}").hasRole(ADMIN.getRole())
                 .pathMatchers(POST, "/duty/user_id/{user_id}/duty/day/{day}/from/{from}/address/{address}/type/{type}").hasRole(ADMIN.getRole())
-                .pathMatchers(DELETE, "/duty/user_id/{user_id}/duty/day/{day}/from/{from}/type/{type}").hasRole(ADMIN.getRole())
+                .pathMatchers(DELETE, "/duty/user_id/{user_id}/duty/day/{day}/from/{from}").hasRole(ADMIN.getRole())
 
                 .pathMatchers("/addresses").permitAll()
                 .pathMatchers("/general/**").permitAll()
