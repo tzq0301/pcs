@@ -42,6 +42,7 @@ public class RouterConfig {
                 .GET("/users", userHandler::listUserInfos)
                 .DELETE("/user_id/{user_id}", userHandler::deleteUserByUserId)
                 .POST("/users", userHandler::importUsers)
+                .GET("/user_infos/role/{role}", userHandler::listUserInfosByRole)
                 .build();
     }
 }

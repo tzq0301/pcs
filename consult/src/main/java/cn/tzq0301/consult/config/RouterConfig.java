@@ -31,6 +31,7 @@ public class RouterConfig {
                 .POST("/global_id/{global_id}/finish", consultHandler::finishConsultByGlobalId)
                 .GET("/statics_infos", consultHandler::listAllStaticsInfos)
                 .GET("/pdf_info/global_id/{global_id}", consultHandler::findPdfInfoByGlobalId)
+                .GET("/consultor_id/{consultor_id}/statics_info", consultHandler::findStaticsInfoByConsultorId)
                 .build();
     }
 }

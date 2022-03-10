@@ -23,6 +23,8 @@ public class RouterConfig {
         return route()
                 .GET("/infos", staticsHandler::listInfos)
                 .GET("/reports/pdf", staticsHandler::exportConsultReports)
+                .GET("/global_id/{global_id}/info/pdf", staticsHandler::exportConsultReportByGlobalId)
+                .GET("/consultors", staticsHandler::exportConsultorInfos)
                 .build();
     }
 }

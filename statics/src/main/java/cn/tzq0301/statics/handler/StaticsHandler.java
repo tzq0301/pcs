@@ -88,6 +88,19 @@ public class StaticsHandler {
                 .flatMap(ServerResponse.ok()::bodyValue);
     }
 
+    public Mono<ServerResponse> exportConsultReportByGlobalId(ServerRequest request) {
+        return Mono.just(request.pathVariable("global_id"))
+                .flatMap(staticsService::exportConsultReport)
+                .map(Result::success)
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    public Mono<ServerResponse> exportConsultorInfos(ServerRequest request) {
+        return staticsService.exportConsultorInfo()
+                .map(Result::success)
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
     private String getJWT(ServerRequest request) {
         return Objects.requireNonNull(request.headers().firstHeader(AUTHORIZATION))
                 .substring(JWTUtils.AUTHORIZATION_HEADER_PREFIX.length());

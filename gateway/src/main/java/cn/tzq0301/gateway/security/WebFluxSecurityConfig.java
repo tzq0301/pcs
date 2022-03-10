@@ -97,6 +97,8 @@ public class WebFluxSecurityConfig {
 
                 .pathMatchers(GET, "/statics/infos").hasRole(ADMIN.getRole())
                 .pathMatchers(GET, "/statics/reports/pdf").hasRole(ADMIN.getRole())
+                .pathMatchers(GET, "/statics/global_id/{global_id}/info/pdf").hasAnyRole(ADMIN.getRole(), CONSULTANT.getRole())
+                .pathMatchers(GET, "/statics/consultors").hasAnyRole(ADMIN.getRole(), CONSULTANT.getRole())
 
 //                .pathMatchers("/student").hasRole(Role.STUDENT.getRole())
 //                .pathMatchers("/admin").hasRole(Role.ADMIN.getRole())

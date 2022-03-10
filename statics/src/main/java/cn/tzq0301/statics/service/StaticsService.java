@@ -1,5 +1,6 @@
 package cn.tzq0301.statics.service;
 
+import cn.tzq0301.statics.entity.CsvInfo;
 import cn.tzq0301.statics.entity.StaticsInfo;
 import cn.tzq0301.statics.manager.StaticsManager;
 import lombok.AllArgsConstructor;
@@ -29,5 +30,15 @@ public class StaticsService {
                 .doOnNext(pdfInfo -> log.info("Got information for Export PDF -> {}", pdfInfo))
                 .flatMap(staticsManager::exportPdf)
                 .doOnNext(url -> log.info("Got URL of PDF -> {}", url));
+    }
+
+    public Mono<String> exportConsultorInfo() {
+        return Mono.just(staticsManager.listConsultorInfos().flatMap(userInfo ->
+                        staticsManager.findConsultorStaticsInfo(userInfo.getId())
+                                .map(consultorStaticsInfo -> new CsvInfo(userInfo.getName(),
+                                        userInfo.getSex(), userInfo.getPhone(),
+                                        userInfo.getEmail(), consultorStaticsInfo.getNumOfPeople(),
+                                        consultorStaticsInfo.getNumOfTime()))))
+                .flatMap(staticsManager::exportCsv);
     }
 }
