@@ -68,21 +68,25 @@ public class UserHandler {
 
                             String sex = queryParams.getFirst("sex");
                             if (!Strings.isNullOrEmpty(sex)) {
+                                log.info("Update User Sex -> {}", sex);
                                 user.setSex(Integer.parseInt(sex));
                             }
 
                             String birthday = queryParams.getFirst("birthday");
                             if (!Strings.isNullOrEmpty(birthday)) {
+                                log.info("Update User birthday -> {}", birthday);
                                 user.setBirthday(DateUtils.stringToLocalDate(birthday));
                             }
 
                             String phone = queryParams.getFirst("phone");
                             if (!Strings.isNullOrEmpty(phone)) {
+                                log.info("Update User phone -> {}", phone);
                                 user.setPhone(phone);
                             }
 
                             String email = queryParams.getFirst("email");
                             if (!Strings.isNullOrEmpty(email)) {
+                                log.info("Update User email -> {}", email);
                                 user.setEmail(email);
                             }
                         })

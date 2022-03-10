@@ -181,19 +181,20 @@ flowchart LR
 
 ### 端口管理
 
-| 应用 | 微服务     | 端口    |
-|--|---------|-------|
-| 网关 | gateway | 12100 |
-| 认证 | auth    | 12101 |
-| 短信 | message | 12102 |
-| 通用 | general | 12103 |
-| 初访 | visit   | 12104 |
-| 咨询 | consult | 12105 |
-| 值班 | duty    | 12106 |
-| 统计 ｜ statics | 12107 |
-
+| 应用  | 微服务     | 端口    |
+|-----|---------|-------|
+| 网关  | gateway | 12100 |
+| 认证  | auth    | 12101 |
+| 短信  | message | 12102 |
+| 通用  | general | 12103 |
+| 初访  | visit   | 12104 |
+| 咨询  | consult | 12105 |
+| 值班  | duty    | 12106 |
+| 统计  | statics | 12107 |
 
 ## 部署架构
+
+
 
 ## 外部依赖
 
@@ -238,6 +239,72 @@ flowchart LR
 项目使用腾讯云 SMS 进行基于手机号的**用户认证与授权**业务。
 
 ## 编码实践
+
+### `ReactiveRedisTemplate` 增加对 `ObjectId` 与 `LocalDate` 对序列化
+
+在对 `User` 类进行 Redis 缓存时，发现 `ObjectId` 与 `LocalDate` 类型的字段无法进行序列化操作，故对 `Jackson2JsonRedisSerializer` 进行定制：
+
+```java
+/**
+ * @author tzq0301
+ * @version 1.0
+ */
+@SpringBootConfiguration
+public class RedisConfig {
+    public static final String PROJECT_NAMESPACE_PREFIX = "pcs:";
+
+    public static final String USER_NAMESPACE_PREFIX = PROJECT_NAMESPACE_PREFIX + "user:";
+
+    @Bean
+    public ReactiveRedisTemplate<String, Object> reactiveRedisTemplate(
+            ReactiveRedisConnectionFactory reactiveRedisConnectionFactory,
+            RedisSerializationContext<String, Object> redisSerializationContext) {
+        return new ReactiveRedisTemplate<>(reactiveRedisConnectionFactory, redisSerializationContext);
+    }
+
+    @Bean
+    public RedisSerializationContext<String, Object> redisSerializationContext() {
+        RedisSerializationContext.RedisSerializationContextBuilder<String, Object> builder = RedisSerializationContext.newSerializationContext();
+
+        builder.key(StringRedisSerializer.UTF_8);
+        builder.value(serializer());
+
+        builder.hashKey(StringRedisSerializer.UTF_8);
+        builder.hashValue(serializer());
+
+        return builder.build();
+    }
+
+    private Jackson2JsonRedisSerializer<Object> serializer() {
+        Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        // ObjectId
+        SimpleModule objectIdModule = new SimpleModule("ObjectIdModule");
+        objectIdModule.addSerializer(ObjectId.class, new JsonSerializer<ObjectId>() {
+            @Override
+            public void serialize(ObjectId objectId, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) {
+                jsonGenerator.writeString(objectId.toString());
+            }
+        });
+        objectIdModule.addDeserializer(ObjectId.class, new JsonDeserializer<ObjectId>() {
+            @Override
+            public ObjectId deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) {
+                return new ObjectId(jsonParser.readValueAs(String.class));
+            }
+        });
+        objectMapper.registerModule(objectIdModule);
+
+        // LocalDate
+        objectMapper.registerModule(new JavaTimeModule());
+
+        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        objectMapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance, ObjectMapper.DefaultTyping.NON_FINAL);
+        jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
+        return jackson2JsonRedisSerializer;
+    }
+}
+```
 
 ### 统一返回体中响应枚举类的抽象设计
 
@@ -481,30 +548,6 @@ docker-compose up -d
 ```
 
 ## 本地运行
-
-### gateway
-
-在执行 jar 时，增加命令行参数：
-```shell
-# Nacos 服务发现中心
---spring.cloud.nacos.discovery.server-addr=your-host:your-port
-
-# Nacos 配置中心
---spring.cloud.nacos.config.server-addr=your-host:your-port
-```
-
-### auth
-
-在执行 jar 时，增加命令行参数：
-```shell
-# Nacos 服务发现中心
---spring.cloud.nacos.discovery.server-addr=your-host:your-port
-
-# Nacos 配置中心
---spring.cloud.nacos.config.server-addr=your-host:your-port
-```
-
-### message
 
 在执行 jar 时，增加命令行参数：
 ```shell

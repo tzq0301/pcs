@@ -5,6 +5,7 @@ import cn.tzq0301.auth.user.entity.Users;
 import cn.tzq0301.auth.user.entity.vo.ImportStudentInfo;
 import cn.tzq0301.auth.user.entity.vo.UserInfoVO;
 import cn.tzq0301.auth.user.infrastraction.UserInfrastructure;
+import cn.tzq0301.auth.user.manager.UserManager;
 import cn.tzq0301.util.DateUtils;
 import cn.tzq0301.util.SexUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,13 +26,19 @@ import java.util.List;
 public class UserService {
     private final UserInfrastructure userInfrastructure;
 
+    private final UserManager userManager;
+
     private final PasswordEncoder passwordEncoder;
 
     @Value("${auth.password}")
     private String defaultPassword;
 
-    public UserService(UserInfrastructure userInfrastructure, PasswordEncoder passwordEncoder) {
+    public UserService(
+            UserInfrastructure userInfrastructure,
+            UserManager userManager,
+            PasswordEncoder passwordEncoder) {
         this.userInfrastructure = userInfrastructure;
+        this.userManager = userManager;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -40,24 +47,27 @@ public class UserService {
                 .map(user -> user != null ? Boolean.TRUE : Boolean.FALSE);
     }
 
-    public Mono<User> findByUserId(String userId) {
-        return userInfrastructure.findByUserId(userId);
+    public Mono<User> findByUserId(final String userId) {
+        return userManager.getUserByUserIdFromCache(userId)
+                .switchIfEmpty(userInfrastructure.findByUserId(userId));
     }
 
-    public Mono<User> updateUser(User user) {
-        return userInfrastructure.saveUser(user);
+    public Mono<User> updateUser(final User user) {
+        return userInfrastructure.saveUser(user)
+                .flatMap(userManager::putUserIdAndUserIdIntoCache);
     }
 
-    public Mono<User> saveUser(User user) {
+    public Mono<User> saveUser(final User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userInfrastructure.saveUser(user);
+        return userInfrastructure.saveUser(user)
+                .flatMap(userManager::putUserIdAndUserIdIntoCache);
     }
 
-    public Mono<Integer> isUserAbleToApply(String userId) {
+    public Mono<Integer> isUserAbleToApply(final String userId) {
         return userInfrastructure.findByUserId(userId).map(User::getStudentStatus);
     }
 
-    public Mono<User> setStudentStatus(User user, int studentStatus) {
+    public Mono<User> setStudentStatus(final User user, final int studentStatus) {
         user.setStudentStatus(studentStatus);
         return userInfrastructure.saveUser(user);
     }
