@@ -4,7 +4,6 @@ import cn.tzq0301.duty.entity.duty.*;
 import cn.tzq0301.duty.entity.duty.vo.DutyResponse;
 import cn.tzq0301.duty.entity.work.WorkItems;
 import cn.tzq0301.duty.entity.work.WorkResponse;
-import cn.tzq0301.duty.entity.work.Works;
 import cn.tzq0301.duty.service.DutyService;
 import cn.tzq0301.result.Result;
 import cn.tzq0301.util.DateUtils;
@@ -169,16 +168,16 @@ public class DutyHandler {
                     return dutyService.saveDuty(duty);
                 })
                 .doOnNext(duty -> log.info("Save Duty -> {}", duty))
-                .flatMap(duty -> dutyService.findWorkByUserId(userId)
-                        .switchIfEmpty(Mono.just(Works.newWork(userId)))
-                        .flatMap(work -> {
-                            boolean isSuccess = work.addWork(WorkItems.newWorkItem(day, from, address));
-                            if (!isSuccess) {
-                                return Mono.empty();
-                            }
-                            return dutyService.saveWork(work);
-                        }))
-                .doOnNext(work -> log.info("Save Work -> {}", work))
+//                .flatMap(duty -> dutyService.findWorkByUserId(userId)
+//                        .switchIfEmpty(Mono.just(Works.newWork(userId)))
+//                        .flatMap(work -> {
+//                            boolean isSuccess = work.addWork(WorkItems.newWorkItem(day, from, address));
+//                            if (!isSuccess) {
+//                                return Mono.empty();
+//                            }
+//                            return dutyService.saveWork(work);
+//                        }))
+//                .doOnNext(work -> log.info("Save Work -> {}", work))
                 .map(it -> Result.success())
                 .switchIfEmpty(Mono.just(Result.error()))
                 .flatMap(ServerResponse.ok()::bodyValue);
@@ -188,26 +187,26 @@ public class DutyHandler {
         String userId = request.pathVariable("user_id");
         LocalDate day = DateUtils.stringToLocalDate(request.pathVariable("day"));
         int from = Integer.parseInt(request.pathVariable("from"));
-        int type = Integer.parseInt(request.pathVariable("type"));
 
         return dutyService.findDutyByUserId(userId)
+                .doOnNext(duty -> log.info("Got Duty: {}", duty))
                 .flatMap(duty -> {
-                    boolean isSuccess = duty.removeSpecial(SpecialItems.newSpecialItem(day, from, "", type));
+                    boolean isSuccess = duty.removeSpecial(day, from);
                     if (!isSuccess) {
                         return Mono.empty();
                     }
-                    return  dutyService.saveDuty(duty);
+                    return dutyService.saveDuty(duty);
                 })
                 .doOnNext(duty -> log.info("Save Duty: {}", duty))
-                .flatMap(duty -> dutyService.findWorkByUserId(userId)
-                        .flatMap(work -> {
-                            boolean isSuccess = work.removeWork(day, from);
-                            if (!isSuccess) {
-                                return Mono.empty();
-                            }
-                            return dutyService.saveWork(work);
-                        }))
-                .doOnNext(work -> log.info("Save Work -> {}", work))
+//                .flatMap(duty -> dutyService.findWorkByUserId(userId)
+//                        .flatMap(work -> {
+//                            boolean isSuccess = work.removeWork(day, from);
+//                            if (!isSuccess) {
+//                                return Mono.empty();
+//                            }
+//                            return dutyService.saveWork(work);
+//                        }))
+//                .doOnNext(work -> log.info("Save Work -> {}", work))
                 .map(it -> Result.success())
                 .switchIfEmpty(Mono.just(Result.error()))
                 .flatMap(ServerResponse.ok()::bodyValue);
@@ -225,7 +224,49 @@ public class DutyHandler {
                 .flatMap(ServerResponse.ok()::bodyValue);
     }
 
+    public Mono<ServerResponse> listSpareVisitorsByDay(ServerRequest request) {
+        String dayAttribute = getAttributeFromServerRequest(request, "day");
+        String fromAttribute = getAttributeFromServerRequest(request, "from");
+
+        if ((Strings.isNullOrEmpty(dayAttribute) && !Strings.isNullOrEmpty(fromAttribute))
+                || (!Strings.isNullOrEmpty(dayAttribute) && Strings.isNullOrEmpty(fromAttribute))) {
+            return ServerResponse.ok().bodyValue(Result.error());
+        }
+
+        if (Strings.isNullOrEmpty(dayAttribute) && Strings.isNullOrEmpty(fromAttribute)) {
+            return dutyService.listSpareVisitors()
+                    .map(Result::success)
+                    .flatMap(ServerResponse.ok()::bodyValue);
+        }
+
+        return dutyService.listSpareVisitorsByDay(DateUtils.stringToLocalDate(dayAttribute), Integer.parseInt(fromAttribute))
+                .map(Result::success)
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
     private static String getAttributeFromServerRequest(ServerRequest request, String attribute) {
         return request.exchange().getRequest().getQueryParams().getFirst(attribute);
+    }
+
+    public Mono<ServerResponse> listSpareTimesById(ServerRequest request) {
+        return dutyService.listSpareTimesById(request.pathVariable("user_id"))
+                .map(Result::success)
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    public Mono<ServerResponse> listNonSpareAddressesByWeekday(ServerRequest request) {
+        return dutyService.listNonSpareAddressesByWeekday(
+                Integer.parseInt(request.pathVariable("weekday")),
+                Integer.parseInt(request.pathVariable("from")))
+                .doOnNext(nonSpareAddresses -> log.info("Non Spare Addresses -> {}", nonSpareAddresses))
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    public Mono<ServerResponse> listNonSpareAddressesByDay(ServerRequest request) {
+        return dutyService.listNonSpareAddressesByDay(
+                        DateUtils.stringToLocalDate(request.pathVariable("day")),
+                        Integer.parseInt(request.pathVariable("from")))
+                .doOnNext(nonSpareAddresses -> log.info("Non Spare Addresses -> {}", nonSpareAddresses))
+                .flatMap(ServerResponse.ok()::bodyValue);
     }
 }

@@ -172,11 +172,12 @@ public class UserHandler {
         int offset = getOffset(request);
         int limit = getLimit(request);
         String role = getAttribute(request, "role");
+        String name = getAttribute(request, "name");
 
         return Mono.defer(() -> Strings.isNullOrEmpty(role)
                 ? userService.listAllUsers()
                 : userService.listAllUsersByRole(role))
-                .map(list -> new RecordsWithTotal<>(list, offset, limit))
+                .map(list -> new RecordsWithTotal<>(list, user -> user.getName().contains(name), offset, limit))
                 .map(Result::success)
                 .flatMap(ServerResponse.ok()::bodyValue);
     }

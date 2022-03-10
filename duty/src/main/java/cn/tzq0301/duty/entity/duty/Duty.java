@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.mapping.FieldType;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -138,5 +139,45 @@ public class Duty implements Serializable {
         }
 
         return false;
+    }
+
+    public boolean removeSpecial(final LocalDate day, final Integer from) {
+        Iterator<SpecialItem> iterator = this.specials.iterator();
+        while (iterator.hasNext()) {
+            SpecialItem item = iterator.next();
+            if (Objects.equals(item.getDay(), day)
+                    && Objects.equals(item.getFrom(), from)) {
+                iterator.remove();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isOnDuty(final LocalDate day, final Integer from) {
+        return isWorkOverTime(day, from) || (!isOnLeave(day, from) && matchPattern(day, from));
+    }
+
+    public boolean isWorkOverTime(final LocalDate day, final Integer from) {
+        return specials.stream()
+                .anyMatch(specialItem -> ZERO.equals(specialItem.getType())
+                        && Objects.equals(day, specialItem.getDay())
+                        && Objects.equals(from, specialItem.getFrom()));
+    }
+
+    public boolean isOnLeave(final LocalDate day, final Integer from) {
+        return specials.stream()
+                .anyMatch(specialItem -> ONE.equals(specialItem.getType())
+                        && Objects.equals(day, specialItem.getDay())
+                        && Objects.equals(from, specialItem.getFrom()));
+    }
+
+    public boolean matchPattern(final LocalDate day, final Integer from) {
+        int weekday = day.getDayOfWeek().getValue();
+
+        return patterns.stream()
+                .anyMatch(pattern -> Objects.equals(weekday, pattern.getWeekday())
+                        && Objects.equals(from, pattern.getFrom()));
     }
 }

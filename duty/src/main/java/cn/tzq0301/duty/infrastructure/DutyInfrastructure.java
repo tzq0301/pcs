@@ -32,6 +32,10 @@ public class DutyInfrastructure {
         return dutyRepository.findAll();
     }
 
+    public Flux<Work> findAllWorks() {
+        return workRepository.findAll();
+    }
+
     public Mono<Work> getWorkByUserId(String userId) {
         return workRepository.getByUserId(userId);
     }

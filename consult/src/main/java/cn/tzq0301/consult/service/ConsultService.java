@@ -137,7 +137,7 @@ public class ConsultService {
 
     public Mono<Consult> finishConsultByGlobalId(final String globalId, final Mono<FinishConsult> finishConsultMono) {
         return Mono.zip(consultInfrastructure.findConsultById(globalId), finishConsultMono)
-                .map(tuple -> {
+                .flatMap(tuple -> {
                     Consult consult = tuple.getT1();
                     FinishConsult finishConsult = tuple.getT2();
 
@@ -145,9 +145,9 @@ public class ConsultService {
                     consult.setSelfComment(finishConsult.getSelfComment());
                     consult.setDetail(finishConsult.getDetail());
 
-                    return consult;
+                    return Mono.zip(Mono.just(consult), consultManager.setStudentStatus(consult.getStudentId(), 0));
                 })
-                .flatMap(consultInfrastructure::saveConsult);
+                .flatMap(tuple -> consultInfrastructure.saveConsult(tuple.getT1()));
     }
 
     public Mono<List<StaticsInfo>> listAllStaticsInfos() {

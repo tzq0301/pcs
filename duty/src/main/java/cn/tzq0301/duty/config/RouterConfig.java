@@ -31,8 +31,12 @@ public class RouterConfig {
                 .POST("/user_id/{user_id}/duty/weekday/{weekday}/from/{from}/address/{address}", dutyHandler::addRegularDuty)
                 .DELETE("/user_id/{user_id}/duty/weekday/{weekday}/from/{from}/address/{address}", dutyHandler::removeRegularDuty)
                 .POST("/user_id/{user_id}/duty/day/{day}/from/{from}/address/{address}/type/{type}", dutyHandler::addWorkOvertimeRecord)
-                .DELETE("/user_id/{user_id}/duty/day/{day}/from/{from}/type/{type}", dutyHandler::removeWorkOvertimeRecord)
+                .DELETE("/user_id/{user_id}/duty/day/{day}/from/{from}", dutyHandler::removeWorkOvertimeRecord)
                 .POST("/user_id/{user_id}/work/weekday/{weekday}/from/{from}/address/{address}/times/{times}", dutyHandler::addWorkItemOfTimesForUser)
+                .GET("/spare_visitors", dutyHandler::listSpareVisitorsByDay)
+                .GET("/user_id/{user_id}/spare_times", dutyHandler::listSpareTimesById)
+                .GET("/weekday/{weekday}/from/{from}/non_spare_addresses", dutyHandler::listNonSpareAddressesByWeekday)
+                .GET("/day/{day}/from/{from}/non_spare_addresses", dutyHandler::listNonSpareAddressesByDay)
                 .build();
     }
 }
