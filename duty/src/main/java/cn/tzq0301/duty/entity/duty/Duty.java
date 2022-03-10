@@ -154,4 +154,30 @@ public class Duty implements Serializable {
 
         return false;
     }
+
+    public boolean isOnDuty(final LocalDate day, final Integer from) {
+        return isWorkOverTime(day, from) || (!isOnLeave(day, from) && matchPattern(day, from));
+    }
+
+    public boolean isWorkOverTime(final LocalDate day, final Integer from) {
+        return specials.stream()
+                .anyMatch(specialItem -> ZERO.equals(specialItem.getType())
+                        && Objects.equals(day, specialItem.getDay())
+                        && Objects.equals(from, specialItem.getFrom()));
+    }
+
+    public boolean isOnLeave(final LocalDate day, final Integer from) {
+        return specials.stream()
+                .anyMatch(specialItem -> ONE.equals(specialItem.getType())
+                        && Objects.equals(day, specialItem.getDay())
+                        && Objects.equals(from, specialItem.getFrom()));
+    }
+
+    public boolean matchPattern(final LocalDate day, final Integer from) {
+        int weekday = day.getDayOfWeek().getValue();
+
+        return patterns.stream()
+                .anyMatch(pattern -> Objects.equals(weekday, pattern.getWeekday())
+                        && Objects.equals(from, pattern.getFrom()));
+    }
 }

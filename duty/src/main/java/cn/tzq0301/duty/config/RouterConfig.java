@@ -33,6 +33,8 @@ public class RouterConfig {
                 .POST("/user_id/{user_id}/duty/day/{day}/from/{from}/address/{address}/type/{type}", dutyHandler::addWorkOvertimeRecord)
                 .DELETE("/user_id/{user_id}/duty/day/{day}/from/{from}", dutyHandler::removeWorkOvertimeRecord)
                 .POST("/user_id/{user_id}/work/weekday/{weekday}/from/{from}/address/{address}/times/{times}", dutyHandler::addWorkItemOfTimesForUser)
+                .GET("/spare_visitors", dutyHandler::listSpareVisitors)
+                .GET("/user_id/{user_id}/spare_times", dutyHandler::listSpareTimesById)
                 .build();
     }
 }

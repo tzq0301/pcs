@@ -6,6 +6,7 @@ import cn.tzq0301.duty.entity.duty.Pattern;
 import cn.tzq0301.duty.entity.duty.SpecialItem;
 import cn.tzq0301.duty.entity.duty.vo.AllDutyDetails;
 import cn.tzq0301.duty.entity.duty.vo.DutyDetail;
+import cn.tzq0301.duty.entity.duty.vo.SpareTime;
 import cn.tzq0301.duty.entity.work.Work;
 import cn.tzq0301.duty.entity.work.WorkItem;
 import cn.tzq0301.duty.entity.work.Works;
@@ -135,7 +136,7 @@ public class DutyService {
     }
 
     public Flux<LocalDate> addWorkItemOfTimesForUser(final String userId, final int weekday, final int from,
-                                                           final String address, final int times) {
+                                                     final String address, final int times) {
         return dutyInfrastructure.getWorkByUserId(userId)
                 .doOnNext(work -> log.info("Got Work -> {}", work))
                 .map(work -> work.arrangeWorks(weekday, from, address, times))
@@ -143,5 +144,10 @@ public class DutyService {
                 .map(work -> work.getWorks().subList(work.getWorks().size() - times, work.getWorks().size()))
                 .map(list -> list.stream().map(WorkItem::getDay))
                 .flatMapMany(Flux::fromStream);
+    }
+
+    public Mono<SpareTime> listSpareTimesById(final String userId) {
+        return Mono.zip(dutyInfrastructure.getDutyByUserId(userId), dutyInfrastructure.getWorkByUserId(userId))
+                .map(tuple -> new SpareTime(tuple.getT1().getPatterns(), tuple.getT1().getSpecials(), tuple.getT2().getWorks()));
     }
 }

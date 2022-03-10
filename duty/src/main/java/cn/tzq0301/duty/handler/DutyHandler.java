@@ -225,7 +225,22 @@ public class DutyHandler {
                 .flatMap(ServerResponse.ok()::bodyValue);
     }
 
+    public Mono<ServerResponse> listSpareVisitors(ServerRequest request) {
+        String dayAttribute = getAttributeFromServerRequest(request, "day");
+        String fromAttribute = getAttributeFromServerRequest(request, "from");
+
+
+
+        return null;
+    }
+
     private static String getAttributeFromServerRequest(ServerRequest request, String attribute) {
         return request.exchange().getRequest().getQueryParams().getFirst(attribute);
+    }
+
+    public Mono<ServerResponse> listSpareTimesById(ServerRequest request) {
+        return dutyService.listSpareTimesById(request.pathVariable("user_id"))
+                .map(Result::success)
+                .flatMap(ServerResponse.ok()::bodyValue);
     }
 }
