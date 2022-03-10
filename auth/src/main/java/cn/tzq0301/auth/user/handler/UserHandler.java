@@ -192,6 +192,11 @@ public class UserHandler {
                 .flatMap(ServerResponse.ok()::bodyValue);
     }
 
+    public Mono<ServerResponse> listUserInfosByRole(ServerRequest request) {
+        return userService.listAllUsersByRole(request.pathVariable("role"))
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
     /**
      * 获取请求参数中的 offset
      *

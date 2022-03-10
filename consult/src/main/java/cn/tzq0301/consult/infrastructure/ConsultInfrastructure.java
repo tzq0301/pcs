@@ -1,6 +1,7 @@
 package cn.tzq0301.consult.infrastructure;
 
 import cn.tzq0301.consult.entity.Consult;
+import cn.tzq0301.consult.entity.statics.ConsultorStaticsInfo;
 import cn.tzq0301.consult.repository.ConsultRepository;
 import lombok.AllArgsConstructor;
 import org.bson.types.ObjectId;
@@ -38,6 +39,10 @@ public class ConsultInfrastructure {
     }
 
     public Flux<Consult> findAllConsultsByConsultorId(final String consultorId) {
+        return consultRepository.findAllByConsultorId(consultorId);
+    }
+
+    public Flux<Consult> listConsultsByConsultorId(String consultorId) {
         return consultRepository.findAllByConsultorId(consultorId);
     }
 }

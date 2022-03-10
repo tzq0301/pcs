@@ -8,16 +8,18 @@ import cn.tzq0301.consult.entity.assistant.ConsultRecordForAssistant;
 import cn.tzq0301.consult.entity.consultor.ConsultRecordForConsultor;
 import cn.tzq0301.consult.entity.consultor.ConsultRecordOfConsultor;
 import cn.tzq0301.consult.entity.consultor.FinishConsult;
+import cn.tzq0301.consult.entity.statics.ConsultRecord;
+import cn.tzq0301.consult.entity.statics.ConsultorStaticsInfo;
+import cn.tzq0301.consult.entity.statics.PdfInfo;
+import cn.tzq0301.consult.entity.statics.StaticsInfo;
 import cn.tzq0301.consult.entity.student.StudentConsult;
 import cn.tzq0301.consult.entity.student.StudentConsultDetail;
 import cn.tzq0301.consult.entity.visit.VisitRecord;
-import cn.tzq0301.consult.entity.work.WorkArrange;
 import cn.tzq0301.consult.infrastructure.ConsultInfrastructure;
 import cn.tzq0301.consult.manager.ConsultManager;
 import cn.tzq0301.problem.ProblemEnum;
 import cn.tzq0301.util.DateUtils;
 import cn.tzq0301.util.SexUtils;
-import jdk.jfr.Frequency;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.bson.types.ObjectId;
@@ -26,9 +28,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 import static cn.tzq0301.util.Num.*;
@@ -148,5 +148,39 @@ public class ConsultService {
                     return consult;
                 })
                 .flatMap(consultInfrastructure::saveConsult);
+    }
+
+    public Mono<List<StaticsInfo>> listAllStaticsInfos() {
+        return consultInfrastructure.findAllConsults()
+                .map(consult -> new StaticsInfo(consult.getId().toString(),
+                        consult.getStudentName(), consult.getStudentPhone(),
+                        consult.getVisitorName(), consult.getVisitorPhone(),
+                        consult.getConsultorName(), consult.getConsultorPhone(),
+                        consult.getProblemId(), consult.getProblemDetail()))
+                .collectList();
+    }
+
+    public Mono<PdfInfo> findPdfInfoByGlobalId(final String globalId) {
+        log.info("Global ID -> {}", globalId);
+        return consultInfrastructure.findConsultById(globalId)
+                .map(consult -> new PdfInfo(consult.getStudentName(), consult.getStudentSex(),
+                        consult.getStudentPhone(), consult.getStudentEmail(), consult.getStudentBirthday(),
+                        consult.getConsultorName(), consult.getConsultorSex(), consult.getConsultorPhone(),
+                        consult.getConsultorEmail(), consult.getSelfComment(), consult.getDetail(),
+                        consult.getRecords().stream().map(record -> new ConsultRecord(
+                                DateUtils.formatToChineseDateString(record.getDay()),
+                                record.getAddress(), record.getDetail()))
+                                .collect(Collectors.toList()), consult.getCreatedTime()))
+                .doOnNext(pdfInfo -> log.info("Got information for PDF -> {}", pdfInfo));
+    }
+
+    public Mono<ConsultorStaticsInfo> findStaticsInfoByConsultorId(final String consultorId) {
+        return consultInfrastructure.listConsultsByConsultorId(consultorId).collectList()
+                .map(list -> new ConsultorStaticsInfo(
+                        (long) list.size(),
+                        list.stream()
+                                .map(Consult::getTimes)
+                                .map(Long::valueOf)
+                                .reduce(0L, Long::sum)));
     }
 }

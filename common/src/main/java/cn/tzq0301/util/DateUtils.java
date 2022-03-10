@@ -48,5 +48,13 @@ public final class DateUtils {
         return LocalDate.of(year, month, day);
     }
 
+    public static String formatToChineseDateString(final LocalDate date) {
+        return date.getYear() + " 年 " + date.getMonthValue() + " 月 " + date.getDayOfMonth() + " 日";
+    }
+
+    public static String formatToChineseDateString(final String date) {
+        return date.substring(0, 4) + " 年 " + date.substring(4, 6) + " 月 " + date.substring(6, 8) + " 日";
+    }
+
     public DateUtils() {}
 }

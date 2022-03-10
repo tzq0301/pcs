@@ -1,7 +1,6 @@
 package cn.tzq0301.gateway.security;
 
 import lombok.AllArgsConstructor;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -97,6 +96,9 @@ public class WebFluxSecurityConfig {
                 .pathMatchers("/general/**").permitAll()
 
                 .pathMatchers(GET, "/statics/infos").hasRole(ADMIN.getRole())
+                .pathMatchers(GET, "/statics/reports/pdf").hasRole(ADMIN.getRole())
+                .pathMatchers(GET, "/statics/global_id/{global_id}/info/pdf").hasAnyRole(ADMIN.getRole(), CONSULTANT.getRole())
+                .pathMatchers(GET, "/statics/consultors").hasAnyRole(ADMIN.getRole(), CONSULTANT.getRole())
 
 //                .pathMatchers("/student").hasRole(Role.STUDENT.getRole())
 //                .pathMatchers("/admin").hasRole(Role.ADMIN.getRole())
