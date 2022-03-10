@@ -31,7 +31,7 @@ type ConsultRecords struct {
 	Content  string
 }
 
-type ReportDate struct {
+type PdfReportData struct {
 	Date       string
 	Pinfo      PatientInfo `json:"patientInfo"`
 	Dinfo      DoctorInfo  `json:"doctorInfo"`
@@ -49,7 +49,7 @@ func assert(expr bool) {
 
 // parse h.body to patientName, doctorName, date and markdown-format text
 func parse(body string) (patientName, doctorName, date, content string, err error) {
-	var data ReportDate
+	var data PdfReportData
 	// Unmarshal规约：字段名和json中对象名要相同（忽略大小写），所有字段都要public（首字母大写），字段名不同时可令json tag为json对象名
 	err = json.Unmarshal([]byte(body), &data)
 	if err != nil {
@@ -89,7 +89,7 @@ func parse(body string) (patientName, doctorName, date, content string, err erro
 	return
 }
 
-func mappingString(number int, data *ReportDate) string {
+func mappingString(number int, data *PdfReportData) string {
 	r := ""
 	switch number {
 	case 1:

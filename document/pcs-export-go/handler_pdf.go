@@ -66,7 +66,7 @@ func (h *Handler) convert() *Handler {
 		"-mdPath", h.markdownPath, "-savePath", h.pdfPath)
 	err := cmd.Run()
 	if err != nil {
-		log.Fatalln("error on Run: ", err.Error())
+		log.Fatalln("error on Run: ", err.Error(), "cmd:", cmd.String())
 	}
 	return h
 }
@@ -102,9 +102,9 @@ func export_pdf(w http.ResponseWriter, r *http.Request) {
 	var buf []byte
 	buf, _ = ioutil.ReadAll(r.Body)
 	str := string(buf)
-	//fmt.Println("http request: ", r.Method, r.URL)
-	//fmt.Println("receive num of bytes: ", len(buf))
-	//fmt.Println("http body: ", str)
+	log.Println("in export_pdf, http request: ", r.Method, r.URL)
+	log.Println("receive num of bytes: ", len(buf))
+	log.Println("http body: ", str)
 	h := Handler{body: str}
 
 	if h.parse() != nil {
