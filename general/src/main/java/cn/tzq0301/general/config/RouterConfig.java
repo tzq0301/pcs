@@ -22,8 +22,8 @@ public class RouterConfig {
     public RouterFunction<ServerResponse> router() {
         return route()
                 .GET("/addresses", addressHandler::listAddresses)
-                .GET("/day/{day}/from/{from}/addresses", addressHandler::listAvailableAddressesByDay)
-                .GET("/weekday/{weekday}/from/{from}/addresses", addressHandler::listAvailableAddressesByWeekday)
+                .GET("/day/{day}/from/{from}/addresses", addressHandler::listSpareAddressesByDay)
+                .GET("/weekday/{weekday}/from/{from}/addresses", addressHandler::listSpareAddressesByWeekday)
                 .build();
     }
 }

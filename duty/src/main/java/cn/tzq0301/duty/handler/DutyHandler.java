@@ -253,4 +253,12 @@ public class DutyHandler {
                 .map(Result::success)
                 .flatMap(ServerResponse.ok()::bodyValue);
     }
+
+    public Mono<ServerResponse> listNonSpareAddressesByWeekday(ServerRequest request) {
+        return dutyService.listNonSpareAddressesByDay(
+                Integer.parseInt(request.pathVariable("weekday")),
+                Integer.parseInt(request.pathVariable("from")))
+                .doOnNext(nonSpareAddresses -> log.info("Non Spare Addresses -> {}", nonSpareAddresses))
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
 }

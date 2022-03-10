@@ -1,6 +1,5 @@
 package cn.tzq0301.duty.service;
 
-import cn.tzq0301.duty.entity.UserInfo;
 import cn.tzq0301.duty.entity.duty.Duties;
 import cn.tzq0301.duty.entity.duty.Duty;
 import cn.tzq0301.duty.entity.duty.Pattern;
@@ -20,6 +19,7 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -169,5 +169,16 @@ public class DutyService {
                 .map(userInfo -> new SpareVisitor(userInfo.getUserId(), userInfo.getName()))
                 .collectList()
                 .map(SpareVisitors::new);
+    }
+
+    public Mono<List<String>> listNonSpareAddressesByDay(final int weekday, final int from) {
+        return dutyInfrastructure.findAllDuties()
+                .flatMapIterable(duty -> duty.getPatterns().stream()
+                        .filter(pattern -> Objects.equals(weekday, pattern.getWeekday())
+                                && Objects.equals(from, pattern.getFrom()))
+                        .map(Pattern::getAddress)
+                        .collect(Collectors.toList()))
+                .collectList();
+
     }
 }

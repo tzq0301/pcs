@@ -35,6 +35,7 @@ public class RouterConfig {
                 .POST("/user_id/{user_id}/work/weekday/{weekday}/from/{from}/address/{address}/times/{times}", dutyHandler::addWorkItemOfTimesForUser)
                 .GET("/spare_visitors", dutyHandler::listSpareVisitorsByDay)
                 .GET("/user_id/{user_id}/spare_times", dutyHandler::listSpareTimesById)
+                .GET("/weekday/{weekday}/from/{from}/non_spare_addresses", dutyHandler::listNonSpareAddressesByWeekday)
                 .build();
     }
 }
