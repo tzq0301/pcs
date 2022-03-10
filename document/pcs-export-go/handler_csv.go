@@ -181,9 +181,9 @@ func export_csv(w http.ResponseWriter, r *http.Request) {
 	buf, _ = ioutil.ReadAll(r.Body)
 	str := string(buf)
 
-	//fmt.Println("http request: ", r.Method, r.URL)
-	//fmt.Println("receive num of bytes: ", len(buf))
-	//fmt.Println("http body: ", str)
+	log.Println("in export_csv, http request: ", r.Method, r.URL)
+	log.Println("receive num of bytes: ", len(buf))
+	log.Println("http body: ", str)
 
 	var res_url string
 	if parse_and_generate(str, &res_url) != nil {

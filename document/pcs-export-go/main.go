@@ -32,6 +32,7 @@ func main() {
 
 	http.HandleFunc("/export/pdf", export_pdf)
 	http.HandleFunc("/export/csv", export_csv)
+	http.HandleFunc("/export/zip", export_zip)
 
 	err := http.ListenAndServe(":" + strconv.Itoa(*port), nil)
 	if err != nil {
