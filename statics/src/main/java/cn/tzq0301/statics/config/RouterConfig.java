@@ -22,7 +22,7 @@ public class RouterConfig {
     public RouterFunction<ServerResponse> router() {
         return route()
                 .GET("/infos", staticsHandler::listInfos)
-                .GET("/reports/pdf", staticsHandler::exportConsultReports)
+                .POST("/reports/pdf", staticsHandler::exportConsultReports)
                 .GET("/global_id/{global_id}/info/pdf", staticsHandler::exportConsultReportByGlobalId)
                 .GET("/consultors", staticsHandler::exportConsultorInfos)
                 .build();
