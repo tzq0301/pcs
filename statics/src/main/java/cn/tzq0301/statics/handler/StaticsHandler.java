@@ -2,7 +2,6 @@ package cn.tzq0301.statics.handler;
 
 import cn.tzq0301.entity.RecordsWithTotal;
 import cn.tzq0301.result.Result;
-import cn.tzq0301.statics.entity.StaticsInfo;
 import cn.tzq0301.statics.service.StaticsService;
 import cn.tzq0301.util.JWTUtils;
 import com.google.common.base.Strings;
@@ -17,7 +16,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -84,6 +82,17 @@ public class StaticsHandler {
                 .flatMapMany(Flux::fromIterable)
                 .flatMap(staticsService::exportConsultReport)
                 .collectList()
+                .map(Result::success)
+                .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    public Mono<ServerResponse> exportConsultReportsByZip(ServerRequest request) {
+        return staticsService.exportConsultReportByZip(
+                        request.bodyToMono(new ParameterizedTypeReference<List<String>>() {
+                                })
+                                .doOnNext(it -> log.info("Global IDs -> {}", it))
+                                .flatMapMany(Flux::fromIterable)
+                )
                 .map(Result::success)
                 .flatMap(ServerResponse.ok()::bodyValue);
     }

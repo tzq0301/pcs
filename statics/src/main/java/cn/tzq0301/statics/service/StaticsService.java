@@ -6,6 +6,7 @@ import cn.tzq0301.statics.manager.StaticsManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -30,6 +31,14 @@ public class StaticsService {
                 .doOnNext(pdfInfo -> log.info("Got information for Export PDF -> {}", pdfInfo))
                 .flatMap(staticsManager::exportPdf)
                 .doOnNext(url -> log.info("Got URL of PDF -> {}", url));
+    }
+
+    public Mono<String> exportConsultReportByZip(final Flux<String> globalIds) {
+        return Mono.just(globalIds
+                .flatMap(staticsManager::findPdfInfoByGlobalId)
+                .doOnNext(pdfInfo -> log.info("Got information for Export PDF -> {}", pdfInfo)))
+                .flatMap(staticsManager::exportPdfsPackedByZip)
+                .doOnNext(url -> log.info("Got URL of ZIP -> {}", url));
     }
 
     public Mono<String> exportConsultorInfo() {
