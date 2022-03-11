@@ -46,11 +46,12 @@ public class ApplyHandler {
 
     public Mono<ServerResponse> requestApply(ServerRequest request) {
         String jwt = getJWT(request);
-        String userId = getUserId(jwt);
+//        String userId = getUserId(jwt);
 
         return applyService.requestApply(jwt, request.bodyToMono(ApplyRequest.class))
-                .flatMap(apply -> ServerResponse.created(
-                        URI.create("/visit/id/" + userId + "/apply_id/" + apply.getId())).build())
+//                .flatMap(apply -> ServerResponse.created(
+//                        URI.create("/visit/id/" + userId + "/apply_id/" + apply.getId())).build())
+                .flatMap(it -> ServerResponse.ok().bodyValue(Result.success(2, "申请成功")))
                 .onErrorResume(ApplyRequestException.class, error ->
                         ServerResponse.ok().bodyValue(Result.error(ApplyRequestResult.NO_NEED_TO_APPLY_TWICE)));
     }
@@ -100,9 +101,15 @@ public class ApplyHandler {
         int offset = getOffset(request);
         int limit = getLimit(request);
 
-        return PageUtils.pagingFlux(applyService.getAppliesByUserId(userId), offset, limit, Applies::toGetApplies)
-                .map(Records::new)
+        return applyService.getAppliesByUserId(userId)
+                .map(Applies::toGetApplies)
+                .collectList()
+                .map(list -> new RecordsWithTotal<>(list, offset, limit))
                 .flatMap(applies -> ServerResponse.ok().bodyValue(Result.success(applies, SUCCESS)));
+
+//        return PageUtils.pagingFlux(applyService.getAppliesByUserId(userId), offset, limit, Applies::toGetApplies)
+//                .map(Records::new)
+//                .flatMap(applies -> ServerResponse.ok().bodyValue(Result.success(applies, SUCCESS)));
     }
 
     public Mono<ServerResponse> getAllUnfinishedApplies(ServerRequest request) {
