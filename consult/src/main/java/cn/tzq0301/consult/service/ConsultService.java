@@ -146,7 +146,7 @@ public class ConsultService {
                     consult.setSelfComment(finishConsult.getSelfComment());
                     consult.setDetail(finishConsult.getDetail());
 
-                    return Mono.zip(Mono.just(consult), consultManager.setStudentStatus(consult.getStudentId(), 0));
+                    return Mono.zip(Mono.just(consult), consultManager.setStudentStatus(consult.getStudentId(), ZERO));
                 })
                 .flatMap(tuple -> consultInfrastructure.saveConsult(tuple.getT1()));
     }
