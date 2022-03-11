@@ -20,14 +20,14 @@ public class UserManager {
 
     private static final String USER_HASH_KEY = RedisConfig.USER_NAMESPACE_PREFIX + "user";
 
-    public Mono<User> putUserIdAndUserIdIntoCache(final Mono<User> user) {
+    public Mono<User> putUserIdAndUserIntoCache(final Mono<User> user) {
         return user
                 .flatMap(it -> redisTemplate.opsForHash().put(USER_HASH_KEY, it.getUserId(), it))
                 .flatMap(it -> user)
                 .doOnNext(it -> log.info("Put User into Cache -> {}", it));
     }
 
-    public Mono<User> putUserIdAndUserIdIntoCache(final User user) {
+    public Mono<User> putUserIdAndUserIntoCache(final User user) {
         return redisTemplate.opsForHash().put(USER_HASH_KEY, user.getUserId(), user)
                 .map(it -> user)
                 .doOnNext(it -> log.info("Put User into Cache -> {}", it));

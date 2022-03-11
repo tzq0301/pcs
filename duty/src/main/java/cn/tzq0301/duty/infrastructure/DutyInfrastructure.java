@@ -5,6 +5,8 @@ import cn.tzq0301.duty.entity.work.Work;
 import cn.tzq0301.duty.repository.DutyRepository;
 import cn.tzq0301.duty.repository.WorkRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -15,6 +17,7 @@ import reactor.core.publisher.Mono;
  */
 @Repository
 @AllArgsConstructor
+@Log4j2
 public class DutyInfrastructure {
     private final DutyRepository dutyRepository;
 
@@ -41,6 +44,7 @@ public class DutyInfrastructure {
     }
 
     public Mono<Work> saveWork(Work work) {
+        log.info("Save Work -> {}", work);
         return workRepository.save(work);
     }
 }

@@ -6,6 +6,8 @@ import cn.tzq0301.visit.apply.entity.UserInfo;
 
 import java.time.LocalDate;
 
+import static cn.tzq0301.util.Num.ZERO;
+
 /**
  * @author tzq0301
  * @version 1.0
@@ -17,7 +19,7 @@ public final class VisitRecords {
                 apply.getPhone(), apply.getEmail(), apply.getIdentity(), visitor.getUserId(), visitor.getName(),
                 visitor.getSex(), visitor.getPhone(), visitor.getEmail(), problemId, problemDetail, DateUtils.stringToLocalDate(day),
                 from, address, apply.getScores(), apply.getSumScore(), apply.getScaleResult(), LocalDate.now(),
-                0, apply.getOrder(), null, null, LocalDate.now());
+                0, apply.getOrder(), null, ZERO, LocalDate.now());
     }
 
     private VisitRecords() {

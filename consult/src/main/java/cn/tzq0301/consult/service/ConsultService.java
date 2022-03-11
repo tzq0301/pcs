@@ -62,7 +62,8 @@ public class ConsultService {
                                     .collect(Collectors.toList())))
                             .flatMap(consultInfrastructure::saveConsult)
                             .doOnNext(consult -> log.info("Save Consult -> {}", consult))
-                            .flatMap(consult -> consultManager.passVisitRecord(id.toString()).map(it -> consult));
+                            .flatMap(consult -> consultManager.passVisitRecord(id.toString()).map(it -> consult))
+                            .flatMap(consult -> consultManager.setStudentStatus(consult.getStudentId(), TWO).map(it -> consult));
                 })
                 .map(consult -> consult.getRecords().get(0).getDay());
     }

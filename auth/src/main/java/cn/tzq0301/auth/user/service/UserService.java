@@ -54,13 +54,13 @@ public class UserService {
 
     public Mono<User> updateUser(final User user) {
         return userInfrastructure.saveUser(user)
-                .flatMap(userManager::putUserIdAndUserIdIntoCache);
+                .flatMap(userManager::putUserIdAndUserIntoCache);
     }
 
     public Mono<User> saveUser(final User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userInfrastructure.saveUser(user)
-                .flatMap(userManager::putUserIdAndUserIdIntoCache);
+                .flatMap(userManager::putUserIdAndUserIntoCache);
     }
 
     public Mono<Integer> isUserAbleToApply(final String userId) {
@@ -70,7 +70,7 @@ public class UserService {
     public Mono<User> setStudentStatus(final User user, final int studentStatus) {
         user.setStudentStatus(studentStatus);
         return userInfrastructure.saveUser(user)
-                .flatMap(userManager::putUserIdAndUserIdIntoCache);
+                .flatMap(userManager::putUserIdAndUserIntoCache);
     }
 
     public Mono<List<UserInfoVO>> listAllUsers() {
@@ -96,7 +96,7 @@ public class UserService {
                     return user;
                 })
                 .flatMap(userInfrastructure::saveUser)
-                .flatMap(userManager::putUserIdAndUserIdIntoCache);
+                .flatMap(userManager::putUserIdAndUserIntoCache);
     }
 
     public Mono<List<User>> saveUsers(final Flux<ImportStudentInfo> studentInfos) {
