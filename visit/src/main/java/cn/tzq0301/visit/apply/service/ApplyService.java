@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
+import reactor.util.function.Tuple3;
 
 import static cn.tzq0301.util.Num.ONE;
 import static cn.tzq0301.util.Num.ZERO;
@@ -92,21 +93,25 @@ public class ApplyService {
                                 userInfo.getPhone(), userInfo.getEmail(), apply.getStatus())));
     }
 
-    public Mono<Apply> revokeUnPassedApply(final Apply apply) {
+    public Mono<Tuple2<Apply, Integer>> revokeUnPassedApply(final Apply apply) {
         apply.revoke();
 
-        return applyInfrastructure.saveApply(apply);
+        return Mono.zip(
+                applyInfrastructure.saveApply(apply),
+                applyManager.setStudentStatus(apply.getUserId(), 0)
+        );
     }
 
     // 撤销成功需要：修改初访申请状态、删除初访员工作安排
-    public Mono<Tuple2<Apply, String>> revokeApply(final Apply apply) {
+    public Mono<Tuple3<Apply, String, Integer>> revokeApply(final Apply apply) {
         apply.revoke();
 
         return Mono.zip(
                 // 1. 修改初访申请状态
                 applyInfrastructure.saveApply(apply),
                 // 2. 删除初访员工作安排
-                applyManager.deleteVisitorWorkById(apply.getId())
+                applyManager.deleteVisitorWorkById(apply.getId()),
+                applyManager.setStudentStatus(apply.getUserId(), 0)
         );
     }
 

@@ -69,7 +69,8 @@ public class UserService {
 
     public Mono<User> setStudentStatus(final User user, final int studentStatus) {
         user.setStudentStatus(studentStatus);
-        return userInfrastructure.saveUser(user);
+        return userInfrastructure.saveUser(user)
+                .flatMap(userManager::putUserIdAndUserIdIntoCache);
     }
 
     public Mono<List<UserInfoVO>> listAllUsers() {
@@ -94,7 +95,8 @@ public class UserService {
                     user.setEnabled(Boolean.FALSE);
                     return user;
                 })
-                .flatMap(userInfrastructure::saveUser);
+                .flatMap(userInfrastructure::saveUser)
+                .flatMap(userManager::putUserIdAndUserIdIntoCache);
     }
 
     public Mono<List<User>> saveUsers(final Flux<ImportStudentInfo> studentInfos) {
