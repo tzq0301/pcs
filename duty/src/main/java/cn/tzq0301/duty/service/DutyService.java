@@ -51,7 +51,8 @@ public class DutyService {
         return dutyInfrastructure.getDutyByUserId(userId)
                 .switchIfEmpty(Mono.just(Duties.newDuty(userId)))
                 .doOnNext(duty -> duty.addPattern(pattern))
-                .flatMap(dutyInfrastructure::saveDuty);
+                .flatMap(dutyInfrastructure::saveDuty)
+                .doOnNext(duty -> log.info("Save Duty -> {}", duty));
     }
 
     public Mono<Duty> addRegularDutiesByUserId(final String userId, final Pattern... patterns) {
@@ -171,6 +172,7 @@ public class DutyService {
         return dutyInfrastructure.findAllDuties()
                 .map(Duty::getUserId)
                 .flatMap(dutyManager::findUserInfoByUserId)
+                .filter(userInfo -> "VISITOR".equals(userInfo.getRole()))
                 .map(userInfo -> new SpareVisitor(userInfo.getUserId(), userInfo.getName()))
                 .collectList()
                 .map(SpareVisitors::new);

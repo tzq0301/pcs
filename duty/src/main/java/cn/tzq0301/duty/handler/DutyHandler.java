@@ -136,8 +136,8 @@ public class DutyHandler {
     }
 
     public Mono<ServerResponse> findAllDuties(ServerRequest request) {
-        long offset = Long.parseLong(requireNonNull(getAttributeFromServerRequest(request, "offset")));
-        long limit = Long.parseLong(requireNonNull(getAttributeFromServerRequest(request, "limit")));
+        long offset = getOffset(request);
+        long limit = getLimit(request);
         String subname = getAttributeFromServerRequest(request, "subname");
 
         return dutyService.findAllDuties()
@@ -268,5 +268,44 @@ public class DutyHandler {
                         Integer.parseInt(request.pathVariable("from")))
                 .doOnNext(nonSpareAddresses -> log.info("Non Spare Addresses -> {}", nonSpareAddresses))
                 .flatMap(ServerResponse.ok()::bodyValue);
+    }
+
+    /**
+     * 获取请求参数中的 offset
+     *
+     * @return offset（默认值为 0）
+     */
+    private int getOffset(ServerRequest request) {
+        String offset = request.exchange().getRequest().getQueryParams().getFirst("offset");
+
+        if (Strings.isNullOrEmpty(offset)) {
+            return 0;
+        }
+
+        return Integer.parseInt(offset);
+    }
+
+    /**
+     * 获取请求参数中的 limit
+     *
+     * @return limit（默认值为 {@code Integer.MAX_VALUE}）
+     */
+    private int getLimit(ServerRequest request) {
+        String limit = request.exchange().getRequest().getQueryParams().getFirst("limit");
+
+        if (Strings.isNullOrEmpty(limit)) {
+            return Integer.MAX_VALUE;
+        }
+
+        return Integer.parseInt(limit);
+    }
+
+    /**
+     * 获取请求参数中的 str
+     *
+     * @return str
+     */
+    private String getStr(ServerRequest request) {
+        return request.exchange().getRequest().getQueryParams().getFirst("str");
     }
 }

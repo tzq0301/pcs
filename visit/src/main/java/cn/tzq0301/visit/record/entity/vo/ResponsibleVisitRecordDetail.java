@@ -35,4 +35,6 @@ public class ResponsibleVisitRecordDetail {
     private Integer problemId;
 
     private String problemDetail;
+
+    private String scaleResult;
 }

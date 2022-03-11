@@ -7,6 +7,7 @@ import cn.tzq0301.visit.apply.entity.unfinished.UnfinishedApply;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author tzq0301
@@ -50,7 +51,7 @@ public final class Applies {
     public static Apply newApply(UserInfo userInfo, ApplyRequest request) {
         return newApply(userInfo.getUserId(), userInfo.getName(), userInfo.getSex(), DateUtils.localDateToString(userInfo.getBirthday()),
                 request.getPhone(), request.getEmail(), userInfo.getIdentity(), request.getProblemId(), request.getProblemDetail(),
-                request.getDay(), request.getFrom(), request.getAddress(), request.getScores(), request.getVisitorId());
+                request.getDay(), request.getFrom(), request.getAddress(), request.getScores().stream().map(Integer::parseInt).collect(Collectors.toList()), request.getVisitorId());
     }
 
     public static GetApplies toGetApplies(Apply apply) {

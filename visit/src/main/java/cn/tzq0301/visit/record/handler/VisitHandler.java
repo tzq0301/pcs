@@ -70,7 +70,8 @@ public class VisitHandler {
                         visitRecord.getStudentId(), visitRecord.getStudentName(), SexUtils.sexOfString(visitRecord.getStudentSex()),
                         visitRecord.getStudentPhone(), DateUtils.localDateToString(visitRecord.getDay()),
                         visitRecord.getFrom(), visitRecord.getAddress(), visitRecord.getStatus(),
-                        visitRecord.getDangerLevel(), visitRecord.getProblemId(), visitRecord.getProblemDetail()))
+                        visitRecord.getDangerLevel(), visitRecord.getProblemId(), visitRecord.getProblemDetail(),
+                        visitRecord.getScaleResult()))
                 .map(Result::success)
                 .flatMap(ServerResponse.ok()::bodyValue);
     }

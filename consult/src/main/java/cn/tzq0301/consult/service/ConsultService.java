@@ -62,7 +62,8 @@ public class ConsultService {
                                     .collect(Collectors.toList())))
                             .flatMap(consultInfrastructure::saveConsult)
                             .doOnNext(consult -> log.info("Save Consult -> {}", consult))
-                            .flatMap(consult -> consultManager.passVisitRecord(id.toString()).map(it -> consult));
+                            .flatMap(consult -> consultManager.passVisitRecord(id.toString()).map(it -> consult))
+                            .flatMap(consult -> consultManager.setStudentStatus(consult.getStudentId(), TWO).map(it -> consult));
                 })
                 .map(consult -> consult.getRecords().get(0).getDay());
     }
@@ -145,7 +146,7 @@ public class ConsultService {
                     consult.setSelfComment(finishConsult.getSelfComment());
                     consult.setDetail(finishConsult.getDetail());
 
-                    return Mono.zip(Mono.just(consult), consultManager.setStudentStatus(consult.getStudentId(), 0));
+                    return Mono.zip(Mono.just(consult), consultManager.setStudentStatus(consult.getStudentId(), ZERO));
                 })
                 .flatMap(tuple -> consultInfrastructure.saveConsult(tuple.getT1()));
     }
