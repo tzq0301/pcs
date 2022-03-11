@@ -32,7 +32,7 @@ func uploadFile(filePath string) (fileLink string) {
 	fileLink = OSS_DIR + "/" + strconv.FormatInt(timestamp, 10) + filepath.Base(filePath)
 	err := bucket.PutObjectFromFile(fileLink, filePath)
 	if err != nil {
-		log.Println("Error:", err)
+		log.Println("Error on uploadFile:", err)
 		os.Exit(-1)
 	}
 	return

@@ -24,6 +24,10 @@ func export_zip(w http.ResponseWriter, r *http.Request) {
 		responseError(w)
 		return
 	}
+	if len(pdfs) == 0 {
+		responseError(w)
+		return
+	}
 
 	pdfPaths := make([]string, len(pdfs))
 	isAllOk := true
@@ -31,7 +35,7 @@ func export_zip(w http.ResponseWriter, r *http.Request) {
 	wg.Add(len(pdfs))
 
 	// 分配任务，每个json数组的对象成员都被一个routine处理，生成多个pdf
-	for i := 0; i< len(pdfs); i++ {
+	for i := 0; i < len(pdfs); i++ {
 		go func(i int) {
 			defer wg.Done()
 			ni_str, err := json.Marshal(pdfs[i])
