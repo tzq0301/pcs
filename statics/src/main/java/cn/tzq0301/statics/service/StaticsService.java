@@ -35,8 +35,7 @@ public class StaticsService {
 
     public Mono<String> exportConsultReportByZip(final Flux<String> globalIds) {
         return Mono.just(globalIds
-                .flatMap(staticsManager::findPdfInfoByGlobalId)
-                .doOnNext(pdfInfo -> log.info("Got information for Export PDF -> {}", pdfInfo)))
+                .flatMap(staticsManager::findPdfInfoByGlobalId))
                 .flatMap(staticsManager::exportPdfsPackedByZip)
                 .doOnNext(url -> log.info("Got URL of ZIP -> {}", url));
     }

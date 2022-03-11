@@ -47,6 +47,7 @@ public class StaticsManager {
     }
 
     public Mono<PdfInfo> findPdfInfoByGlobalId(final String globalId) {
+        log.info("Global ID -> {}", globalId);
         return builder.build().get()
                 .uri("lb://pcs-consult/pdf_info/global_id/{global_id}", globalId)
                 .retrieve()
@@ -62,6 +63,14 @@ public class StaticsManager {
     }
 
     public Mono<String> exportPdfsPackedByZip(final Flux<PdfInfo> pdfInfo) {
+        return builderWithOutLoadBalanced.build().post()
+                .uri("http://" + host + ":" + port + "/export/zip")
+                .body(pdfInfo, PdfInfo.class)
+                .retrieve()
+                .bodyToMono(String.class);
+    }
+
+    public Mono<String> exportPdfsPackedByZip(final Mono<List<PdfInfo>> pdfInfo) {
         return builderWithOutLoadBalanced.build().post()
                 .uri("http://" + host + ":" + port + "/export/zip")
                 .body(pdfInfo, PdfInfo.class)
