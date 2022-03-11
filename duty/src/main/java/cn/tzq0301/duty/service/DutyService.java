@@ -171,6 +171,7 @@ public class DutyService {
         return dutyInfrastructure.findAllDuties()
                 .map(Duty::getUserId)
                 .flatMap(dutyManager::findUserInfoByUserId)
+                .filter(userInfo -> "VISITOR".equals(userInfo.getRole()))
                 .map(userInfo -> new SpareVisitor(userInfo.getUserId(), userInfo.getName()))
                 .collectList()
                 .map(SpareVisitors::new);
