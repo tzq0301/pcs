@@ -168,16 +168,6 @@ public class DutyHandler {
                     return dutyService.saveDuty(duty);
                 })
                 .doOnNext(duty -> log.info("Save Duty -> {}", duty))
-//                .flatMap(duty -> dutyService.findWorkByUserId(userId)
-//                        .switchIfEmpty(Mono.just(Works.newWork(userId)))
-//                        .flatMap(work -> {
-//                            boolean isSuccess = work.addWork(WorkItems.newWorkItem(day, from, address));
-//                            if (!isSuccess) {
-//                                return Mono.empty();
-//                            }
-//                            return dutyService.saveWork(work);
-//                        }))
-//                .doOnNext(work -> log.info("Save Work -> {}", work))
                 .map(it -> Result.success())
                 .switchIfEmpty(Mono.just(Result.error()))
                 .flatMap(ServerResponse.ok()::bodyValue);

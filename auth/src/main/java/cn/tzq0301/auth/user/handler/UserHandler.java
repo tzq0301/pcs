@@ -181,6 +181,7 @@ public class UserHandler {
                 ? userService.listAllUsers()
                 : userService.listAllUsersByRole(role))
                 .map(list -> new RecordsWithTotal<>(list, user -> user.getName().contains(name), offset, limit))
+                .doOnNext(log::info)
                 .map(Result::success)
                 .flatMap(ServerResponse.ok()::bodyValue);
     }
