@@ -189,7 +189,6 @@ public class DutyService {
     }
 
     public Mono<List<String>> listNonSpareAddressesByDay(final LocalDate day, final int from) {
-//                .collectList();
         return dutyInfrastructure.findAllDuties()
                 .flatMap(duty -> {
                     int weekday = day.getDayOfWeek().getValue();
