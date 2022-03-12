@@ -153,6 +153,7 @@ public class ConsultService {
 
     public Mono<List<StaticsInfo>> listAllStaticsInfos() {
         return consultInfrastructure.findAllConsults()
+                .filter(consult -> TWO.equals(consult.getConsultStatus()))
                 .map(consult -> new StaticsInfo(consult.getId().toString(),
                         consult.getStudentName(), consult.getStudentPhone(),
                         consult.getVisitorName(), consult.getVisitorPhone(),

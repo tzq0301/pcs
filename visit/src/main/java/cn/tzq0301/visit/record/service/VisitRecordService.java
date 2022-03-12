@@ -11,10 +11,12 @@ import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 import java.util.List;
 
 import static cn.tzq0301.util.Num.ONE;
+import static cn.tzq0301.util.Num.TWO;
 import static cn.tzq0301.visit.apply.entity.ApplyStatusEnum.PENDING_REVIEW;
 
 /**
@@ -39,7 +41,10 @@ public class VisitRecordService {
     }
 
     public Mono<VisitRecord> saveVisitRecord(final VisitRecord visitRecord) {
-        return visitRecordInfrastructure.saveVisitRecord(visitRecord);
+        return Mono.zip(
+                visitRecordInfrastructure.saveVisitRecord(visitRecord),
+                visitRecordManager.setStudentStatus(visitRecord.getStudentId(), TWO))
+                .map(Tuple2::getT1);
     }
 
     /**

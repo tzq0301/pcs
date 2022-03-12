@@ -102,7 +102,8 @@ public class DutyHandler {
         String address = request.pathVariable("address");
 
         return dutyService.addRegularDutyByUserId(userId, Patterns.newPattern(weekday, from, address))
-                .flatMap(duty -> ServerResponse.created(URI.create("/duty/user_id/pattern/weekday/from/address")).build());
+                .map(Result::success)
+                .flatMap(ServerResponse.ok()::bodyValue);
     }
 
     /**

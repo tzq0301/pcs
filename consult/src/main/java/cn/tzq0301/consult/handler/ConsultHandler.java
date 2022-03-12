@@ -9,6 +9,7 @@ import cn.tzq0301.result.Result;
 import cn.tzq0301.util.JWTUtils;
 import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -25,6 +26,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
  */
 @Component
 @AllArgsConstructor
+@Log4j2
 public class ConsultHandler {
     private final ConsultService consultService;
 
@@ -36,7 +38,8 @@ public class ConsultHandler {
 
         return consultService.generateConsult(new ObjectId(request.pathVariable("global_id")),
                         weekday, from, address, consultorId)
-                .flatMap(ServerResponse.ok()::bodyValue);
+                .flatMap(ServerResponse.ok()::bodyValue)
+                .doOnNext(log::info);
     }
 
     public Mono<ServerResponse> listStudentConsultByStudentId(ServerRequest request) {
