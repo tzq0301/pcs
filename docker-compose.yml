@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  gateway:
+    build:
+      context: ./gateway
+    ports:
+      - "12100:12100"

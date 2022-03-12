@@ -41,4 +41,11 @@ public class VisitRecordManager {
                 .retrieve()
                 .bodyToMono(UserInfo.class);
     }
+
+    public Mono<Integer> setStudentStatus(String userId, int studentStatus) {
+        return builder.build().patch()
+                .uri("lb://pcs-auth/user_id/{user_id}/student_status/{student_status}", userId, studentStatus)
+                .retrieve()
+                .bodyToMono(Integer.class);
+    }
 }

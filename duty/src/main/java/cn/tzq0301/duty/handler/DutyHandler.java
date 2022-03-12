@@ -7,9 +7,11 @@ import cn.tzq0301.duty.entity.work.WorkResponse;
 import cn.tzq0301.duty.service.DutyService;
 import cn.tzq0301.result.Result;
 import cn.tzq0301.util.DateUtils;
+import cn.tzq0301.util.Num;
 import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -101,8 +103,11 @@ public class DutyHandler {
         int from = Integer.parseInt(request.pathVariable("from"));
         String address = request.pathVariable("address");
 
+        log.info("增加值班记录：周{} {}:00~{}:00 {}", Num.getChinese(weekday), from, from + 1, address);
+
         return dutyService.addRegularDutyByUserId(userId, Patterns.newPattern(weekday, from, address))
-                .flatMap(duty -> ServerResponse.created(URI.create("/duty/user_id/pattern/weekday/from/address")).build());
+                .map(Result::success)
+                .flatMap(ServerResponse.ok()::bodyValue);
     }
 
     /**
@@ -115,9 +120,8 @@ public class DutyHandler {
         String userId = request.pathVariable("user_id");
         int weekday = Integer.parseInt(request.pathVariable("weekday"));
         int from = Integer.parseInt(request.pathVariable("from"));
-        String address = request.pathVariable("address");
 
-        return dutyService.removeRegularDuty(userId, Patterns.newPattern(weekday, from, address))
+        return dutyService.removeRegularDuty(userId, Patterns.newPattern(weekday, from, ""))
                 .flatMap(duty -> ServerResponse.noContent().build());
     }
 
@@ -165,19 +169,11 @@ public class DutyHandler {
                     if (!isSuccess) {
                         return Mono.empty();
                     }
+                    log.info("插入{}记录：{} {}:00~{}:00 {}",
+                            type == 1 ? "加班" : "请假", day.toString(), from, from + 1, address);
                     return dutyService.saveDuty(duty);
                 })
                 .doOnNext(duty -> log.info("Save Duty -> {}", duty))
-//                .flatMap(duty -> dutyService.findWorkByUserId(userId)
-//                        .switchIfEmpty(Mono.just(Works.newWork(userId)))
-//                        .flatMap(work -> {
-//                            boolean isSuccess = work.addWork(WorkItems.newWorkItem(day, from, address));
-//                            if (!isSuccess) {
-//                                return Mono.empty();
-//                            }
-//                            return dutyService.saveWork(work);
-//                        }))
-//                .doOnNext(work -> log.info("Save Work -> {}", work))
                 .map(it -> Result.success())
                 .switchIfEmpty(Mono.just(Result.error()))
                 .flatMap(ServerResponse.ok()::bodyValue);
@@ -256,8 +252,8 @@ public class DutyHandler {
 
     public Mono<ServerResponse> listNonSpareAddressesByWeekday(ServerRequest request) {
         return dutyService.listNonSpareAddressesByWeekday(
-                Integer.parseInt(request.pathVariable("weekday")),
-                Integer.parseInt(request.pathVariable("from")))
+                        Integer.parseInt(request.pathVariable("weekday")),
+                        Integer.parseInt(request.pathVariable("from")))
                 .doOnNext(nonSpareAddresses -> log.info("Non Spare Addresses -> {}", nonSpareAddresses))
                 .flatMap(ServerResponse.ok()::bodyValue);
     }

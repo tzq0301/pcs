@@ -157,8 +157,11 @@ public class ApplyService {
         return applyInfrastructure.findApplyByApplyId(applyId)
                 .flatMap(apply -> {
                     apply.reject();
-                    return applyInfrastructure.saveApply(apply);
+                    return Mono.zip(applyInfrastructure.saveApply(apply),
+                            applyManager.setStudentStatus(apply.getUserId(), ZERO));
+//                    return applyInfrastructure.saveApply(apply);
                 })
+                .map(Tuple2::getT1)
                 .doOnNext(apply -> log.info("Save Apply: {}", apply.toString()));
     }
 

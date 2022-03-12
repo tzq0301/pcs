@@ -76,4 +76,12 @@ class UserServiceTest {
                         "999@gmail.com", "999999999999999999"))
         ).subscribe();
     }
+
+    @Test
+    @Disabled
+    void init() {
+        userService.saveUser(Users.newUser("10000", "童昭旗", "123456", Role.ADMIN,
+                Sex.MALE, LocalDate.of(2001, 3, 1), "18968909990", "tzq0301@gmail.com",
+                "330302200103011610")).subscribe();
+    }
 }

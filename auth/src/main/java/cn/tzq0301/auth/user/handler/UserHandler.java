@@ -59,39 +59,38 @@ public class UserHandler {
     public Mono<ServerResponse> updateUserInformation(ServerRequest request) {
         String userId = request.pathVariable("user_id");
 
-        return checkForUserId(request, userId)
-                .switchIfEmpty(userService
-                        .findByUserId(userId)
-                        .doOnNext(user -> {
-                            MultiValueMap<String, String> queryParams =
-                                    request.exchange().getRequest().getQueryParams();
+        return userService
+                .findByUserId(userId)
+                .doOnNext(user -> {
+                    MultiValueMap<String, String> queryParams =
+                            request.exchange().getRequest().getQueryParams();
 
-                            String sex = queryParams.getFirst("sex");
-                            if (!Strings.isNullOrEmpty(sex)) {
-                                log.info("Update User Sex -> {}", sex);
-                                user.setSex(Integer.parseInt(sex));
-                            }
+                    String sex = queryParams.getFirst("sex");
+                    if (!Strings.isNullOrEmpty(sex)) {
+                        log.info("Update User Sex -> {}", sex);
+                        user.setSex(Integer.parseInt(sex));
+                    }
 
-                            String birthday = queryParams.getFirst("birthday");
-                            if (!Strings.isNullOrEmpty(birthday)) {
-                                log.info("Update User birthday -> {}", birthday);
-                                user.setBirthday(DateUtils.stringToLocalDate(birthday));
-                            }
+                    String birthday = queryParams.getFirst("birthday");
+                    if (!Strings.isNullOrEmpty(birthday)) {
+                        log.info("Update User birthday -> {}", birthday);
+                        user.setBirthday(DateUtils.stringToLocalDate(birthday));
+                    }
 
-                            String phone = queryParams.getFirst("phone");
-                            if (!Strings.isNullOrEmpty(phone)) {
-                                log.info("Update User phone -> {}", phone);
-                                user.setPhone(phone);
-                            }
+                    String phone = queryParams.getFirst("phone");
+                    if (!Strings.isNullOrEmpty(phone)) {
+                        log.info("Update User phone -> {}", phone);
+                        user.setPhone(phone);
+                    }
 
-                            String email = queryParams.getFirst("email");
-                            if (!Strings.isNullOrEmpty(email)) {
-                                log.info("Update User email -> {}", email);
-                                user.setEmail(email);
-                            }
-                        })
-                        .flatMap(userService::updateUser)
-                        .flatMap(user -> ServerResponse.ok().bodyValue(Result.success(SUCCESS))));
+                    String email = queryParams.getFirst("email");
+                    if (!Strings.isNullOrEmpty(email)) {
+                        log.info("Update User email -> {}", email);
+                        user.setEmail(email);
+                    }
+                })
+                .flatMap(userService::updateUser)
+                .flatMap(user -> ServerResponse.ok().bodyValue(Result.success(SUCCESS)));
     }
 
     public Mono<ServerResponse> updatePassword(ServerRequest request) {
@@ -182,6 +181,7 @@ public class UserHandler {
                 ? userService.listAllUsers()
                 : userService.listAllUsersByRole(role))
                 .map(list -> new RecordsWithTotal<>(list, user -> user.getName().contains(name), offset, limit))
+                .doOnNext(log::info)
                 .map(Result::success)
                 .flatMap(ServerResponse.ok()::bodyValue);
     }

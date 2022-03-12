@@ -57,6 +57,7 @@ public class LoginHandler {
 
         return userDetailsService.findByUsername(account)
                 .filter(user -> passwordEncoder.matches(password, user.getPassword()))
+                .filter(UserDetails::isEnabled)
                 .doOnNext(user -> log.info("{} {} login", user.getAuthorities(), user.getUsername()))
                 .map(this::generateJwtResponse)
                 .doOnNext(this::pushJwtToRedis)
@@ -82,6 +83,7 @@ public class LoginHandler {
                 .switchIfEmpty(Mono.just(Boolean.FALSE))
                 .filter(Boolean.TRUE::equals)
                 .flatMap(valid -> userDetailsService.findByUsername(phone))
+                .filter(UserDetails::isEnabled)
                 .doOnNext(user -> log.info("{} {} login", user.getAuthorities(), user.getUsername()))
                 .map(this::generateJwtResponse)
                 .doOnNext(this::pushJwtToRedis)
