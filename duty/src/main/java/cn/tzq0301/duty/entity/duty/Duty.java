@@ -65,8 +65,14 @@ public class Duty implements Serializable {
     }
 
     public void removePattern(final Pattern pattern) {
-        if (!this.patterns.contains(pattern)) {
-            return;
+        Iterator<Pattern> iterator = this.patterns.iterator();
+        while (iterator.hasNext()) {
+            Pattern next = iterator.next();
+            if (Objects.equals(next.getWeekday(), pattern.getWeekday())
+            && Objects.equals(next.getFrom(), pattern.getFrom())) {
+                iterator.remove();
+                return;
+            }
         }
 
         this.patterns.remove(pattern);

@@ -115,9 +115,8 @@ public class DutyHandler {
         String userId = request.pathVariable("user_id");
         int weekday = Integer.parseInt(request.pathVariable("weekday"));
         int from = Integer.parseInt(request.pathVariable("from"));
-        String address = request.pathVariable("address");
 
-        return dutyService.removeRegularDuty(userId, Patterns.newPattern(weekday, from, address))
+        return dutyService.removeRegularDuty(userId, Patterns.newPattern(weekday, from, ""))
                 .flatMap(duty -> ServerResponse.noContent().build());
     }
 

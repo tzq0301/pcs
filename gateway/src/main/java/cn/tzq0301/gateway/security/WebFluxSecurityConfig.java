@@ -88,7 +88,7 @@ public class WebFluxSecurityConfig {
                 .pathMatchers(GET, "/duty/user_id/{user_id}/works").hasAnyRole(VISITOR.getRole(), CONSULTANT.getRole(), ASSISTANT.getRole(), ADMIN.getRole())
                 .pathMatchers(GET, "/duty/duties").hasAnyRole(VISITOR.getRole(), CONSULTANT.getRole(), ASSISTANT.getRole(), ADMIN.getRole())
                 .pathMatchers(POST, "/duty/user_id/{user_id}/duty/weekday/{weekday}/from/{from}/address/{address}").hasRole(ADMIN.getRole())
-                .pathMatchers(DELETE, "/duty/user_id/{user_id}/duty/weekday/{weekday}/from/{from}/address/{address}").hasRole(ADMIN.getRole())
+                .pathMatchers(DELETE, "/duty/user_id/{user_id}/duty/weekday/{weekday}/from/{from}").hasRole(ADMIN.getRole())
                 .pathMatchers(POST, "/duty/user_id/{user_id}/duty/day/{day}/from/{from}/address/{address}/type/{type}").hasRole(ADMIN.getRole())
                 .pathMatchers(DELETE, "/duty/user_id/{user_id}/duty/day/{day}/from/{from}").hasRole(ADMIN.getRole())
                 .pathMatchers(GET, "/duty/spare_visitors").hasAnyRole(ADMIN.getRole(), STUDENT.getRole())
